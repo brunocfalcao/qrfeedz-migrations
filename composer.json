@@ -1,0 +1,40 @@
+{
+    "name": "brunocfalcao/qrfeedz-migrations",
+    "description": "QRFeedz - Migrations",
+    "keywords": [
+        "brunocfalcao",
+        "qrfeedz"
+    ],
+    "homepage": "https://github.com/brunocfalcao/brunocfalcao/qrfeedz-migrations",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Bruno Falcão",
+            "email": "bruno.c.falcao@brunofalcao.me",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "illuminate/contracts": "^10.0",
+        "brunocfalcao/qrfeedz-cube": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "QRFeedz\\Migrations\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "QRFeedz\\Migrations\\MigrationsServiceProvider"
+            ]
+        }
+    }
+}
