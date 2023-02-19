@@ -22,7 +22,9 @@
     },
     "autoload": {
         "psr-4": {
-            "QRFeedz\\Migrations\\": "src/"
+            "QRFeedz\\Migrations\\": "src/",
+            "QRFeedz\\Database\\Factories\\": "database/factories/",
+            "QRFeedz\\Database\\Seeders\\": "database/seeders/"
         }
     },
     "config": {
