@@ -55,6 +55,9 @@ return new class extends Migration
                   ->nullable()
                   ->comment('The place address, but it might also be a specific zone inside a location');
 
+            $table->foreignId('country_id')
+                  ->comment('Organization country. By default (observer) will show the related organization country');
+
             $table->text('description')
                   ->nullable()
                   ->comment('If necessary can have a bit more description context to understand what this place is');
@@ -117,8 +120,7 @@ return new class extends Migration
         Schema::create('taggables', function (Blueprint $table) {
             $table->id();
 
-            $table->morph('taggable');
-            $table->foreignId('organization_id');
+            $table->morphs('taggable');
 
             $table->timestamps();
             $table->softDeletes();
@@ -127,14 +129,34 @@ return new class extends Migration
         Schema::create('categorizables', function (Blueprint $table) {
             $table->id();
 
-            $table->morph('categorizables');
-            $table->foreignId('organization_id');
+            $table->morphs('categorizables');
 
             $table->timestamps();
             $table->softDeletes();
         });
 
         Schema::create('questions', function (Blueprint $table) {
+            $table->id();
+
+            $table->string('group_uuid')
+                  ->comment('Represents grouped questions with the same uuid, since questions can have versions');
+
+            $table->string('question')
+                  ->comment('Question value to be presented to the visitor');
+
+            $table->foreignId('widget_id')
+                  ->nullable();
+
+            $table->unsignedInteger('version')
+                  ->comment('We can have several versions of the same question, but we don\'t want to lose the connection to the previous version question versions');
+
+            $table->foreignId('questionnaire_id');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('widgets', function (Blueprint $table) {
             $table->id();
 
             $table->string('name')
@@ -168,8 +190,11 @@ return new class extends Migration
         Schema::create('responses', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('question_id');
+            $table->foreignId('question_id')
+                  ->comment('This is referenced to the exact question version that was answered for');
+
             $table->foreignId('place_id');
+
             $table->longText('data')
                   ->nullable()
                   ->comment('Answers need to be json-structured since it can be a complex answer type');
