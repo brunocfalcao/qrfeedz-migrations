@@ -21,10 +21,8 @@ class MigrationsServiceProvider extends ServiceProvider
 
     protected function registerCommands(): void
     {
-        $this->app->bind('command.qrfeedz:fresh', FreshSeed::class);
-
         $this->commands([
-            'command.qrfeedz:fresh',
+            FreshSeed::class,
         ]);
     }
 }
