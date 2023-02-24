@@ -56,7 +56,7 @@ return new class extends Migration
                   ->comment('The place address, but it might also be a specific zone inside a location');
 
             $table->foreignId('country_id')
-                  ->comment('Organization country. By default (observer) will show the related organization country');
+                  ->comment('Place country. By default (observer) will show the related organization country');
 
             $table->text('description')
                   ->nullable()
