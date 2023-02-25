@@ -311,10 +311,17 @@ class SchemaFoundationSeeder extends Seeder
         ]);
 
         Widget::create([
-            'name' => 'MultiLineInput',
-            'view_component' => 'multi-line-input',
+            'name' => 'Textarea',
+            'view_component' => 'textarea',
             'settings' => ['caption' => 'answer here'],
-            'description' => 'A multi line input text area',
+            'description' => 'A textarea for a more detailed visitor feedback',
+        ]);
+
+        Widget::create([
+            'name' => 'MultipleCheckboxes',
+            'view_component' => 'multiple-checkboxes',
+            'settings' => ['option 1', 'option 2', ['min' => 1]],
+            'description' => 'A multi line input text area, settings are a value range of answers',
         ]);
     }
 }

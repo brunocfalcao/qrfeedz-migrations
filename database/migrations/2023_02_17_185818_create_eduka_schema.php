@@ -67,6 +67,14 @@ return new class extends Migration
                   ->nullable()
                   ->comment('The place address, but it might also be a specific zone inside a location');
 
+            $table->string('postal_code')
+                  ->nullable()
+                  ->comment('The organization postal code');
+
+            $table->string('locality')
+                  ->nullable()
+                  ->comment('The organization locality');
+
             $table->foreignId('country_id')
                   ->comment('Place country. By default (observer) will show the related organization country');
 
@@ -161,6 +169,10 @@ return new class extends Migration
 
             $table->unsignedInteger('index')
                   ->comment('The question index in the questionnaire. AKA sequence in the questionnaire');
+
+            $table->boolean('is_required')
+                  ->default(false)
+                  ->comment('If this question is required to be answered');
 
             $table->unsignedInteger('page_num')
                   ->default(1)

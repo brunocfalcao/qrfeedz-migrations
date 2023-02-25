@@ -39,11 +39,18 @@ class SchemaTestSeeder extends Seeder
         Organization::factory()->count(rand(20, 30))->create();
 
         foreach (Organization::all() as $organization) {
-            Place::factory()->count(rand(1, 3))->make([
+            
+            /**
+             * Then by creating random places that will store questionnares
+             * and answers to questionnaires.
+             */
+            Place::factory()->count(rand(1, 3))->create([
                 'organization_id' => $organization->id,
-            ])->each(function ($place) {
-                dd($place);
-            });
+                'address' => $organization->address,
+                'postal_code' => $organization->postal_code,
+                'locality' => $organization->locality,
+                'country_id' => $organization->country_id
+            ]);
         }
     }
 }
