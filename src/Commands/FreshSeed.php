@@ -11,7 +11,7 @@ class FreshSeed extends Command
      *
      * @var string
      */
-    protected $signature = 'qrfeedz:fresh {--seed : Seed testing data}';
+    protected $signature = 'qrfeedz:fresh {--test : Seed testing data}';
 
     /**
      * The console command description.
@@ -39,12 +39,24 @@ class FreshSeed extends Command
     {
         $this->info('=> Installing QR Feedz schema...');
 
+        /**
+         * Create all tables and indexes.
+         */
         $this->call('migrate:fresh', [
             '--force' => 1,
             '--quiet' => 1,
         ]);
 
-        if ($this->option('seed') && app()->environment() != 'production') {
+        /**
+         * The foundation seeder populates de system tables with the
+         * initial data that is needed to use qrfeedz.
+         */
+        $this->call('db:seed', [
+            '--class' => 'QRFeedz\Database\Seeders\SchemaFoundationSeeder',
+            '--quiet' => 1,
+        ]);
+
+        if ($this->option('test') && app()->environment() != 'production') {
             $this->info('=> Seeding database with testing data ...');
             $this->call('db:seed', [
                 '--class' => 'QRFeedz\Database\Seeders\SchemaTestSeeder',

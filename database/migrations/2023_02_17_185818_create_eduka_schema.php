@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::table('users', function (Blueprint $table) {
+            $table->softDeletes();
+        });
+
         Schema::create('countries', function (Blueprint $table) {
             $table->id();
 
@@ -141,29 +145,45 @@ return new class extends Migration
             $table->string('group_uuid')
                   ->comment('Represents grouped questions with the same uuid, since questions can have versions');
 
+            $table->unsignedInteger('version')
+                  ->comment('We can have several versions of the same question, but we don\'t want to lose the connection to the previous version question versions');
+
             $table->string('question')
                   ->comment('Question value to be presented to the visitor');
+
+            $table->unsignedInteger('index')
+                  ->comment('The question index in the questionnaire. AKA sequence in the questionnaire');
+
+            $table->unsignedInteger('page_num')
+                  ->default(1)
+                  ->comment('The questionnaire page number that this question will belong to');
 
             $table->foreignId('widget_id')
                   ->nullable();
 
-            $table->unsignedInteger('version')
-                  ->comment('We can have several versions of the same question, but we don\'t want to lose the connection to the previous version question versions');
+            $table->longText('settings')
+                  ->nullable()
+                  ->comment('These settings are copied from the widget, at the moment of the creation. Then we can override them to change the default configuration');
 
             $table->foreignId('questionnaire_id');
 
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index(['group_uuid', 'version']);
         });
 
         Schema::create('widgets', function (Blueprint $table) {
             $table->id();
 
             $table->string('name')
-                  ->comment('E.g: A Textbox');
+                  ->comment('E.g: Textbox, 1 to N, etc');
 
-            $table->string('canonical')
-                  ->comment('E.g.: textbox, checkbox, etc');
+            $table->uuid('group_uuid')
+                  ->comment('Used to uniquely identify the widget with the version');
+
+            $table->unsignedInteger('version')
+                  ->comment('We can have several versions of the same question widget, but we don\'t want to lose the connection to the previous version question instances');
 
             $table->longText('settings')
                   ->nullable()
@@ -172,19 +192,14 @@ return new class extends Migration
             $table->string('view_component')
                   ->comment('The view component namespace and path. All questions are rendered via blade components');
 
-            $table->unsignedInteger('version')
-                  ->comment('We can have several versions of the same question widget, but we don\'t want to lose the connection to the previous version question instances');
-
             $table->text('description')
                   ->nullable()
                   ->comment('Extended description, validation options, integration details, etc');
 
-            $table->uuid('uuid')
-                  ->nullable()
-                  ->comment('The uuid is what is actually used to uniquely identify the component in the UI (still, can have several instances in the UI)');
-
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index(['group_uuid', 'version']);
         });
 
         Schema::create('responses', function (Blueprint $table) {

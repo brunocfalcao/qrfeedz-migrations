@@ -3,18 +3,24 @@
 namespace QRFeedz\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
+use QRFeedz\Cube\Models\Country;
+use QRFeedz\Cube\Models\Organization;
 
 class OrganizationFactory extends Factory
 {
+
+    protected $model = Organization::class;
+
     public function definition(): array
     {
+        // for vat()
+        fake()->addProvider(new \Faker\Provider\es_ES\Payment(fake()));
+
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-            'remember_token' => Str::random(10),
+            'name' => fake()->company(),
+            'address' => fake()->streetAddress(),
+            'vat_number' => fake()->vat(),
+            'country_id' => Country::all()->random(),
         ];
     }
 }
