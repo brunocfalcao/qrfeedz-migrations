@@ -38,12 +38,20 @@ return new class extends Migration
                   ->nullable()
                   ->comment('The organization address');
 
-            $table->string('vat_number')
+            $table->string('postal_code')
                   ->nullable()
-                  ->comment('Organization fiscal number');
+                  ->comment('The organization postal code');
+
+            $table->string('locality')
+                  ->nullable()
+                  ->comment('The organization locality');
 
             $table->foreignId('country_id')
                   ->comment('Organization country');
+
+            $table->string('vat_number')
+                  ->nullable()
+                  ->comment('Organization fiscal number');
 
             $table->timestamps();
             $table->softDeletes();

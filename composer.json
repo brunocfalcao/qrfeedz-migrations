@@ -17,6 +17,7 @@
     ],
     "require": {
         "php": "^8.1",
+        "fakerphp/faker": "^1.9.1",
         "illuminate/contracts": "^10.0",
         "brunocfalcao/qrfeedz-cube": "dev-master"
     },

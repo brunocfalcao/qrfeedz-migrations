@@ -3,7 +3,6 @@
 namespace QRFeedz\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
@@ -275,11 +274,10 @@ class SchemaFoundationSeeder extends Seeder
         /**
          * Super system admin credentials registration.
          */
-
         User::create([
             'name' => env('QRFEEDZ_SUPER_ADMIN_NAME'),
             'email' => env('QRFEEDZ_SUPER_ADMIN_EMAIL'),
-            'password' => bcrypt(env('QRFEEDZ_SUPER_ADMIN_PASSWORD'))
+            'password' => bcrypt(env('QRFEEDZ_SUPER_ADMIN_PASSWORD')),
         ]);
 
         /**
@@ -302,21 +300,21 @@ class SchemaFoundationSeeder extends Seeder
             'name' => '1 to N',
             'view_component' => '1-to-n',
             'settings' => ['min' => 1, 'max' => 5],
-            'description' => 'A 1 to N range where the visitor selects only one, from very bad to very good'
+            'description' => 'A 1 to N range where the visitor selects only one, from very bad to very good',
         ]);
 
         Widget::create([
             'name' => 'OneLineInput',
             'view_component' => 'one-line-input',
             'settings' => ['caption' => 'answer here'],
-            'description' => 'A single line input text'
+            'description' => 'A single line input text',
         ]);
 
         Widget::create([
             'name' => 'MultiLineInput',
             'view_component' => 'multi-line-input',
             'settings' => ['caption' => 'answer here'],
-            'description' => 'A multi line input text area'
+            'description' => 'A multi line input text area',
         ]);
     }
 }
