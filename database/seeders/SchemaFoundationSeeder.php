@@ -300,28 +300,56 @@ class SchemaFoundationSeeder extends Seeder
          */
         Widget::create([
             'name' => '1 to N',
-            'view_component' => '1-to-n',
+            'canonical' => '1-to-n',
+            'view_component_namespace' => '1-to-n',
             'settings' => ['min' => 1, 'max' => 5],
             'description' => 'A 1 to N range where the visitor selects only one, from very bad to very good',
         ]);
 
         Widget::create([
-            'name' => 'OneLineInput',
-            'view_component' => 'one-line-input',
+            'name' => 'Input',
+            'canonical' => 'input',
+            'view_component_namespace' => 'input',
             'settings' => ['caption' => 'answer here'],
             'description' => 'A single line input text',
         ]);
 
         Widget::create([
             'name' => 'Textarea',
-            'view_component' => 'textarea',
+            'canonical' => 'textarea',
+            'view_component_namespace' => 'textarea',
             'settings' => ['caption' => 'answer here'],
             'description' => 'A textarea for a more detailed visitor feedback',
         ]);
 
         Widget::create([
-            'name' => 'MultipleCheckboxes',
-            'view_component' => 'multiple-checkboxes',
+            'name' => 'Multi Select with Lanes',
+            'canonical' => 'multi-line-lanes',
+            'view_component_namespace' => 'multi-select-lanes',
+            'settings' => ['option 1', 'option 2', ['min' => 1]],
+            'description' => 'A multi line input text area, settings are a value range of answers',
+        ]);
+
+        Widget::create([
+            'name' => 'Stars rating',
+            'canonical' => 'stars-rating',
+            'view_component_namespace' => 'stars-rating',
+            'settings' => ['count' => 5],
+            'description' => 'Rating with stars',
+        ]);
+
+        Widget::create([
+            'name' => 'EmojiSmiles',
+            'canonical' => 'emoji-smiles',
+            'view_component_namespace' => 'emoji-smiles',
+            'settings' => [],
+            'description' => 'Rating but with emojis (from very sad to very happy)',
+        ]);
+
+        Widget::create([
+            'name' => 'RadioGroup',
+            'canonical' => 'radio-group',
+            'view_component_namespace' => 'radio-group',
             'settings' => ['option 1', 'option 2', ['min' => 1]],
             'description' => 'A multi line input text area, settings are a value range of answers',
         ]);

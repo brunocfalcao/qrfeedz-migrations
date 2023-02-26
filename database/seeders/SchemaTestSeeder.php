@@ -7,7 +7,9 @@ use Illuminate\Support\Str;
 use QRFeedz\Cube\Models\Category;
 use QRFeedz\Cube\Models\Organization;
 use QRFeedz\Cube\Models\Place;
+use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\Questionnaire;
+use QRFeedz\Cube\Models\Widget;
 
 class SchemaTestSeeder extends Seeder
 {
@@ -69,8 +71,9 @@ class SchemaTestSeeder extends Seeder
          */
         foreach (Place::all() as $place) {
             $questionnaire = Questionnaire::create([
-                'description' => 'Questionnaire for '.$place->name,
+                'description' => 'Questionnaire for ' . $place->name,
                 'qrcode' => (string) Str::uuid(),
+                'place_id' => $place->id
             ]);
 
             /**
@@ -103,9 +106,6 @@ class SchemaTestSeeder extends Seeder
             $place->categories()
                   ->save($category);
 
-            $questionnaire->places()
-                          ->attach($place->id, ['starts_at' => now()]);
-
             /**
              * Time to create the questions collection for the respective
              * questionnaire type. For that we dynamically call the
@@ -128,7 +128,35 @@ class SchemaTestSeeder extends Seeder
 
     protected function createRestaurantQuestions(Questionnaire $questionnaire)
     {
-        info('creating restaurant questions ...');
+        /**
+         * We add the following questions (2 per page):
+         *
+         * How much did you like what you eat?
+         * [ stars - 1 to 5 ]
+         *
+         * How much did you like the cleaniness?
+         * [ stars - 1 to 5 ]
+         *
+         * Did you pay a fair price for the service?
+         * [ radio - yes  / no / don't know ]
+         *
+         * Anything else to tell us?
+         * [ textarea ]
+         */
+
+        $question = Question::create([
+            'questionnaire_id' => $questionnaire->id,
+            'question' => 'How much did you like what you ate?',
+            'page_num' => 1,
+            'widget_group_uuid' => Widget::newestByCanonical('stars-rating')->group_uuid
+        ]);
+
+        Question::create([
+            'questionnaire_id' => $questionnaire->id,
+            'question' => 'How much did you like the cleaniness?',
+            'page_num' => 1,
+            'widget_group_uuid' => Widget::newestByCanonical('stars-rating')->group_uuid
+        ]);
     }
 
     protected function createCantineQuestions(Questionnaire $questionnaire)

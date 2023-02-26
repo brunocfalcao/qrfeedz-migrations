@@ -230,6 +230,11 @@ return new class extends Migration
             $table->softDeletes();
         });
 
+        /**
+         * Categories are joker attributes that are related with organizations,
+         * places, questionnaires, etc. They can be created and used as
+         * requested.
+         */
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
 
@@ -242,6 +247,11 @@ return new class extends Migration
             $table->softDeletes();
         });
 
+        /**
+         * Tags are joker attributes that are related with organizations,
+         * places, questionnaires, etc. They can be created and used as
+         * requested.
+         */
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
 
@@ -274,23 +284,35 @@ return new class extends Migration
             $table->softDeletes();
         });
 
+        /**
+         * A widget is a view component that renders HTML where the visitor
+         * will then give the answer to the question. Widgets are only
+         * related with questions, and they can be versioned. A widget, if
+         * not specified by the question, will always be rendered on the
+         * latest version when the questionnaire is rendered to the
+         * visitor. Still, the widget is related with the response
+         * specifically (by the widget id and not by the group uuid).
+         */
         Schema::create('widgets', function (Blueprint $table) {
             $table->id();
 
             $table->string('name')
                   ->comment('E.g: Textbox, 1 to N, etc');
 
+            $table->string('canonical')
+                  ->comment('Widget canonical, easier to find when relating with questions');
+
             $table->uuid('group_uuid')
-                  ->comment('Used to uniquely identify the widget with the version');
+                  ->comment('Used to uniquely identify the widget with the version.Automatically generated');
 
             $table->unsignedInteger('version')
-                  ->comment('We can have several versions of the same question widget, but we don\'t want to lose the connection to the previous version question instances');
+                  ->comment('We can have several versions of the same question widget, but we don\'t want to lose the connection to the previous version question instances.Automatically generated');
 
             $table->longText('settings')
                   ->nullable()
                   ->comment('Question additional configuration data to be sent to the UI');
 
-            $table->string('view_component')
+            $table->string('view_component_namespace')
                   ->comment('The view component namespace and path. All questions are rendered via blade components');
 
             $table->text('description')
