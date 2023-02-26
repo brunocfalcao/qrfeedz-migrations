@@ -3,7 +3,9 @@
 namespace QRFeedz\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use QRFeedz\Cube\Models\Category;
 use QRFeedz\Cube\Models\Country;
+use QRFeedz\Cube\Models\Tag;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
 
@@ -323,5 +325,19 @@ class SchemaFoundationSeeder extends Seeder
             'settings' => ['option 1', 'option 2', ['min' => 1]],
             'description' => 'A multi line input text area, settings are a value range of answers',
         ]);
+
+        /**
+         * Add default categories.
+         */
+        Category::create(['name' => 'Hotel']);
+        Category::create(['name' => 'Cantine']);
+        Category::create(['name' => 'Restaurant']);
+
+        /**
+         * Add default tags.
+         */
+        Tag::create(['name' => 'On trial']);
+        Tag::create(['name' => 'Trending']);
+        Tag::create(['name' => 'Old Wolf']);
     }
 }

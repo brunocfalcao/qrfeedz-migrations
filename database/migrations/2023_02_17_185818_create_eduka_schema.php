@@ -11,10 +11,69 @@ return new class extends Migration
      */
     public function up(): void
     {
+        /**
+         * The users table is extended to also have soft deletes to allow
+         * users to be "deleted". Users are ALWAYS connected to organizations
+         * and their authorizations will cascade down to places, and
+         * questionnaires. Authorization cascading profiles:
+         *
+         * Two access types: READ and UPSERT.
+         * The READ access is at it says: User can ONLY view data, and cannot
+         * change, neither interact with anything. The data scope excepts the
+         * emails of visitors. That one is specific for GDPR access.
+         *
+         * The UPSERT access is wider: It can give access to insert and to
+         * update data. Some ground rules: If a questionnaire already has
+         * questions on it, it cannot be updated on the questions configuration.
+         * The user would need to create a new question version to attach it to
+         * the questionnaire. The questionnaire instance will always display
+         * the latest versions of each of the question, but for reporting will
+         * always give the value of the respective version that the answer was
+         * given to.
+         *
+         * Admin access specifically: DELETE and GPDR.
+         *
+         * The DELETE is very powerful, because it will actually be able to
+         * delete places, questionnaires, and organizations. The delete is
+         * always a soft delete still. The user will be able to delete a
+         * questionnaire. If a questionnaire is deleted, all the data is
+         * also deleted. The best is to disable, or close it with an
+         * end date.
+         */
         Schema::table('users', function (Blueprint $table) {
             $table->softDeletes();
         });
 
+        Schema::create('authorizations', function (Blueprint $table) {
+            $table->id();
+
+            $table->string('name')
+                  ->comment('The authorization type: READ, UPSERT, DELETE, GDPR');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        /**
+         * The authorization is given between a user, an authorization type
+         * and a organization/place/questionnaire. That's why we need a
+         * many-to-many polymorphic relationship.
+         */
+        Schema::create('authorizables', function (Blueprint $table) {
+            $table->id();
+
+            $table->morphs('authorizable');
+            $table->foreignId('authorization_id');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        /**
+         * Countries are used in organizations and places. Both respect
+         * the same values from Laravel Nova, so we can use the country
+         * field type.
+         */
         Schema::create('countries', function (Blueprint $table) {
             $table->id();
 
@@ -28,6 +87,13 @@ return new class extends Migration
             $table->softDeletes();
         });
 
+        /**
+         * Organizations are the top most entity on the qrfeedz structure.
+         * An organization will cascade its data branches as places, then
+         * questionnaires, and then responses. An organization can be like
+         * a big company e.g.: Tavero, but can also be just a single entity
+         * as a restaurant.
+         */
         Schema::create('organizations', function (Blueprint $table) {
             $table->id();
 
@@ -57,6 +123,16 @@ return new class extends Migration
             $table->softDeletes();
         });
 
+        /**
+         * A place is one of the greatest added values of qrfeedz. A place
+         * uniquely identifies a set of questionnaires (or just one) that
+         * will be answered by visitors. A place can be, as example:
+         * - A room in an hotel
+         * - A section in a restaurant
+         * - A full restaurant address
+         * - A full hotel address, or an hotel inside an organization
+         * - A cantine, from a set of cantines from a big company
+         */
         Schema::create('places', function (Blueprint $table) {
             $table->id();
 
@@ -89,18 +165,36 @@ return new class extends Migration
             $table->softDeletes();
         });
 
+        /**
+         * Questionnaires are unique entry points for visitors to give their
+         * feedback about something. A questionnaire is attached to a place,
+         * and can have multiple questions versions attached to it.
+         * Questionnaires can be enpowered with tags and categories to it
+         * will be easier to see reports from another perspective.
+         * The relationship between a place and a questionnaire is 1-N
+         * meaning a place can have multiple questionnaires attached to
+         * it. The versioning of content is made at the questions level.
+         */
         Schema::create('questionnaires', function (Blueprint $table) {
             $table->id();
+
+            $table->string('name')
+                  ->nullable()
+                  ->comment('Human name that the questionnaire is used for. E.g.: Terrace Summer 2021');
 
             $table->text('description')
                   ->nullable()
                   ->comment('In case we want to describe a specific qr code instance for whatever reason');
 
-            $table->uuid('uuid')
-                  ->comment('This will be the unique qr code that will be scanned by a client');
+            $table->foreignId('place_id')
+                  ->comment('Related place where the questionnaire will be used');
 
-            $table->boolean('is_inactive')
-                  ->default(false)
+            $table->string('default_locale')
+                  ->default('en-US')
+                  ->comment('The default localization for this questionnaire');
+
+            $table->boolean('is_active')
+                  ->default(true)
                   ->comment('Overrides the active dates. In case we want to immediate inactivate the questionnaire');
 
             $table->dateTime('starts_at')
@@ -108,6 +202,29 @@ return new class extends Migration
 
             $table->dateTime('ends_at')
                   ->nullable();
+
+            $table->string('background_color')
+                  ->default('FFFFFF')
+                  ->comment('That is the main questionnaire background color');
+
+            $table->string('font_color')
+                  ->default('000000')
+                  ->comment('That is the main questionnaire font color, for the questions and answers');
+
+            $table->string('info_color')
+                  ->default('0000FF')
+                  ->comment('That is the main questionnaire info secondary color');
+
+            $table->string('warning_color')
+                  ->default('FF0000')
+                  ->comment('That is when we want to alert the visitor because he/she made a mistake or forgot something');
+
+            $table->boolean('asks_for_email')
+                  ->default(true)
+                  ->comment('It will ask for an email at the end of the questionnaire');
+
+            $table->uuid('qrcode')
+                  ->comment('This will be the unique qr code that will be scanned by a client');
 
             $table->timestamps();
             $table->softDeletes();
@@ -141,6 +258,7 @@ return new class extends Migration
             $table->id();
 
             $table->morphs('taggable');
+            $table->foreignId('tag_id');
 
             $table->timestamps();
             $table->softDeletes();
@@ -149,48 +267,11 @@ return new class extends Migration
         Schema::create('categorizables', function (Blueprint $table) {
             $table->id();
 
-            $table->morphs('categorizables');
+            $table->morphs('categorizable');
+            $table->foreignId('category_id');
 
             $table->timestamps();
             $table->softDeletes();
-        });
-
-        Schema::create('questions', function (Blueprint $table) {
-            $table->id();
-
-            $table->string('group_uuid')
-                  ->comment('Represents grouped questions with the same uuid, since questions can have versions');
-
-            $table->unsignedInteger('version')
-                  ->comment('We can have several versions of the same question, but we don\'t want to lose the connection to the previous version question versions');
-
-            $table->string('question')
-                  ->comment('Question value to be presented to the visitor');
-
-            $table->unsignedInteger('index')
-                  ->comment('The question index in the questionnaire. AKA sequence in the questionnaire');
-
-            $table->boolean('is_required')
-                  ->default(false)
-                  ->comment('If this question is required to be answered');
-
-            $table->unsignedInteger('page_num')
-                  ->default(1)
-                  ->comment('The questionnaire page number that this question will belong to');
-
-            $table->foreignId('widget_id')
-                  ->nullable();
-
-            $table->longText('settings')
-                  ->nullable()
-                  ->comment('These settings are copied from the widget, at the moment of the creation. Then we can override them to change the default configuration');
-
-            $table->foreignId('questionnaire_id');
-
-            $table->timestamps();
-            $table->softDeletes();
-
-            $table->index(['group_uuid', 'version']);
         });
 
         Schema::create('widgets', function (Blueprint $table) {
@@ -222,13 +303,55 @@ return new class extends Migration
             $table->index(['group_uuid', 'version']);
         });
 
+        Schema::create('questions', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('questionnaire_id');
+
+            $table->uuid('group_uuid')
+                  ->nullable()
+                  ->comment('A group uuid to group questions. Automatically generated');
+
+            $table->unsignedInteger('version')
+                  ->comment('We can have several versions of the same question. Still this needs to be used in edge cases');
+
+            $table->string('question')
+                  ->comment('Question caption to be presented to the visitor');
+
+            $table->unsignedInteger('index')
+                  ->comment('The question index in the questionnaire. AKA sequence in the questionnaire. Can be automatically generated');
+
+            $table->unsignedInteger('page_num')
+                  ->default(1)
+                  ->comment('The questionnaire page number that this question will belong to. By default we just have one page, but we could have multiple too');
+
+            $table->uuid('widget_group_uuid')
+                  ->nullable()
+                  ->comment('Related widget group uuid. By default the widget will always be rendered in the latest version, still the answers are recorded in the exact widget id (not group uuid)');
+
+            $table->boolean('is_required')
+                  ->default(false)
+                  ->comment('If this question is required to be answered');
+
+            $table->longText('settings')
+                  ->nullable()
+                  ->comment('These settings are copied from the widget, at the moment of the creation. Then we can override them to change the default configuration');
+
+            $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('widget_group_uuid')
+                  ->references('group_uuid')
+                  ->on('widgets');
+
+            $table->index(['group_uuid', 'version']);
+        });
+
         Schema::create('responses', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('question_id')
                   ->comment('This is referenced to the exact question version that was answered for');
-
-            $table->foreignId('place_id');
 
             $table->longText('data')
                   ->nullable()
@@ -236,17 +359,7 @@ return new class extends Migration
 
             $table->string('value')
                   ->nullable()
-                  ->comment('This is the value that is used for reporting in a certain way. It is a human value computed from the json_value column');
-
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
-        Schema::create('place_questionnaire', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('questionnaire_id');
-            $table->foreignId('place_id');
+                  ->comment('This is the value that is used for reporting in a certain way. It is a computed value from the widget value');
 
             $table->timestamps();
             $table->softDeletes();

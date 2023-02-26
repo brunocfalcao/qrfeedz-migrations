@@ -18,7 +18,7 @@ class PlaceFactory extends Factory
             'postal_code' => fake()->postcode(),
             'locality' => fake()->city(),
             'country_id' => Country::all()->random(),
-            'description' => fake()->sentence()
+            'description' => fake()->sentence(),
         ];
     }
 }
