@@ -359,7 +359,10 @@ return new class extends Migration
 
             $table->string('value')
                   ->nullable()
-                  ->comment('This is the value that is used for reporting in a certain way. It is a computed value from the widget value');
+                  ->comment('This is the concluded value(s) from the data json structure');
+
+            $table->foreignId('widget_id')
+                  ->comment('The relatable exact widget id that this question was answered for');
 
             $table->timestamps();
             $table->softDeletes();
