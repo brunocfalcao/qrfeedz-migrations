@@ -148,6 +148,7 @@ class SchemaTestSeeder extends Seeder
             'questionnaire_id' => $questionnaire->id,
             'question' => 'How much did you like what you ate?',
             'page_num' => 1,
+            'is_required' => true,
             'widget_group_uuid' => Widget::newestByCanonical('stars-rating')->group_uuid
         ]);
 
@@ -155,7 +156,23 @@ class SchemaTestSeeder extends Seeder
             'questionnaire_id' => $questionnaire->id,
             'question' => 'How much did you like the cleaniness?',
             'page_num' => 1,
+            'is_required' => true,
             'widget_group_uuid' => Widget::newestByCanonical('stars-rating')->group_uuid
+        ]);
+
+        Question::create([
+            'questionnaire_id' => $questionnaire->id,
+            'question' => 'Did you consider you paid a fair price?',
+            'page_num' => 2,
+            'is_required' => true,
+            'widget_group_uuid' => Widget::newestByCanonical('radio-group')->group_uuid
+        ]);
+
+        Question::create([
+            'questionnaire_id' => $questionnaire->id,
+            'question' => 'Anything else to tell us?',
+            'page_num' => 2,
+            'widget_group_uuid' => Widget::newestByCanonical('textarea')->group_uuid
         ]);
     }
 

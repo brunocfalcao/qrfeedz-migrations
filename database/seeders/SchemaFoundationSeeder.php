@@ -351,7 +351,7 @@ class SchemaFoundationSeeder extends Seeder
             'canonical' => 'radio-group',
             'view_component_namespace' => 'radio-group',
             'settings' => ['option 1', 'option 2', ['min' => 1]],
-            'description' => 'A multi line input text area, settings are a value range of answers',
+            'description' => 'A group of radios, where only one can be selected',
         ]);
 
         /**
