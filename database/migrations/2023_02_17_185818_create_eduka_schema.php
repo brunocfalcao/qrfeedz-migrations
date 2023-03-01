@@ -48,7 +48,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('name')
-                  ->comment('The authorization type: READ, UPSERT, DELETE, GDPR');
+                  ->comment('The authorization type: READ, UPSERT, DELETE, GDPR, SYSADMIN');
 
             $table->timestamps();
             $table->softDeletes();
@@ -139,6 +139,14 @@ return new class extends Migration
             $table->string('name')
                   ->comment('The place name, can be a specific location or a restaurant/hotel, etc');
 
+            $table->text('description')
+                  ->nullable()
+                  ->comment('If necessary can have a bit more description context to understand what this place is');
+
+            $table->longText('openai_learning_content')
+                  ->nullable()
+                  ->comment('The Open AI learning content, customizable and sent to Open AI on each feedback enhancement scheduled job');
+
             $table->text('address')
                   ->nullable()
                   ->comment('The place address, but it might also be a specific zone inside a location');
@@ -153,10 +161,6 @@ return new class extends Migration
 
             $table->foreignId('country_id')
                   ->comment('Place country. By default (observer) will show the related organization country');
-
-            $table->text('description')
-                  ->nullable()
-                  ->comment('If necessary can have a bit more description context to understand what this place is');
 
             $table->foreignId('organization_id')
                   ->nullable();
@@ -193,6 +197,10 @@ return new class extends Migration
                   ->default('en-US')
                   ->comment('The default localization for this questionnaire');
 
+            $table->string('image_filename')
+                  ->nullable()
+                  ->comment('Image logo in case we want to create the experience more corporate');
+
             $table->boolean('is_active')
                   ->default(true)
                   ->comment('Overrides the active dates. In case we want to immediate inactivate the questionnaire');
@@ -225,6 +233,21 @@ return new class extends Migration
 
             $table->uuid('qrcode')
                   ->comment('This will be the unique qr code that will be scanned by a client');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('locales', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('question_id');
+
+            $table->string('locale')
+                  ->comment('The locale: E.g.: en-us, pt-pt, en-fr, etc');
+
+            $table->text('value')
+                  ->comment('The question value itself, in the respective locale');
 
             $table->timestamps();
             $table->softDeletes();
@@ -308,9 +331,9 @@ return new class extends Migration
             $table->unsignedInteger('version')
                   ->comment('We can have several versions of the same question widget, but we don\'t want to lose the connection to the previous version question instances.Automatically generated');
 
-            $table->longText('settings')
+            $table->json('settings_override')
                   ->nullable()
-                  ->comment('Question additional configuration data to be sent to the UI');
+                  ->comment('Question additional/overriding configuration data to be sent to the UI');
 
             $table->string('view_component_namespace')
                   ->comment('The view component namespace and path. All questions are rendered via blade components');
@@ -337,9 +360,6 @@ return new class extends Migration
             $table->unsignedInteger('version')
                   ->comment('We can have several versions of the same question. Still this needs to be used in edge cases');
 
-            $table->string('question')
-                  ->comment('Question caption to be presented to the visitor');
-
             $table->unsignedInteger('index')
                   ->comment('The question index in the questionnaire. AKA sequence in the questionnaire. Can be automatically generated');
 
@@ -355,7 +375,7 @@ return new class extends Migration
                   ->default(false)
                   ->comment('If this question is required to be answered');
 
-            $table->longText('settings')
+            $table->json('settings')
                   ->nullable()
                   ->comment('These settings are copied from the widget, at the moment of the creation. Then we can override them to change the default configuration');
 
@@ -385,6 +405,20 @@ return new class extends Migration
 
             $table->foreignId('widget_id')
                   ->comment('The relatable exact widget id that this question was answered for');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('question_flows', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('question_id_parent');
+            $table->foreignId('question_id_child');
+
+            $table->json('conditions')
+                  ->nullable()
+                  ->comment('Conditions that will make the visitor progress to the child questionnaire. For the parent, it is a button=back click');
 
             $table->timestamps();
             $table->softDeletes();

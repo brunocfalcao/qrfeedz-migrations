@@ -5,6 +5,7 @@ namespace QRFeedz\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use QRFeedz\Cube\Models\Category;
+use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\Organization;
 use QRFeedz\Cube\Models\Place;
 use QRFeedz\Cube\Models\Question;
@@ -46,7 +47,7 @@ class SchemaTestSeeder extends Seeder
         /**
          * Populate categories.
          */
-        $categoryHotel = Category::firstWhere('name', 'Hotel');
+        $categoryHotel = Category::firstWhere('name', 'Hotel - Building');
         $categoryCantine = Category::firstWhere('name', 'Cantine');
         $categoryRestaurant = Category::firstWhere('name', 'Restaurant');
 
@@ -71,9 +72,10 @@ class SchemaTestSeeder extends Seeder
          */
         foreach (Place::all() as $place) {
             $questionnaire = Questionnaire::create([
-                'description' => 'Questionnaire for ' . $place->name,
+                'description' => 'Questionnaire for '.$place->name,
                 'qrcode' => (string) Str::uuid(),
-                'place_id' => $place->id
+                'place_id' => $place->id,
+                'starts_at' => now()
             ]);
 
             /**
@@ -144,36 +146,31 @@ class SchemaTestSeeder extends Seeder
          * [ textarea ]
          */
 
-        $question = Question::create([
-            'questionnaire_id' => $questionnaire->id,
-            'question' => 'How much did you like what you ate?',
-            'page_num' => 1,
-            'is_required' => true,
-            'widget_group_uuid' => Widget::newestByCanonical('stars-rating')->group_uuid
-        ]);
+        $this->question(
+            questionnaire: $questionnaire,
+            caption: 'How much did you like what you ate?',
+            canonical: 'stars-rating'
+        );
 
-        Question::create([
-            'questionnaire_id' => $questionnaire->id,
-            'question' => 'How much did you like the cleaniness?',
-            'page_num' => 1,
-            'is_required' => true,
-            'widget_group_uuid' => Widget::newestByCanonical('stars-rating')->group_uuid
-        ]);
+        $this->question(
+            questionnaire: $questionnaire,
+            caption: 'How much did you like the cleaniness?',
+            canonical: 'stars-rating'
+        );
 
-        Question::create([
-            'questionnaire_id' => $questionnaire->id,
-            'question' => 'Did you consider you paid a fair price?',
-            'page_num' => 2,
-            'is_required' => true,
-            'widget_group_uuid' => Widget::newestByCanonical('radio-group')->group_uuid
-        ]);
+        $this->question(
+            questionnaire: $questionnaire,
+            caption: 'Did you consider you paid a fair price?',
+            canonical: 'radio-group',
+            pageNum: 2
+        );
 
-        Question::create([
-            'questionnaire_id' => $questionnaire->id,
-            'question' => 'Anything else to tell us?',
-            'page_num' => 2,
-            'widget_group_uuid' => Widget::newestByCanonical('textarea')->group_uuid
-        ]);
+        $this->question(
+            questionnaire: $questionnaire,
+            caption: 'Anything else to tell us?',
+            canonical: 'textarea',
+            pageNum: 2
+        );
     }
 
     protected function createCantineQuestions(Questionnaire $questionnaire)
@@ -184,5 +181,21 @@ class SchemaTestSeeder extends Seeder
     protected function createHotelQuestions(Questionnaire $questionnaire)
     {
         info('creating hotel questions ...');
+    }
+
+    protected function question(Questionnaire $questionnaire, string $caption, string $canonical, $pageNum = 1, $isRequired = true, string $locale = 'en-US')
+    {
+        $question = Question::create([
+            'questionnaire_id' => $questionnaire->id,
+            'page_num' => $pageNum,
+            'is_required' => $isRequired,
+            'widget_group_uuid' => Widget::newestByCanonical($canonical)->group_uuid,
+        ]);
+
+        $locale = Locale::create([
+            'locale' => $locale,
+            'value' => $caption,
+            'question_id' => $question->id
+        ]);
     }
 }

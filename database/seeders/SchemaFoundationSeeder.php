@@ -3,9 +3,9 @@
 namespace QRFeedz\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use QRFeedz\Cube\Models\Authorization;
 use QRFeedz\Cube\Models\Category;
 use QRFeedz\Cube\Models\Country;
-use QRFeedz\Cube\Models\Tag;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
 
@@ -276,7 +276,7 @@ class SchemaFoundationSeeder extends Seeder
         /**
          * Super system admin credentials registration.
          */
-        User::create([
+        $sysadmin = User::create([
             'name' => env('QRFEEDZ_SUPER_ADMIN_NAME'),
             'email' => env('QRFEEDZ_SUPER_ADMIN_EMAIL'),
             'password' => bcrypt(env('QRFEEDZ_SUPER_ADMIN_PASSWORD')),
@@ -357,15 +357,23 @@ class SchemaFoundationSeeder extends Seeder
         /**
          * Add default categories.
          */
-        Category::create(['name' => 'Hotel']);
+        Category::create(['name' => 'Hotel - Building']);
+        Category::create(['name' => 'Hotel - Room']);
         Category::create(['name' => 'Cantine']);
         Category::create(['name' => 'Restaurant']);
+        Category::create(['name' => 'Store']);
 
         /**
-         * Add default tags.
+         * Add system authorizations.
          */
-        Tag::create(['name' => 'On trial']);
-        Tag::create(['name' => 'Trending']);
-        Tag::create(['name' => 'Old Wolf']);
+        Authorization::create(['name' => 'Read']);
+        Authorization::create(['name' => 'Upsert']);
+        Authorization::create(['name' => 'Delete']);
+        Authorization::create(['name' => 'GDPR']);
+        Authorization::create(['name' => 'Sysadmin']);
+
+        // Attach sysadmin user to sysadmin authorization.
+        $sysadmin->authorizations()
+                 ->save(Authorization::firstWhere('name', 'Sysadmin'));
     }
 }
