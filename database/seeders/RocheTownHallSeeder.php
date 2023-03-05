@@ -43,7 +43,7 @@ class RocheTownHallSeeder extends Seeder
         $place = Place::create([
             'name' => 'H4IT',
             'description' => 'Home4IT events, related with all Roche IT Organizations',
-            'organization_id' => $organization->id
+            'organization_id' => $organization->id,
         ]);
     }
 }
