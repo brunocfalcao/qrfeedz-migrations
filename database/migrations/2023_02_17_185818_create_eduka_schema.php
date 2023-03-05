@@ -194,7 +194,7 @@ return new class extends Migration
                   ->comment('Related place where the questionnaire will be used');
 
             $table->string('default_locale')
-                  ->default('en-US')
+                  ->default('en')
                   ->comment('The default localization for this questionnaire');
 
             $table->string('image_filename')
@@ -233,21 +233,6 @@ return new class extends Migration
 
             $table->uuid('qrcode')
                   ->comment('This will be the unique qr code that will be scanned by a client');
-
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
-        Schema::create('locales', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('question_id');
-
-            $table->string('locale')
-                  ->comment('The locale: E.g.: en-us, pt-pt, en-fr, etc');
-
-            $table->text('value')
-                  ->comment('The question value itself, in the respective locale');
 
             $table->timestamps();
             $table->softDeletes();

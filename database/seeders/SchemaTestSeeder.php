@@ -75,7 +75,7 @@ class SchemaTestSeeder extends Seeder
                 'description' => 'Questionnaire for '.$place->name,
                 'qrcode' => (string) Str::uuid(),
                 'place_id' => $place->id,
-                'starts_at' => now()
+                'starts_at' => now(),
             ]);
 
             /**
@@ -145,7 +145,6 @@ class SchemaTestSeeder extends Seeder
          * Anything else to tell us?
          * [ textarea ]
          */
-
         $this->question(
             questionnaire: $questionnaire,
             caption: 'How much did you like what you ate?',
@@ -195,7 +194,7 @@ class SchemaTestSeeder extends Seeder
         $locale = Locale::create([
             'locale' => $locale,
             'value' => $caption,
-            'question_id' => $question->id
+            'question_id' => $question->id,
         ]);
     }
 }
