@@ -184,7 +184,7 @@ return new class extends Migration
 
             $table->string('name')
                   ->nullable()
-                  ->comment('Human name that the questionnaire is used for. E.g.: Terrace Summer 2021');
+                  ->comment('Human name that the questionnaire is used for. E.g.: Terrace Summer 2021, used for the title html tag too');
 
             $table->text('description')
                   ->nullable()
@@ -199,7 +199,7 @@ return new class extends Migration
 
             $table->string('image_filename')
                   ->nullable()
-                  ->comment('Image logo in case we want to create the experience more corporate');
+                  ->comment('Image logo, appears in the questionnaire header');
 
             $table->boolean('is_active')
                   ->default(true)
@@ -211,21 +211,29 @@ return new class extends Migration
             $table->dateTime('ends_at')
                   ->nullable();
 
-            $table->string('background_color')
-                  ->default('FFFFFF')
-                  ->comment('That is the main questionnaire background color');
+            $table->string('theme_background_color')
+                  ->default('#BABABA')
+                  ->comment('That is the main questionnaire background color (not the form background!)');
 
-            $table->string('font_color')
-                  ->default('000000')
-                  ->comment('That is the main questionnaire font color, for the questions and answers');
+            $table->string('theme_background_form_color')
+                  ->default('#FFFFFF')
+                  ->comment('That is the main questionnaire background color (not the form background!)');
 
-            $table->string('info_color')
-                  ->default('0000FF')
-                  ->comment('That is the main questionnaire info secondary color');
+            $table->string('theme_font_primary_color')
+                  ->default('#000000')
+                  ->comment('That is the main questionnaire font color, for the questions captions mostly, and marketing content');
 
-            $table->string('warning_color')
-                  ->default('FF0000')
+            $table->string('theme_font_secondary_color')
+                  ->default('#EEEEEE')
+                  ->comment('That is the main questionnaire secondary color, for imput placeholders, and extra info content');
+
+            $table->string('theme_font_warning_color')
+                  ->default('#FC7736')
                   ->comment('That is when we want to alert the visitor because he/she made a mistake or forgot something');
+
+            $table->longText('svg_header_css')
+                  ->nullable()
+                  ->comment('SVG code in case we want to have a header background with a pattern, image, etc. It will be all the css inside the bg-header { } class');
 
             $table->boolean('asks_for_email')
                   ->default(true)
@@ -316,9 +324,9 @@ return new class extends Migration
             $table->unsignedInteger('version')
                   ->comment('We can have several versions of the same question widget, but we don\'t want to lose the connection to the previous version question instances.Automatically generated');
 
-            $table->json('settings_override')
+            $table->json('settings')
                   ->nullable()
-                  ->comment('Question additional/overriding configuration data to be sent to the UI');
+                  ->comment('Widgets default settings. Can be overriden by the questions.settings_override column');
 
             $table->string('view_component_namespace')
                   ->comment('The view component namespace and path. All questions are rendered via blade components');
@@ -337,6 +345,10 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('questionnaire_id');
+
+            $table->string('caption')
+                  ->nullable()
+                  ->comment('The question caption (appearing in the display) in the default questionnaires.default_locale. All other captions should be defined in the settings.locale (key=locale)');
 
             $table->uuid('group_uuid')
                   ->nullable()

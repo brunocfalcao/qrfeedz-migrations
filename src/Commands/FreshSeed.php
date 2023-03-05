@@ -11,7 +11,7 @@ class FreshSeed extends Command
      *
      * @var string
      */
-    protected $signature = 'qrfeedz:fresh {--test : Seed testing data}';
+    protected $signature = 'qrfeedz:fresh {--test : Seed testing data} {--seeder= : A custom seeder classname prefix}';
 
     /**
      * The console command description.
@@ -60,6 +60,16 @@ class FreshSeed extends Command
             $this->info('=> Seeding database with testing data ...');
             $this->call('db:seed', [
                 '--class' => 'QRFeedz\Database\Seeders\SchemaTestSeeder',
+                '--quiet' => 1,
+            ]);
+        }
+
+        if ($this->option('seeder') && app()->environment() != 'production') {
+            $classname = $this->option('seeder');
+
+            $this->info('=> Seeding database with '.$classname.' class ...');
+            $this->call('db:seed', [
+                '--class' => 'QRFeedz\Database\Seeders\\'.$classname,
                 '--quiet' => 1,
             ]);
         }

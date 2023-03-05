@@ -5,7 +5,6 @@ namespace QRFeedz\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use QRFeedz\Cube\Models\Category;
-use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\Organization;
 use QRFeedz\Cube\Models\Place;
 use QRFeedz\Cube\Models\Question;
@@ -182,19 +181,14 @@ class SchemaTestSeeder extends Seeder
         info('creating hotel questions ...');
     }
 
-    protected function question(Questionnaire $questionnaire, string $caption, string $canonical, $pageNum = 1, $isRequired = true, string $locale = 'en-US')
+    protected function question(Questionnaire $questionnaire, string $caption, string $canonical, $pageNum = 1, $isRequired = true, string $locale = 'en')
     {
         $question = Question::create([
             'questionnaire_id' => $questionnaire->id,
+            'caption' => $caption,
             'page_num' => $pageNum,
             'is_required' => $isRequired,
             'widget_group_uuid' => Widget::newestByCanonical($canonical)->group_uuid,
-        ]);
-
-        $locale = Locale::create([
-            'locale' => $locale,
-            'value' => $caption,
-            'question_id' => $question->id,
         ]);
     }
 }
