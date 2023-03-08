@@ -290,12 +290,11 @@ class SchemaFoundationSeeder extends Seeder
             'canonical' => 'one-liner-grouped',
             'view_component_namespace' => 'one-liner-grouped',
             'settings' => [
-                ['captions' =>
-                    ['en' => 'It was good', 'it' => 'fazie guto'],
-                 'value'    => '3'],
+                ['captions' => ['en' => 'It was good', 'it' => 'fazie guto'],
+                    'value' => '3'],
             ],
             'description' => 'A group of one liners',
-            ]);
+        ]);
 
         /**
          * Add default categories.

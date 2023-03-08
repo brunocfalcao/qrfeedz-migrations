@@ -3,8 +3,8 @@
 namespace QRFeedz\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Client;
+use QRFeedz\Cube\Models\Country;
 
 class ClientFactory extends Factory
 {

@@ -3,8 +3,8 @@
 namespace QRFeedz\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Client;
+use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Place;
 use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\Widget;
