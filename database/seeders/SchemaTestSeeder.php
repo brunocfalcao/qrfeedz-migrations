@@ -5,7 +5,7 @@ namespace QRFeedz\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use QRFeedz\Cube\Models\Category;
-use QRFeedz\Cube\Models\Organization;
+use QRFeedz\Cube\Models\Client;
 use QRFeedz\Cube\Models\Place;
 use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\Questionnaire;
@@ -33,15 +33,15 @@ class SchemaTestSeeder extends Seeder
         //$faker->addProvider(new Faker\Provider\en_US\Address($faker));
 
         /**
-         * Organization -> place -> questionnaire -> question -> answer
+         * Client -> place -> questionnaire -> question -> answer
          */
 
         /**
-         * Start by creating a random number of organizations. Everything
+         * Start by creating a random number of clients. Everything
          * starts at the topic, and then we will cascade for places,
          * questionnaires, questions and answers.
          */
-        Organization::factory()->count(rand(20, 30))->create();
+        Client::factory()->count(rand(20, 30))->create();
 
         /**
          * Populate categories.
@@ -50,17 +50,17 @@ class SchemaTestSeeder extends Seeder
         $categoryCantine = Category::firstWhere('name', 'Cantine');
         $categoryRestaurant = Category::firstWhere('name', 'Restaurant');
 
-        foreach (Organization::all() as $organization) {
+        foreach (Client::all() as $client) {
             /**
              * Then by creating random places that will store questionnares
              * and answers to questionnaires.
              */
             $places = Place::factory()->count(rand(1, 3))->create([
-                'organization_id' => $organization->id,
-                'address' => $organization->address,
-                'postal_code' => $organization->postal_code,
-                'locality' => $organization->locality,
-                'country_id' => $organization->country_id,
+                'client_id' => $client->id,
+                'address' => $client->address,
+                'postal_code' => $client->postal_code,
+                'locality' => $client->locality,
+                'country_id' => $client->country_id,
             ]);
         }
 

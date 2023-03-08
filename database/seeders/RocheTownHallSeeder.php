@@ -4,7 +4,7 @@ namespace QRFeedz\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use QRFeedz\Cube\Models\Country;
-use QRFeedz\Cube\Models\Organization;
+use QRFeedz\Cube\Models\Client;
 use QRFeedz\Cube\Models\Place;
 use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\Widget;
@@ -29,9 +29,9 @@ class RocheTownHallSeeder extends Seeder
          * to ask more details:
          * "Why did you like it so much?"
          *
-         * Organization will be Roche IT.
+         * Client will be Roche IT.
          */
-        $organization = Organization::create([
+        $client = Client::create([
             'name' => 'Roche IT',
             'address' => 'Wurmisweg',
             'postal_code' => '4303',
@@ -42,8 +42,8 @@ class RocheTownHallSeeder extends Seeder
 
         $place = Place::create([
             'name' => 'H4IT',
-            'description' => 'Home4IT events, related with all Roche IT Organizations',
-            'organization_id' => $organization->id,
+            'description' => 'Home4IT events, related with all Roche IT Clients',
+            'client_id' => $client->id,
         ]);
     }
 }

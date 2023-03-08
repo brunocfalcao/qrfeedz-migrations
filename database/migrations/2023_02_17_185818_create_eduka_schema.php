@@ -13,7 +13,7 @@ return new class extends Migration
     {
         /**
          * The users table is extended to also have soft deletes to allow
-         * users to be "deleted". Users are ALWAYS connected to organizations
+         * users to be "deleted". Users are ALWAYS connected to clients
          * and their authorizations will cascade down to places, and
          * questionnaires. Authorization cascading profiles:
          *
@@ -34,7 +34,7 @@ return new class extends Migration
          * Admin access specifically: DELETE and GPDR.
          *
          * The DELETE is very powerful, because it will actually be able to
-         * delete places, questionnaires, and organizations. The delete is
+         * delete places, questionnaires, and clients. The delete is
          * always a soft delete still. The user will be able to delete a
          * questionnaire. If a questionnaire is deleted, all the data is
          * also deleted. The best is to disable, or close it with an
@@ -56,8 +56,8 @@ return new class extends Migration
 
         /**
          * The authorization is given between a user, an authorization type
-         * and a organization/place/questionnaire. That's why we need a
-         * many-to-many polymorphic relationship.
+         * and a client/questionnaire or group/questionnaire. That's why we
+         * need a many-to-many polymorphic relationship.
          */
         Schema::create('authorizables', function (Blueprint $table) {
             $table->id();
@@ -70,7 +70,7 @@ return new class extends Migration
         });
 
         /**
-         * Countries are used in organizations and places. Both respect
+         * Countries are used in clients. Both respect
          * the same values from Laravel Nova, so we can use the country
          * field type.
          */
@@ -88,52 +88,52 @@ return new class extends Migration
         });
 
         /**
-         * Organizations are the top most entity on the qrfeedz structure.
-         * An organization will cascade its data branches as places, then
-         * questionnaires, and then responses. An organization can be like
-         * a big company e.g.: Tavero, but can also be just a single entity
-         * as a restaurant.
+         * Clients are the top most entity on the qrfeedz structure.
+         * A client will cascade its data relations to
+         * questionnaires. A client can be like a big
+         * company e.g.: Tavero, but can also be just
+         * a single entity as a restaurant.
          */
-        Schema::create('organizations', function (Blueprint $table) {
+        Schema::create('clients', function (Blueprint $table) {
             $table->id();
 
             $table->string('name')
-                  ->comment('The organization name');
+                  ->comment('The client name');
 
             $table->text('address')
                   ->nullable()
-                  ->comment('The organization address');
+                  ->comment('The client address');
 
             $table->string('postal_code')
                   ->nullable()
-                  ->comment('The organization postal code');
+                  ->comment('The client postal code');
 
             $table->string('locality')
                   ->nullable()
-                  ->comment('The organization locality');
+                  ->comment('The client locality');
 
             $table->foreignId('country_id')
-                  ->comment('Organization country');
+                  ->comment('Client country');
 
             $table->string('vat_number')
                   ->nullable()
-                  ->comment('Organization fiscal number');
+                  ->comment('Client fiscal number');
 
             $table->timestamps();
             $table->softDeletes();
         });
 
         /**
-         * A place is one of the greatest added values of qrfeedz. A place
-         * uniquely identifies a set of questionnaires (or just one) that
-         * will be answered by visitors. A place can be, as example:
-         * - A room in an hotel
-         * - A section in a restaurant
-         * - A full restaurant address
-         * - A full hotel address, or an hotel inside an organization
-         * - A cantine, from a set of cantines from a big company
+         * Groups are, as the name says, abstract grouping entities to group
+         * questionnaires. They are related to the client, and they have a
+         * N-N relationship with questionnaires. Meaning we don't need to
+         * create the same questionnaire if we want to relate it with
+         * different groups. Take as example a qrcode for wine
+         * bottles. The group will be the brand/model of the
+         * wine bottle, the questionnaire will always be
+         * the same (same id).
          */
-        Schema::create('places', function (Blueprint $table) {
+        Schema::create('groups', function (Blueprint $table) {
             $table->id();
 
             $table->string('name')
@@ -143,26 +143,11 @@ return new class extends Migration
                   ->nullable()
                   ->comment('If necessary can have a bit more description context to understand what this place is');
 
-            $table->longText('openai_learning_content')
+            $table->json('data')
                   ->nullable()
-                  ->comment('The Open AI learning content, customizable and sent to Open AI on each feedback enhancement scheduled job');
+                  ->comment('Additional data that identifies this group, like a brand, a place, etc');
 
-            $table->text('address')
-                  ->nullable()
-                  ->comment('The place address, but it might also be a specific zone inside a location');
-
-            $table->string('postal_code')
-                  ->nullable()
-                  ->comment('The organization postal code');
-
-            $table->string('locality')
-                  ->nullable()
-                  ->comment('The organization locality');
-
-            $table->foreignId('country_id')
-                  ->comment('Place country. By default (observer) will show the related organization country');
-
-            $table->foreignId('organization_id')
+            $table->foreignId('client_id')
                   ->nullable();
 
             $table->timestamps();
@@ -173,11 +158,13 @@ return new class extends Migration
          * Questionnaires are unique entry points for visitors to give their
          * feedback about something. A questionnaire is attached to a place,
          * and can have multiple questions versions attached to it.
-         * Questionnaires can be enpowered with tags and categories to it
-         * will be easier to see reports from another perspective.
-         * The relationship between a place and a questionnaire is 1-N
-         * meaning a place can have multiple questionnaires attached to
-         * it. The versioning of content is made at the questions level.
+         * Questionnaires can be enpowered with tags and categories
+         * so it will be easier to see reports from another
+         * perspective. The relationship between a place
+         * and a questionnaire is 1-N meaning a place
+         * can have multiple questionnaires attached
+         * to it. The versioning of content is made
+         * at the questions level.
          */
         Schema::create('questionnaires', function (Blueprint $table) {
             $table->id();
@@ -247,8 +234,8 @@ return new class extends Migration
         });
 
         /**
-         * Categories are joker attributes that are related with organizations,
-         * places, questionnaires, etc. They can be created and used as
+         * Categories are joker attributes that are related to clients,
+         * groups, questionnaires, etc. They can be created and used as
          * requested.
          */
         Schema::create('categories', function (Blueprint $table) {
@@ -264,7 +251,7 @@ return new class extends Migration
         });
 
         /**
-         * Tags are joker attributes that are related with organizations,
+         * Tags are joker attributes that are related with clients,
          * places, questionnaires, etc. They can be created and used as
          * requested.
          */
@@ -315,6 +302,10 @@ return new class extends Migration
             $table->string('name')
                   ->comment('E.g: Textbox, 1 to N, etc');
 
+            $table->boolean('is_reportable')
+                  ->default(true)
+                  ->comment('If the widget counts for reports or not. If it is not reportable means it is to display a message');
+
             $table->string('canonical')
                   ->comment('Widget canonical, easier to find when relating with questions');
 
@@ -350,6 +341,14 @@ return new class extends Migration
                   ->nullable()
                   ->comment('The question caption (appearing in the display) in the default questionnaires.default_locale. All other captions should be defined in the settings.locale (key=locale)');
 
+            $table->boolean('is_caption_visible')
+                  ->default(true)
+                  ->comment('In case we just want to show only widget caption(s) and not the question caption');
+
+            $table->json('caption_locales')
+                  ->nullable()
+                  ->comment('Additional captions in different locales. If a locale is missing it fallsback to the default questionnaire locale');
+
             $table->uuid('group_uuid')
                   ->nullable()
                   ->comment('A group uuid to group questions. Automatically generated');
@@ -372,7 +371,7 @@ return new class extends Migration
                   ->default(false)
                   ->comment('If this question is required to be answered');
 
-            $table->json('settings')
+            $table->json('settings_override')
                   ->nullable()
                   ->comment('These settings are copied from the widget, at the moment of the creation. Then we can override them to change the default configuration');
 

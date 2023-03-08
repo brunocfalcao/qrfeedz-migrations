@@ -283,76 +283,19 @@ class SchemaFoundationSeeder extends Seeder
         ]);
 
         /**
-         * Create the widget types.
-         *
-         * Widget "1 to N"
-         * A squared 1 to N from "very bad" to "very good".
-         * Default is 1 to 5, if max not specified.
-         *
-         * OneLineInput
-         * An input type = text with one line.
-         * Can accept a placeholder caption, by default will be a computed
-         * "answer here" localized.
-         *
-         * MultipleLineInput
-         * A full textarea that allows the visitor to add detailed feedback
-         * content. Also can have a caption "answer here" localized.
+         * Widgets types:
          */
         Widget::create([
-            'name' => '1 to N',
-            'canonical' => '1-to-n',
-            'view_component_namespace' => '1-to-n',
-            'settings' => ['min' => 1, 'max' => 5],
-            'description' => 'A 1 to N range where the visitor selects only one, from very bad to very good',
-        ]);
-
-        Widget::create([
-            'name' => 'Input',
-            'canonical' => 'input',
-            'view_component_namespace' => 'input',
-            'settings' => ['caption' => 'answer here'],
-            'description' => 'A single line input text',
-        ]);
-
-        Widget::create([
-            'name' => 'Textarea',
-            'canonical' => 'textarea',
-            'view_component_namespace' => 'textarea',
-            'settings' => ['caption' => 'answer here'],
-            'description' => 'A textarea for a more detailed visitor feedback',
-        ]);
-
-        Widget::create([
-            'name' => 'Multi Select with Lanes',
-            'canonical' => 'multi-line-lanes',
-            'view_component_namespace' => 'multi-select-lanes',
-            'settings' => ['option 1', 'option 2', ['min' => 1]],
-            'description' => 'A multi line input text area, settings are a value range of answers',
-        ]);
-
-        Widget::create([
-            'name' => 'Stars rating',
-            'canonical' => 'stars-rating',
-            'view_component_namespace' => 'stars-rating',
-            'settings' => ['count' => 5],
-            'description' => 'Rating with stars',
-        ]);
-
-        Widget::create([
-            'name' => 'EmojiSmiles',
-            'canonical' => 'emoji-smiles',
-            'view_component_namespace' => 'emoji-smiles',
-            'settings' => [],
-            'description' => 'Rating but with emojis (from very sad to very happy)',
-        ]);
-
-        Widget::create([
-            'name' => 'RadioGroup',
-            'canonical' => 'radio-group',
-            'view_component_namespace' => 'radio-group',
-            'settings' => ['option 1', 'option 2', ['min' => 1]],
-            'description' => 'A group of radios, where only one can be selected',
-        ]);
+            'name' => 'One Liner - Grouped',
+            'canonical' => 'one-liner-grouped',
+            'view_component_namespace' => 'one-liner-grouped',
+            'settings' => [
+                ['captions' =>
+                    ['en' => 'It was good', 'it' => 'fazie guto'],
+                 'value'    => '3'],
+            ],
+            'description' => 'A group of one liners',
+            ]);
 
         /**
          * Add default categories.

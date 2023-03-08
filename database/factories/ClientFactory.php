@@ -4,11 +4,11 @@ namespace QRFeedz\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use QRFeedz\Cube\Models\Country;
-use QRFeedz\Cube\Models\Organization;
+use QRFeedz\Cube\Models\Client;
 
-class OrganizationFactory extends Factory
+class ClientFactory extends Factory
 {
-    protected $model = Organization::class;
+    protected $model = Client::class;
 
     public function definition(): array
     {
