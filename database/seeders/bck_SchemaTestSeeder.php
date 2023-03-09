@@ -3,6 +3,7 @@
 namespace QRFeedz\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 use QRFeedz\Cube\Models\Category;
 use QRFeedz\Cube\Models\Client;
 use QRFeedz\Cube\Models\Group;
@@ -46,9 +47,85 @@ class SchemaTestSeeder extends Seeder
         /**
          * Populate categories.
          */
-        $categoryHotel = Category::firstWhere('name', 'Hotel');
+        $categoryHotel = Category::firstWhere('name', 'Hotel - Building');
         $categoryCantine = Category::firstWhere('name', 'Cantine');
         $categoryRestaurant = Category::firstWhere('name', 'Restaurant');
+
+        foreach (Client::all() as $client) {
+            /**
+             * Then by creating random groups that will store questionnares
+             * and answers to questionnaires.
+             */
+            $places = Place::factory()->count(rand(1, 3))->create([
+                'client_id' => $client->id,
+                'address' => $client->address,
+                'postal_code' => $client->postal_code,
+                'locality' => $client->locality,
+                'country_id' => $client->country_id,
+            ]);
+        }
+
+        /**
+         * Now, for each place we create one random questionnaire. The
+         * questionnaire itself is like a "placeholder" for the remaining
+         * data repository of questions, answers and widgets.
+         */
+        foreach (Place::all() as $place) {
+            $questionnaire = Questionnaire::create([
+                'description' => 'Questionnaire for '.$place->name,
+                'qrcode' => (string) Str::uuid(),
+                'place_id' => $place->id,
+                'starts_at' => now(),
+            ]);
+
+            /**
+             * Next we need to randomize the category between hotel,
+             * restaurante, and cantine. For each type, there will be
+             * a different questionnaire created. I want to have them
+             * in different probabilities still. More restaurants than
+             * hotels, more hotels than cantines.
+             */
+            $type = rand(1, 100);
+            $category = null;
+            $callable = null;
+
+            if ($type < 25) {
+                $category = $categoryHotel;
+                $callable = 'createHotelQuestions';
+            } elseif ($type < 90) {
+                $category = $categoryRestaurant;
+                $callable = 'createRestaurantQuestions';
+            } else {
+                $category = $categoryCantine;
+                $callable = 'createCantineQuestions';
+            }
+
+            /**
+             * Attach a related category. Then we will create the
+             * questionnaire instance based on this category, for testing
+             * purposes.
+             */
+            $place->categories()
+                  ->save($category);
+
+            /**
+             * Time to create the questions collection for the respective
+             * questionnaire type. For that we dynamically call the
+             * protected method.
+             */
+            $this->$callable($questionnaire);
+        }
+
+        /**
+         * Now it's time to create the questionnaire instances. So, we will
+         * create 3 types of questionnaires, and then attach each of those
+         * via the questions and widgets structure to the questionnaire id.
+         *
+         * We will use 3 different functions for this:
+         * createRestaurantQuestions($questionnaire)
+         * createHotelQuestions($questionnaire)
+         * createCantineQuestions($questionnaire)
+         */
     }
 
     protected function createRestaurantQuestions(Questionnaire $questionnaire)

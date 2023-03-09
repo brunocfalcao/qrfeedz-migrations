@@ -14,7 +14,7 @@ return new class extends Migration
         /**
          * The users table is extended to also have soft deletes to allow
          * users to be "deleted". Users are ALWAYS connected to clients
-         * and their authorizations will cascade down to places, and
+         * and their authorizations will cascade down to groups, and
          * questionnaires. Authorization cascading profiles:
          *
          * Two access types: READ and UPSERT.
@@ -34,13 +34,47 @@ return new class extends Migration
          * Admin access specifically: DELETE and GPDR.
          *
          * The DELETE is very powerful, because it will actually be able to
-         * delete places, questionnaires, and clients. The delete is
+         * delete groups, questionnaires, and clients. The delete is
          * always a soft delete still. The user will be able to delete a
          * questionnaire. If a questionnaire is deleted, all the data is
          * also deleted. The best is to disable, or close it with an
          * end date.
          */
         Schema::table('users', function (Blueprint $table) {
+            $table->softDeletes();
+        });
+
+        Schema::create('locales', function (Blueprint $table) {
+            $table->id();
+
+            $table->string('en')
+                  ->nullable()
+                  ->comment('The caption value on the respective locale');
+
+            $table->string('fr')
+                  ->nullable()
+                  ->comment('The caption value on the respective locale');
+
+            $table->string('it')
+                  ->nullable()
+                  ->comment('The caption value on the respective locale');
+
+            $table->string('de')
+                  ->nullable()
+                  ->comment('The caption value on the respective locale');
+
+            $table->string('pt')
+                  ->nullable()
+                  ->comment('The caption value on the respective locale');
+
+            $table->string('cn')
+                  ->nullable()
+                  ->comment('The caption value on the respective locale');
+
+            $table->foreignId('client_id')
+                  ->comment('Related client id');
+
+            $table->timestamps();
             $table->softDeletes();
         });
 
@@ -115,6 +149,9 @@ return new class extends Migration
             $table->foreignId('country_id')
                   ->comment('Client country');
 
+            $table->string('default_locale')
+                  ->comment('The default locale: Can be one of the locale columns (en, de, it, pt, fr, cn)');
+
             $table->string('vat_number')
                   ->nullable()
                   ->comment('Client fiscal number');
@@ -137,15 +174,15 @@ return new class extends Migration
             $table->id();
 
             $table->string('name')
-                  ->comment('The place name, can be a specific location or a restaurant/hotel, etc');
+                  ->comment('The group name, can be a specific location or a restaurant/hotel, etc');
 
             $table->text('description')
                   ->nullable()
-                  ->comment('If necessary can have a bit more description context to understand what this place is');
+                  ->comment('If necessary can have a bit more description context to understand what this group is');
 
             $table->json('data')
                   ->nullable()
-                  ->comment('Additional data that identifies this group, like a brand, a place, etc');
+                  ->comment('Additional data that identifies this group, like a brand, a restaurant, etc');
 
             $table->foreignId('client_id')
                   ->nullable();
@@ -156,12 +193,12 @@ return new class extends Migration
 
         /**
          * Questionnaires are unique entry points for visitors to give their
-         * feedback about something. A questionnaire is attached to a place,
+         * feedback about something. A questionnaire is attached to a group,
          * and can have multiple questions versions attached to it.
          * Questionnaires can be enpowered with tags and categories
          * so it will be easier to see reports from another
-         * perspective. The relationship between a place
-         * and a questionnaire is 1-N meaning a place
+         * perspective. The relationship between a group
+         * and a questionnaire is 1-N meaning a group
          * can have multiple questionnaires attached
          * to it. The versioning of content is made
          * at the questions level.
@@ -177,8 +214,13 @@ return new class extends Migration
                   ->nullable()
                   ->comment('In case we want to describe a specific qr code instance for whatever reason');
 
-            $table->foreignId('place_id')
-                  ->comment('Related place where the questionnaire will be used');
+            $table->foreignId('client_id')
+                  ->nullable()
+                  ->comment('Related client');
+
+            $table->foreignId('group_id')
+                  ->nullable()
+                  ->comment('Related groups where the questionnaire will be used');
 
             $table->string('default_locale')
                   ->default('en')
@@ -198,36 +240,17 @@ return new class extends Migration
             $table->dateTime('ends_at')
                   ->nullable();
 
-            $table->string('theme_background_color')
-                  ->default('#BABABA')
-                  ->comment('That is the main questionnaire background color (not the form background!)');
-
-            $table->string('theme_background_form_color')
-                  ->default('#FFFFFF')
-                  ->comment('That is the main questionnaire background color (not the form background!)');
-
-            $table->string('theme_font_primary_color')
-                  ->default('#000000')
-                  ->comment('That is the main questionnaire font color, for the questions captions mostly, and marketing content');
-
-            $table->string('theme_font_secondary_color')
-                  ->default('#EEEEEE')
-                  ->comment('That is the main questionnaire secondary color, for imput placeholders, and extra info content');
-
-            $table->string('theme_font_warning_color')
-                  ->default('#FC7736')
-                  ->comment('That is when we want to alert the visitor because he/she made a mistake or forgot something');
-
-            $table->longText('svg_header_css')
+            $table->longText('logo_svg')
                   ->nullable()
                   ->comment('SVG code in case we want to have a header background with a pattern, image, etc. It will be all the css inside the bg-header { } class');
 
             $table->boolean('asks_for_email')
                   ->default(true)
-                  ->comment('It will ask for an email at the end of the questionnaire');
+                  ->comment('Will it ask for the visitors email at the end of the questionnaire');
 
             $table->uuid('qrcode')
-                  ->comment('This will be the unique qr code that will be scanned by a client');
+                  ->nullable()
+                  ->comment('This will be the unique questionnaire qr code that will be scanned by a client');
 
             $table->timestamps();
             $table->softDeletes();
@@ -252,7 +275,7 @@ return new class extends Migration
 
         /**
          * Tags are joker attributes that are related with clients,
-         * places, questionnaires, etc. They can be created and used as
+         * groups, questionnaires, etc. They can be created and used as
          * requested.
          */
         Schema::create('tags', function (Blueprint $table) {
@@ -302,29 +325,30 @@ return new class extends Migration
             $table->string('name')
                   ->comment('E.g: Textbox, 1 to N, etc');
 
-            $table->boolean('is_reportable')
-                  ->default(true)
-                  ->comment('If the widget counts for reports or not. If it is not reportable means it is to display a message');
+            $table->text('description')
+                  ->nullable()
+                  ->comment('Extended description, validation options, integration details, etc');
 
             $table->string('canonical')
                   ->comment('Widget canonical, easier to find when relating with questions');
 
             $table->uuid('group_uuid')
-                  ->comment('Used to uniquely identify the widget with the version.Automatically generated');
+                  ->comment('Used to uniquely identify the widget group with the version.Automatically generated');
 
             $table->unsignedInteger('version')
+                  ->default(1)
                   ->comment('We can have several versions of the same question widget, but we don\'t want to lose the connection to the previous version question instances.Automatically generated');
 
             $table->json('settings')
                   ->nullable()
-                  ->comment('Widgets default settings. Can be overriden by the questions.settings_override column');
+                  ->comment('Widgets default settings. Can be overriden by the question_widget.settings column');
+
+            $table->boolean('is_reportable')
+                  ->default(true)
+                  ->comment('If the widget will have data for reports. If it is not then it can be to display a message, or to capture custom information. E.g.: Input text to get a employee code');
 
             $table->string('view_component_namespace')
                   ->comment('The view component namespace and path. All questions are rendered via blade components');
-
-            $table->text('description')
-                  ->nullable()
-                  ->comment('Extended description, validation options, integration details, etc');
 
             $table->timestamps();
             $table->softDeletes();
@@ -337,17 +361,13 @@ return new class extends Migration
 
             $table->foreignId('questionnaire_id');
 
-            $table->string('caption')
+            $table->foreignId('locale_id')
                   ->nullable()
-                  ->comment('The question caption (appearing in the display) in the default questionnaires.default_locale. All other captions should be defined in the settings.locale (key=locale)');
+                  ->comment('The related caption locale value');
 
             $table->boolean('is_caption_visible')
                   ->default(true)
                   ->comment('In case we just want to show only widget caption(s) and not the question caption');
-
-            $table->json('caption_locales')
-                  ->nullable()
-                  ->comment('Additional captions in different locales. If a locale is missing it fallsback to the default questionnaire locale');
 
             $table->uuid('group_uuid')
                   ->nullable()
@@ -370,10 +390,6 @@ return new class extends Migration
             $table->boolean('is_required')
                   ->default(false)
                   ->comment('If this question is required to be answered');
-
-            $table->json('settings_override')
-                  ->nullable()
-                  ->comment('These settings are copied from the widget, at the moment of the creation. Then we can override them to change the default configuration');
 
             $table->timestamps();
             $table->softDeletes();
@@ -406,15 +422,41 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('question_flows', function (Blueprint $table) {
+        Schema::create('group_questionnaire', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('question_id_parent');
-            $table->foreignId('question_id_child');
+            $table->foreignId('group_id');
+            $table->foreignId('questionnaire_id');
 
-            $table->json('conditions')
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('question_widget', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('questionnaire_id');
+            $table->foreignId('widget_id');
+
+            $table->foreignId('locale_id')
                   ->nullable()
-                  ->comment('Conditions that will make the visitor progress to the child questionnaire. For the parent, it is a button=back click');
+                  ->comment('Related locale instance');
+
+            $table->unsignedInteger('index')
+                  ->default(1)
+                  ->comment('The sequence of the index in the question, in case it is a multi-widget question');
+
+            $table->json('settings_data')
+                  ->nullable()
+                  ->comment('The settings override from the question-widget pair. These are general settings');
+
+            $table->json('settings_conditionals')
+                  ->nullable()
+                  ->comment('The settings conditionals from the question-widget pair. Like if we want to extend a textarea if the value is < XX');
+
+            $table->json('settings_captions')
+                  ->nullable()
+                  ->comment('To be used in case this widget has multiple captions, like a yes-no one-liner radio button, for instance');
 
             $table->timestamps();
             $table->softDeletes();

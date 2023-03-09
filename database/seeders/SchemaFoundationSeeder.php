@@ -283,24 +283,20 @@ class SchemaFoundationSeeder extends Seeder
         ]);
 
         /**
-         * Widgets types:
+         * Widgets creation.
          */
         Widget::create([
-            'name' => 'One Liner - Grouped',
-            'canonical' => 'one-liner-grouped',
-            'view_component_namespace' => 'one-liner-grouped',
-            'settings' => [
-                ['captions' => ['en' => 'It was good', 'it' => 'fazie guto'],
-                    'value' => '3'],
-            ],
-            'description' => 'A group of one liners',
+            'name' => 'Emoji rating',
+            'canonical' => 'emoji-rating',
+            'description' => 'An emoji rating, 5 faces from very sad to very happy. Gray-based, then when the visitor touches the emoji it gets transformed into color',
+            'view_component_namespace' => 'emoji-rating',
         ]);
 
         /**
          * Add default categories.
          */
-        Category::create(['name' => 'Hotel - Building']);
-        Category::create(['name' => 'Hotel - Room']);
+        Category::create(['name' => 'Event']);
+        Category::create(['name' => 'Hotel']);
         Category::create(['name' => 'Cantine']);
         Category::create(['name' => 'Restaurant']);
         Category::create(['name' => 'Store']);
