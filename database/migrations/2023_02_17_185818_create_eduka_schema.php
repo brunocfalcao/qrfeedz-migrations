@@ -11,39 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        /**
-         * The users table is extended to also have soft deletes to allow
-         * users to be "deleted". Users are ALWAYS connected to clients
-         * and their authorizations will cascade down to groups, and
-         * questionnaires. Authorization cascading profiles:
-         *
-         * Two access types: READ and UPSERT.
-         * The READ access is at it says: User can ONLY view data, and cannot
-         * change, neither interact with anything. The data scope excepts the
-         * emails of visitors. That one is specific for GDPR access.
-         *
-         * The UPSERT access is wider: It can give access to insert and to
-         * update data. Some ground rules: If a questionnaire already has
-         * questions on it, it cannot be updated on the questions configuration.
-         * The user would need to create a new question version to attach it to
-         * the questionnaire. The questionnaire instance will always display
-         * the latest versions of each of the question, but for reporting will
-         * always give the value of the respective version that the answer was
-         * given to.
-         *
-         * Admin access specifically: DELETE and GPDR.
-         *
-         * The DELETE is very powerful, because it will actually be able to
-         * delete groups, questionnaires, and clients. The delete is
-         * always a soft delete still. The user will be able to delete a
-         * questionnaire. If a questionnaire is deleted, all the data is
-         * also deleted. The best is to disable, or close it with an
-         * end date.
-         */
-        Schema::table('users', function (Blueprint $table) {
-            $table->softDeletes();
-        });
-
         Schema::create('locales', function (Blueprint $table) {
             $table->id();
 
@@ -142,6 +109,42 @@ return new class extends Migration
                   ->comment('Client fiscal number');
 
             $table->timestamps();
+            $table->softDeletes();
+        });
+
+        /**
+         * The users table is extended to also have soft deletes to allow
+         * users to be "deleted". Users are ALWAYS connected to clients
+         * and their authorizations will cascade down to groups, and
+         * questionnaires. Authorization cascading profiles:
+         *
+         * Two access types: READ and UPSERT.
+         * The READ access is at it says: User can ONLY view data, and cannot
+         * change, neither interact with anything. The data scope excepts the
+         * emails of visitors. That one is specific for GDPR access.
+         *
+         * The UPSERT access is wider: It can give access to insert and to
+         * update data. Some ground rules: If a questionnaire already has
+         * questions on it, it cannot be updated on the questions configuration.
+         * The user would need to create a new question version to attach it to
+         * the questionnaire. The questionnaire instance will always display
+         * the latest versions of each of the question, but for reporting will
+         * always give the value of the respective version that the answer was
+         * given to.
+         *
+         * Admin access specifically: DELETE and GPDR.
+         *
+         * The DELETE is very powerful, because it will actually be able to
+         * delete groups, questionnaires, and clients. The delete is
+         * always a soft delete still. The user will be able to delete a
+         * questionnaire. If a questionnaire is deleted, all the data is
+         * also deleted. The best is to disable, or close it with an
+         * end date.
+         */
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreignId('client_id')
+                  ->nullable();
+
             $table->softDeletes();
         });
 
