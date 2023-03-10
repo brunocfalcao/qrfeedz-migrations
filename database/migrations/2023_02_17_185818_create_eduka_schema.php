@@ -89,21 +89,6 @@ return new class extends Migration
         });
 
         /**
-         * The authorization is given between a user, an authorization type
-         * and a client/questionnaire or group/questionnaire. That's why we
-         * need a many-to-many polymorphic relationship.
-         */
-        Schema::create('authorizables', function (Blueprint $table) {
-            $table->id();
-
-            $table->morphs('authorizable');
-            $table->foreignId('authorization_id');
-
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
-        /**
          * Countries are used in clients. Both respect
          * the same values from Laravel Nova, so we can use the country
          * field type.
@@ -248,9 +233,9 @@ return new class extends Migration
                   ->default(true)
                   ->comment('Will it ask for the visitors email at the end of the questionnaire');
 
-            $table->uuid('qrcode')
+            $table->uuid()
                   ->nullable()
-                  ->comment('This will be the unique questionnaire qr code that will be scanned by a client');
+                  ->comment('This will be the unique questionnaire qr code that will be scanned by a client.');
 
             $table->timestamps();
             $table->softDeletes();
@@ -363,7 +348,7 @@ return new class extends Migration
 
             $table->foreignId('locale_id')
                   ->nullable()
-                  ->comment('The related caption locale value');
+                  ->comment('The related caption locale values. If null then we dont render a label but only the widget');
 
             $table->boolean('is_caption_visible')
                   ->default(true)
@@ -385,7 +370,7 @@ return new class extends Migration
 
             $table->uuid('widget_group_uuid')
                   ->nullable()
-                  ->comment('Related widget group uuid. By default the widget will always be rendered in the latest version, still the answers are recorded in the exact widget id (not group uuid)');
+                  ->comment('Related widget group uuid. For new questionnaires, the widget is rendered in the last active version');
 
             $table->boolean('is_required')
                   ->default(false)
@@ -407,6 +392,9 @@ return new class extends Migration
             $table->foreignId('question_id')
                   ->comment('This is referenced to the exact question version that was answered for');
 
+            $table->foreignId('widget_id')
+                  ->comment('The relatable exact widget id that this question was answered for');
+
             $table->longText('data')
                   ->nullable()
                   ->comment('Answers need to be json-structured since it can be a complex answer type');
@@ -414,19 +402,6 @@ return new class extends Migration
             $table->string('value')
                   ->nullable()
                   ->comment('This is the concluded value(s) from the data json structure');
-
-            $table->foreignId('widget_id')
-                  ->comment('The relatable exact widget id that this question was answered for');
-
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
-        Schema::create('group_questionnaire', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('group_id');
-            $table->foreignId('questionnaire_id');
 
             $table->timestamps();
             $table->softDeletes();
