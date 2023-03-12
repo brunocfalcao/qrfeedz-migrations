@@ -49,12 +49,26 @@ return new class extends Migration
             $table->id();
 
             $table->string('name')
-                  ->comment('The authorization type: READ, UPSERT, DELETE, GDPR, SYSADMIN');
+                  ->comment('The authorization type: READ, UPSERT, DELETE, GDPR, ADMIN, SYSADMIN');
+
+            $table->text('description')
+                  ->nullable()
+                  ->comment('Details of the respective authorization type');
 
             $table->timestamps();
             $table->softDeletes();
         });
 
+        Schema::create('authorizables', function (Blueprint $table) {
+            $table->id();
+
+            $table->morphs('authorizable');
+            $table->foreignId('authorization_id');
+            $table->foreignId('user_id');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
         /**
          * Countries are used in clients. Both respect
          * the same values from Laravel Nova, so we can use the country
@@ -143,6 +157,7 @@ return new class extends Migration
          */
         Schema::table('users', function (Blueprint $table) {
             $table->foreignId('client_id')
+                  ->after('id')
                   ->nullable();
 
             $table->softDeletes();

@@ -304,14 +304,34 @@ class SchemaFoundationSeeder extends Seeder
         /**
          * Add system authorizations.
          */
-        Authorization::create(['name' => 'Read']);
-        Authorization::create(['name' => 'Upsert']);
-        Authorization::create(['name' => 'Delete']);
-        Authorization::create(['name' => 'GDPR']);
-        Authorization::create(['name' => 'Sysadmin']);
+        Authorization::create([
+            'name' => 'Read',
+            'description' => 'Can only view data',
+        ]);
 
-        // Attach sysadmin user to sysadmin authorization.
-        $sysadmin->authorizations()
-                 ->save(Authorization::firstWhere('name', 'Sysadmin'));
+        Authorization::create([
+            'name' => 'Upsert',
+            'description' => 'Can update and insert data (but cannot change questionnaires)',
+        ]);
+
+        Authorization::create([
+            'name' => 'Delete',
+            'description' => 'Can delete questionnaires (only for this), and only if the questionnaire doesnt have data',
+        ]);
+
+        Authorization::create([
+            'name' => 'GDPR',
+            'description' => 'Can access visitor personal information, like email, or custom fields marked as personal',
+        ]);
+
+        Authorization::create([
+            'name' => 'admin',
+            'description' => 'Full admin access (UPSERT+GDPR+DELETE). Can also manage its client users',
+        ]);
+
+        Authorization::create([
+            'name' => 'Sysadmin',
+            'description' => 'Full admin to all clients, GPDR, but cannot delete questionnaires data neither questionnaires that have data',
+        ]);
     }
 }

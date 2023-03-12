@@ -3,15 +3,17 @@
 namespace QRFeedz\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use QRFeedz\Cube\Models\Authorization;
 use QRFeedz\Cube\Models\Client;
 use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Group;
 use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\Questionnaire;
+use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
 
-class RocheTownHallSeeder extends Seeder
+class RocheTownHall extends Seeder
 {
     public function run()
     {
@@ -34,9 +36,17 @@ class RocheTownHallSeeder extends Seeder
         /**
          * Create a user that has admin access to the client, and create
          * a user that only has read-only access.
-         *
-         * // TODO
          */
+        $user = User::create([
+            'client_id' => $client->id,
+            'name' => 'Bruno Falcao (Roche - admin)',
+            'email' => 'bruno.falcao@roche.com',
+            'password' => bcrypt(env('ROCHE_TOWNHALL_ADMIN_PASSWORD')),
+        ]);
+
+        $authorization = Authorization::firstWhere('name', 'admin');
+
+        $user->assignAuthorization($authorization, $client);
 
         /**
          * Simulating a Town Hall event, so we need a new questionnaire for that
