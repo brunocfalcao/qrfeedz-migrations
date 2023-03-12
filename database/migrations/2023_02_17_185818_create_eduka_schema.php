@@ -160,6 +160,11 @@ return new class extends Migration
                   ->after('id')
                   ->nullable();
 
+            $table->boolean('is_admin')
+                  ->after('client_id')
+                  ->default(false)
+                  ->comment('Super admin role');
+
             $table->softDeletes();
         });
 

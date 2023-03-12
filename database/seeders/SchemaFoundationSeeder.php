@@ -280,6 +280,7 @@ class SchemaFoundationSeeder extends Seeder
             'name' => env('QRFEEDZ_SUPER_ADMIN_NAME'),
             'email' => env('QRFEEDZ_SUPER_ADMIN_EMAIL'),
             'password' => bcrypt(env('QRFEEDZ_SUPER_ADMIN_PASSWORD')),
+            'is_admin' => true
         ]);
 
         /**
