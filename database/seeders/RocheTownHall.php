@@ -55,6 +55,10 @@ class RocheTownHall extends Seeder
             'password' => bcrypt(env('ROCHE_TOWNHALL_ADMIN_PASSWORD')),
         ]);
 
+        // Assign 'view' authorization to the client $user.
+        $authorization = Authorization::firstWhere('name', 'view');
+        $client->authorizations()->save($authorization, ['user_id' => $user->id]);
+
         /**
          * Simulating a Town Hall event, so we need a new questionnaire for that
          * event. First we create the only question, then the questionnaire,
