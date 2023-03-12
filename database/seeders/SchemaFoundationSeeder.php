@@ -303,36 +303,26 @@ class SchemaFoundationSeeder extends Seeder
         Category::create(['name' => 'Store']);
 
         /**
-         * Add system authorizations.
+         * Authorizations creation.
+         * view
+         * create
+         * update
+         * replicate
+         * delete
+         * restore
+         * forceDelete
+         * + special ones:
+         * admin
+         * gpdr
          */
-        Authorization::create([
-            'name' => 'Read',
-            'description' => 'Can only view data',
-        ]);
-
-        Authorization::create([
-            'name' => 'Upsert',
-            'description' => 'Can update and insert data (but cannot change questionnaires)',
-        ]);
-
-        Authorization::create([
-            'name' => 'Delete',
-            'description' => 'Can delete questionnaires (only for this), and only if the questionnaire doesnt have data',
-        ]);
-
-        Authorization::create([
-            'name' => 'GDPR',
-            'description' => 'Can access visitor personal information, like email, or custom fields marked as personal',
-        ]);
-
-        Authorization::create([
-            'name' => 'admin',
-            'description' => 'Full admin access (UPSERT+GDPR+DELETE). Can also manage its client users',
-        ]);
-
-        Authorization::create([
-            'name' => 'Sysadmin',
-            'description' => 'Full admin to all clients, GPDR, but cannot delete questionnaires data neither questionnaires that have data',
-        ]);
+        Authorization::create(['name' => 'view']);
+        Authorization::create(['name' => 'create']);
+        Authorization::create(['name' => 'update']);
+        Authorization::create(['name' => 'replicate']);
+        Authorization::create(['name' => 'delete']);
+        Authorization::create(['name' => 'restore']);
+        Authorization::create(['name' => 'forceDelete']);
+        Authorization::create(['name' => 'admin']);
+        Authorization::create(['name' => 'gdpr']);
     }
 }

@@ -49,11 +49,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('name')
-                  ->comment('The authorization type: READ, UPSERT, DELETE, GDPR, ADMIN, SYSADMIN');
-
-            $table->text('description')
-                  ->nullable()
-                  ->comment('Details of the respective authorization type');
+                  ->comment('Policy authorizations + replicate, gdpr and admin');
 
             $table->timestamps();
             $table->softDeletes();
@@ -69,6 +65,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
         /**
          * Countries are used in clients. Both respect
          * the same values from Laravel Nova, so we can use the country
@@ -164,6 +161,12 @@ return new class extends Migration
                   ->after('client_id')
                   ->default(false)
                   ->comment('Super admin role');
+
+            $table->string('phone_number')
+                  ->after('email')
+                  ->nullable();
+
+            $table->dropColumn('email_verified_at');
 
             $table->softDeletes();
         });
