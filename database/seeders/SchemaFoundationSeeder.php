@@ -304,25 +304,29 @@ class SchemaFoundationSeeder extends Seeder
 
         /**
          * Authorizations creation.
-         * view
-         * create
-         * update
-         * replicate
-         * delete
-         * restore
-         * forceDelete
-         * + special ones:
          * admin
          * gpdr
+         * affiliate
+         *
          */
-        Authorization::create(['name' => 'view']);
-        Authorization::create(['name' => 'create']);
-        Authorization::create(['name' => 'update']);
-        Authorization::create(['name' => 'replicate']);
-        Authorization::create(['name' => 'delete']);
-        Authorization::create(['name' => 'restore']);
-        Authorization::create(['name' => 'forceDelete']);
+        Authorization::create([
+            'name' => 'admin',
+            'description' => 'Generic admin, can admin its own client, respective groups and questionnaires. Can delete questionnaires that dont have data yet. Can change users, and delete them, but not delete himself. Can trigger reset passwords']);
+
+        Authorization::create([
+            'name' => 'group-admin',
+            'description' => 'Can only admin groups, create, change and delete groups'
+        ]);
+
+        Authorization::create([
+            'name' => 'questionnaire-admin',
+            'description' => ''
+        ]);
+
         Authorization::create(['name' => 'admin']);
+
+        Authorization::create(['name' => 'affiliate']);
+
         Authorization::create(['name' => 'gdpr']);
     }
 }

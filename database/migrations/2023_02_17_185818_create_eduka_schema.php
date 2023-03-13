@@ -49,7 +49,10 @@ return new class extends Migration
             $table->id();
 
             $table->string('name')
-                  ->comment('Policy authorizations + replicate, gdpr and admin');
+                  ->comment('Policy authorizations + replicate, gdpr, admin (generic client/questionnaire/groups admin) and client-admin (for commercials/affiliates)');
+
+            $table->text('description')
+                  ->nullable();
 
             $table->timestamps();
             $table->softDeletes();
