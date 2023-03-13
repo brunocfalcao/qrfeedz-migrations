@@ -27,9 +27,15 @@ class RocheTownHall extends Seeder
             'vat_number' => '507643121',
         ]);
 
-        $group = Group::create([
+        $groupH4IT = Group::create([
             'name' => 'H4IT',
             'data' => ['name' => 'Home 4 IT', 'location' => 'Kaiseraugst', 'subject' => 'Town Halls'],
+            'client_id' => $client->id,
+        ]);
+
+        $groupRMKT = Group::create([
+            'name' => 'Roche Marketing',
+            'data' => ['location' => 'Basel', 'subject' => 'Group Marketing function'],
             'client_id' => $client->id,
         ]);
 
@@ -37,27 +43,38 @@ class RocheTownHall extends Seeder
          * Create a user that has admin access to the client, and create
          * a user that only has read-only access.
          */
-        $user = User::create([
+        $userAdmin = User::create([
             'client_id' => $client->id,
-            'name' => 'Bruno Falcao (Roche - admin)',
-            'email' => 'bruno.falcao@roche.com',
+            'name' => 'Roche Admin',
+            'email' => 'admin@roche.com',
             'password' => bcrypt(env('ROCHE_TOWNHALL_ADMIN_PASSWORD')),
         ]);
 
         // Assign 'admin' authorization to the client $user.
-        $authorization = Authorization::firstWhere('name', 'admin');
-        $client->authorizations()->save($authorization, ['user_id' => $user->id]);
+        $authorizationAdmin = Authorization::firstWhere('name', 'admin');
+        $authorizationView = Authorization::firstWhere('name', 'view');
+        $authorizationUpdate = Authorization::firstWhere('name', 'update');
+        $client->authorizations()->save($authorizationAdmin, ['user_id' => $userAdmin->id]);
 
-        $user = User::create([
+        $userView = User::create([
             'client_id' => $client->id,
-            'name' => 'Bruno Falcao (Roche)',
-            'email' => 'bruno.falcao2@roche.com',
+            'name' => 'Roche View',
+            'email' => 'view@roche.com',
             'password' => bcrypt(env('ROCHE_TOWNHALL_ADMIN_PASSWORD')),
         ]);
 
         // Assign 'view' authorization to the client $user.
         $authorization = Authorization::firstWhere('name', 'view');
-        $client->authorizations()->save($authorization, ['user_id' => $user->id]);
+        $client->authorizations()->save($authorizationView, ['user_id' => $userView->id]);
+
+        // Add group permissions to users.
+        $groupH4IT->authorizations()->save($authorizationAdmin, ['user_id' => $userAdmin->id]);
+        $groupRMKT->authorizations()->save($authorizationAdmin, ['user_id' => $userAdmin->id]);
+
+        $groupH4IT->authorizations()->save($authorizationView, ['user_id' => $userView->id]);
+        $groupH4IT->authorizations()->save($authorizationUpdate, ['user_id' => $userView->id]);
+
+        $groupRMKT->authorizations()->save($authorizationView, ['user_id' => $userView->id]);
 
         /**
          * Simulating a Town Hall event, so we need a new questionnaire for that
