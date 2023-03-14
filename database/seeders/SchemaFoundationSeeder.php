@@ -307,7 +307,6 @@ class SchemaFoundationSeeder extends Seeder
          * admin
          * gpdr
          * affiliate
-         *
          */
         Authorization::create([
             'name' => 'admin',
@@ -315,22 +314,22 @@ class SchemaFoundationSeeder extends Seeder
 
         Authorization::create([
             'name' => 'group-admin',
-            'description' => 'Can only admin groups, create, change and delete groups'
+            'description' => 'Can only admin groups, create, change and delete groups',
         ]);
 
         Authorization::create([
             'name' => 'questionnaire-admin',
-            'description' => 'Can only admin questionnaires, create, change and delete (both data-limited) from its own client'
+            'description' => 'Can only admin questionnaires, create, change and delete (both data-limited) from its own client',
         ]);
 
         Authorization::create([
             'name' => 'affiliate',
-            'description' => 'Its an admin for the clients that are attached to the affiliate. Used for commercial reasons'
+            'description' => 'Its an admin for the clients that are attached to the affiliate. Used for commercial reasons',
         ]);
 
         Authorization::create([
             'name' => 'gdpr',
-            'description' => 'The GDPR role allows the user to see personal data, like visitors emails, widgets instances marked as having personal data'
+            'description' => 'The GDPR role allows the user to see personal data, like visitors emails, widgets instances marked as having personal data',
         ]);
     }
 }
