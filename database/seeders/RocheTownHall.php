@@ -52,29 +52,15 @@ class RocheTownHall extends Seeder
 
         // Assign 'admin' authorization to the client $user.
         $authorizationAdmin = Authorization::firstWhere('name', 'admin');
-        $authorizationView = Authorization::firstWhere('name', 'view');
-        $authorizationUpdate = Authorization::firstWhere('name', 'update');
         $client->authorizations()->save($authorizationAdmin, ['user_id' => $userAdmin->id]);
 
-        $userView = User::create([
+        // This is a very normal user, without any specific authorization.
+        $userStandard = User::create([
             'client_id' => $client->id,
-            'name' => 'Roche View',
-            'email' => 'view@roche.com',
+            'name' => 'Roche Standard',
+            'email' => 'standard@roche.com',
             'password' => bcrypt(env('ROCHE_TOWNHALL_ADMIN_PASSWORD')),
         ]);
-
-        // Assign 'view' authorization to the client $user.
-        $authorization = Authorization::firstWhere('name', 'view');
-        $client->authorizations()->save($authorizationView, ['user_id' => $userView->id]);
-
-        // Add group permissions to users.
-        $groupH4IT->authorizations()->save($authorizationAdmin, ['user_id' => $userAdmin->id]);
-        $groupRMKT->authorizations()->save($authorizationAdmin, ['user_id' => $userAdmin->id]);
-
-        $groupH4IT->authorizations()->save($authorizationView, ['user_id' => $userView->id]);
-        $groupH4IT->authorizations()->save($authorizationUpdate, ['user_id' => $userView->id]);
-
-        $groupRMKT->authorizations()->save($authorizationView, ['user_id' => $userView->id]);
 
         /**
          * Simulating a Town Hall event, so we need a new questionnaire for that

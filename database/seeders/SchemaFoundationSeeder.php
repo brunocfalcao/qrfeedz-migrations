@@ -320,13 +320,17 @@ class SchemaFoundationSeeder extends Seeder
 
         Authorization::create([
             'name' => 'questionnaire-admin',
-            'description' => ''
+            'description' => 'Can only admin questionnaires, create, change and delete (both data-limited) from its own client'
         ]);
 
-        Authorization::create(['name' => 'admin']);
+        Authorization::create([
+            'name' => 'affiliate',
+            'description' => 'Its an admin for the clients that are attached to the affiliate. Used for commercial reasons'
+        ]);
 
-        Authorization::create(['name' => 'affiliate']);
-
-        Authorization::create(['name' => 'gdpr']);
+        Authorization::create([
+            'name' => 'gdpr',
+            'description' => 'The GDPR role allows the user to see personal data, like visitors emails, widgets instances marked as having personal data'
+        ]);
     }
 }

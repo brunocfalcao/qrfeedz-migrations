@@ -88,6 +88,38 @@ return new class extends Migration
         });
 
         /**
+         * Affiliates are sales persons that work for qrfeedz, and sells it
+         * to clients. Each client created with an affiliate account will
+         * automatically be connected to the respective affiliate user.
+         * Affiliate commissions will then be applied, on each revenue
+         * cycle, giving a split % to the affiliate.
+         */
+        Schema::create('affiliates', function (Blueprint $table) {
+            $table->id();
+
+            $table->string('name')
+                  ->comment('Affiliate name');
+
+            $table->text('address')
+                  ->nullable()
+                  ->comment('The affiliate address');
+
+            $table->string('postal_code')
+                  ->nullable()
+                  ->comment('The affiliate postal code');
+
+            $table->string('locality')
+                  ->nullable()
+                  ->comment('The affiliate locality');
+
+            $table->foreignId('country_id')
+                  ->comment('Affiliate country');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        /**
          * Clients are the top most entity on the qrfeedz structure.
          * A client will cascade its data relations to
          * questionnaires. A client can be like a big
@@ -111,6 +143,10 @@ return new class extends Migration
             $table->string('locality')
                   ->nullable()
                   ->comment('The client locality');
+
+            $table->foreignId('affiliate_id')
+                  ->nullable()
+                  ->comment('Related affiliate, if exists');
 
             $table->foreignId('country_id')
                   ->comment('Client country');
@@ -164,6 +200,11 @@ return new class extends Migration
                   ->after('client_id')
                   ->default(false)
                   ->comment('Super admin role');
+
+            $table->boolean('is_affiliate')
+                  ->after('is_admin')
+                  ->default(false)
+                  ->comment('Affiliate super role');
 
             $table->string('phone_number')
                   ->after('email')
