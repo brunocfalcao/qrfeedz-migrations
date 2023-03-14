@@ -313,11 +313,6 @@ class SchemaFoundationSeeder extends Seeder
             'description' => 'Generic admin, can admin its own client, respective groups and questionnaires. Can delete questionnaires that dont have data yet. Can change users, and delete them, but not delete himself. Can trigger reset passwords']);
 
         Authorization::create([
-            'name' => 'group-admin',
-            'description' => 'Can only admin groups, create, change and delete groups',
-        ]);
-
-        Authorization::create([
             'name' => 'questionnaire-admin',
             'description' => 'Can only admin questionnaires, create, change and delete (both data-limited) from its own client',
         ]);

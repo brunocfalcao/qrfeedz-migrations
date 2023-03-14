@@ -6,37 +6,30 @@ use Illuminate\Database\Seeder;
 use QRFeedz\Cube\Models\Authorization;
 use QRFeedz\Cube\Models\Client;
 use QRFeedz\Cube\Models\Country;
-use QRFeedz\Cube\Models\Group;
 use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\Questionnaire;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
 
-class RocheTownHall extends Seeder
+class Test1 extends Seeder
 {
     public function run()
     {
+        /**
+         * 3 Clients: McDonalds, Porto Novo and Roche.
+         * 2 Users (std and admin) per client (@mcd.com, @portonovo.ch, @roche.ch).
+         * 3 affiliates, 1 with Mcd and Porto Novo, 2nd with Roche,
+         * 3rd with none. (affmcd@qrfeedz.ai, affpn@qrfeedz.ai, affrch@qrfeedz.ai)
+         */
         $client = Client::create([
-            'name' => 'Roche IT',
+            'name' => 'Roche',
             'address' => 'Wurmisweg',
             'postal_code' => '4303',
             'locality' => 'Kaiseraugst',
             'default_locale' => 'en',
             'country_id' => Country::firstWhere('name', 'Switzerland')->id,
             'vat_number' => '507643121',
-        ]);
-
-        $groupH4IT = Group::create([
-            'name' => 'H4IT',
-            'data' => ['name' => 'Home 4 IT', 'location' => 'Kaiseraugst', 'subject' => 'Town Halls'],
-            'client_id' => $client->id,
-        ]);
-
-        $groupRMKT = Group::create([
-            'name' => 'Roche Marketing',
-            'data' => ['location' => 'Basel', 'subject' => 'Group Marketing function'],
-            'client_id' => $client->id,
         ]);
 
         /**

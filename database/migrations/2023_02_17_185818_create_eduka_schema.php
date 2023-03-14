@@ -11,53 +11,78 @@ return new class extends Migration
      */
     public function up(): void
     {
+        /**
+         * Locales are used to define the caption language. By default, the
+         * foundation seeder will render a group of locales. Later we can
+         * add more if needed. The data model is dynamic enough.
+         */
         Schema::create('locales', function (Blueprint $table) {
             $table->id();
 
-            $table->string('en')
-                  ->nullable()
-                  ->comment('The caption value on the respective locale');
+            $table->string('code')
+                  ->unique()
+                  ->comment('Locale code, like pt, en, cn, etc');
 
-            $table->string('fr')
-                  ->nullable()
-                  ->comment('The caption value on the respective locale');
-
-            $table->string('it')
-                  ->nullable()
-                  ->comment('The caption value on the respective locale');
-
-            $table->string('de')
-                  ->nullable()
-                  ->comment('The caption value on the respective locale');
-
-            $table->string('pt')
-                  ->nullable()
-                  ->comment('The caption value on the respective locale');
-
-            $table->string('cn')
-                  ->nullable()
-                  ->comment('The caption value on the respective locale');
-
-            $table->foreignId('client_id')
-                  ->comment('Related client id');
+            $table->string('name')
+                  ->comment('The described locale name');
 
             $table->timestamps();
             $table->softDeletes();
         });
 
+        /**
+         * Authorizations are the heart of user security and data privacy.
+         * They connect users with profiles, that allow them to "do"
+         * things. By default there will be a group of pre-defined
+         * authorizations. Authorizations are applied to 3 main
+         * groups: clients, questionnaires or groups. Also
+         * any authorization level will cascade to its
+         * childs. Meaning, a "client"-admin will have
+         * access to the child questionnaires and
+         * child groups.
+         *
+         * Authorization types:
+         * ADMIN - Admins all the information for the respective client. From
+         * the own client, users, questionnaires, and groups.
+         *
+         * QUESTIONNAIRE-ADMIN - Admins all the information at the questionnaire
+         * level, meaning manages questionnaires, and groups. Normally used
+         * for users that can create new questionnaires under the same client.
+         * The groups management are directly related with the questionnaire
+         * admin role.
+         *
+         * GDPR - Special role that will allow the user to see personal data.
+         * That is, if a question.is_used_for_personal_data = true, then
+         * only users with this role will see that data value.
+         *
+         * AFFILIATE - Special role that is given to users that are considered
+         * affiliates. An affiliate is someone that sells qrfeedz to others.
+         * So, the affiliate will be like a "super-admin" (can create clients,
+         * admin users and questionnaires) but with some limitations, like it
+         * can't manage clients that are not related to its account.
+         *
+         * Authorizations are mostly used in the model policies where they
+         * will reflect directly in the Nova admin, the backoffice and the
+         * frontend, and also in the different data store actions.
+         */
         Schema::create('authorizations', function (Blueprint $table) {
             $table->id();
 
             $table->string('name')
-                  ->comment('Policy authorizations + replicate, gdpr, admin (generic client/questionnaire/groups admin) and client-admin (for commercials/affiliates)');
+                  ->comment('The authorization name');
 
             $table->text('description')
-                  ->nullable();
+                  ->nullable()
+                  ->comment('Details on the authorization type');
 
             $table->timestamps();
             $table->softDeletes();
         });
 
+        /**
+         * A polymorphic many-to-many to relate clients, questionnaires
+         * and groups, into authorization types, and respective users.
+         */
         Schema::create('authorizables', function (Blueprint $table) {
             $table->id();
 
@@ -70,9 +95,9 @@ return new class extends Migration
         });
 
         /**
-         * Countries are used in clients. Both respect
-         * the same values from Laravel Nova, so we can use the country
-         * field type.
+         * Countries are used in clients. Both respect the same values from
+         * Laravel Nova, so we can use the country field type. Countries
+         * are used for addresses fields (clients, groups, questionnaires).
          */
         Schema::create('countries', function (Blueprint $table) {
             $table->id();
@@ -88,11 +113,14 @@ return new class extends Migration
         });
 
         /**
-         * Affiliates are sales persons that work for qrfeedz, and sells it
-         * to clients. Each client created with an affiliate account will
-         * automatically be connected to the respective affiliate user.
+         * Affiliates are sales persons that work for qrfeedz, and sell it
+         * to clients. Each client created by an affiliate user will
+         * automatically connect to the respective affiliate user.
          * Affiliate commissions will then be applied, on each revenue
-         * cycle, giving a split % to the affiliate.
+         * cycle, giving a split % to the affiliate. Also the affiliate
+         * can manage the client, create users for that client, and
+         * create questionnaires. It's fully enpowered to start
+         * new businesses for new clients.
          */
         Schema::create('affiliates', function (Blueprint $table) {
             $table->id();
@@ -120,11 +148,11 @@ return new class extends Migration
         });
 
         /**
-         * Clients are the top most entity on the qrfeedz structure.
-         * A client will cascade its data relations to
-         * questionnaires. A client can be like a big
-         * company e.g.: Tavero, but can also be just
-         * a single entity as a restaurant.
+         * Clients are the top most entity on the qrfeedz structure. A client
+         * will cascade its data relations to questionnaires. A client can be
+         * like a big company e.g.: Tavero, but can also be just
+         * a single entity like a small restaurant. If the client
+         * wants to group questionnaires it should use groups.
          */
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
@@ -151,8 +179,8 @@ return new class extends Migration
             $table->foreignId('country_id')
                   ->comment('Client country');
 
-            $table->string('default_locale')
-                  ->comment('The default locale: Can be one of the locale columns (en, de, it, pt, fr, cn)');
+            $table->foreignId('locale_id')
+                  ->comment('The related default locale');
 
             $table->string('vat_number')
                   ->nullable()
@@ -166,49 +194,29 @@ return new class extends Migration
          * The users table is extended to also have soft deletes to allow
          * users to be "deleted". Users are ALWAYS connected to clients
          * and their authorizations will cascade down to groups, and
-         * questionnaires. Authorization cascading profiles:
-         *
-         * Two access types: READ and UPSERT.
-         * The READ access is at it says: User can ONLY view data, and cannot
-         * change, neither interact with anything. The data scope excepts the
-         * emails of visitors. That one is specific for GDPR access.
-         *
-         * The UPSERT access is wider: It can give access to insert and to
-         * update data. Some ground rules: If a questionnaire already has
-         * questions on it, it cannot be updated on the questions configuration.
-         * The user would need to create a new question version to attach it to
-         * the questionnaire. The questionnaire instance will always display
-         * the latest versions of each of the question, but for reporting will
-         * always give the value of the respective version that the answer was
-         * given to.
-         *
-         * Admin access specifically: DELETE and GPDR.
-         *
-         * The DELETE is very powerful, because it will actually be able to
-         * delete groups, questionnaires, and clients. The delete is
-         * always a soft delete still. The user will be able to delete a
-         * questionnaire. If a questionnaire is deleted, all the data is
-         * also deleted. The best is to disable, or close it with an
-         * end date.
+         * questionnaires. As an example, if an user has "admin" at
+         * a client level, then it will be admin in questionnaires
+         * and it its groups. We always should apply a least-based
+         * security (the user just have the minimum security level).
          */
         Schema::table('users', function (Blueprint $table) {
             $table->foreignId('client_id')
-                  ->after('id')
-                  ->nullable();
+            ->after('id')
+            ->nullable();
 
             $table->boolean('is_admin')
-                  ->after('client_id')
-                  ->default(false)
-                  ->comment('Super admin role');
+            ->after('client_id')
+            ->default(false)
+            ->comment('Super admin role');
 
             $table->boolean('is_affiliate')
-                  ->after('is_admin')
-                  ->default(false)
-                  ->comment('Affiliate super role');
+            ->after('is_admin')
+            ->default(false)
+            ->comment('Affiliate super role');
 
             $table->string('phone_number')
-                  ->after('email')
-                  ->nullable();
+            ->after('email')
+            ->nullable();
 
             $table->dropColumn('email_verified_at');
 
@@ -229,18 +237,18 @@ return new class extends Migration
             $table->id();
 
             $table->string('name')
-                  ->comment('The group name, can be a specific location or a restaurant/hotel, etc');
+            ->comment('The group name, can be a specific location or a restaurant/hotel, etc');
 
             $table->text('description')
-                  ->nullable()
-                  ->comment('If necessary can have a bit more description context to understand what this group is');
+            ->nullable()
+            ->comment('If necessary can have a bit more description context to understand what this group is');
 
             $table->json('data')
-                  ->nullable()
-                  ->comment('Additional data that identifies this group, like a brand, a restaurant, etc');
+            ->nullable()
+            ->comment('Additional data that identifies this group, like a brand, a restaurant, etc');
 
             $table->foreignId('client_id')
-                  ->nullable();
+            ->nullable();
 
             $table->timestamps();
             $table->softDeletes();
@@ -277,9 +285,8 @@ return new class extends Migration
                   ->nullable()
                   ->comment('Related groups where the questionnaire will be used');
 
-            $table->string('default_locale')
-                  ->default('en')
-                  ->comment('The default localization for this questionnaire');
+            $table->foreignId('locale_id')
+                  ->comment('The default locale for this questionnaire');
 
             $table->string('image_filename')
                   ->nullable()
@@ -355,6 +362,23 @@ return new class extends Migration
             $table->softDeletes();
         });
 
+        Schema::create('localables', function (Blueprint $table) {
+            $table->id();
+
+            $table->morphs('localable');
+            $table->foreignId('locale_id');
+
+            $table->string('caption')
+                  ->comment('The sentence in the respective locale');
+
+            $table->string('variable')
+                  ->nullable()
+                  ->comment('Used from widgets in case we have several locales for the same widget id. If nullable then it is just used for default purposes (will be most of the time)');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
         Schema::create('categorizables', function (Blueprint $table) {
             $table->id();
 
@@ -368,11 +392,10 @@ return new class extends Migration
         /**
          * A widget is a view component that renders HTML where the visitor
          * will then give the answer to the question. Widgets are only
-         * related with questions, and they can be versioned. A widget, if
-         * not specified by the question, will always be rendered on the
-         * latest version when the questionnaire is rendered to the
-         * visitor. Still, the widget is related with the response
-         * specifically (by the widget id and not by the group uuid).
+         * related with questions. See it as a widget library to create
+         * questionnaires. The model between a questionnaire question
+         * and a widget is the QuestionWidget model. It will related
+         * both entities to create questions enriched with widgets.
          */
         Schema::create('widgets', function (Blueprint $table) {
             $table->id();
@@ -381,29 +404,18 @@ return new class extends Migration
                   ->comment('E.g: Textbox, 1 to N, etc');
 
             $table->text('description')
-                  ->nullable()
-                  ->comment('Extended description, validation options, integration details, etc');
+            ->nullable()
+            ->comment('Extended description, validation options, integration details, etc');
 
             $table->string('canonical')
-                  ->comment('Widget canonical, easier to find when relating with questions');
-
-            $table->uuid('group_uuid')
-                  ->comment('Used to uniquely identify the widget group with the version.Automatically generated');
-
-            $table->unsignedInteger('version')
-                  ->default(1)
-                  ->comment('We can have several versions of the same question widget, but we don\'t want to lose the connection to the previous version question instances.Automatically generated');
+            ->comment('Widget canonical, easier to find when relating with questions');
 
             $table->json('settings')
-                  ->nullable()
-                  ->comment('Widgets default settings. Can be overriden by the question_widget.settings column');
-
-            $table->boolean('is_reportable')
-                  ->default(true)
-                  ->comment('If the widget will have data for reports. If it is not then it can be to display a message, or to capture custom information. E.g.: Input text to get a employee code');
+            ->nullable()
+            ->comment('Widgets default settings, so it can be UI redered by default');
 
             $table->string('view_component_namespace')
-                  ->comment('The view component namespace and path. All questions are rendered via blade components');
+            ->comment('The view component namespace and path. All questions are rendered via blade components');
 
             $table->timestamps();
             $table->softDeletes();
@@ -411,6 +423,15 @@ return new class extends Migration
             $table->index(['group_uuid', 'version']);
         });
 
+        /**
+         * Questions are one of the topmost rich data entity. It will create
+         * the foundation of questionnaires, by asking something to the
+         * visitors. Questions are related with widgets (1 to many) and
+         * they have special configurations for the answers types. Like
+         * if the question is restricted GDPR, or if the question will
+         * record a value that doesn't need to be reportable (used for
+         * analytics).
+         */
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
 
@@ -420,27 +441,25 @@ return new class extends Migration
                   ->nullable()
                   ->comment('The related caption locale values. If null then we dont render a label but only the widget');
 
-            $table->boolean('is_caption_visible')
+            $table->boolean('is_analytical')
                   ->default(true)
-                  ->comment('In case we just want to show only widget caption(s) and not the question caption');
+                  ->comment('If the question value will be used for reports. If it is not then it can be to display a message, or to capture custom information. E.g.: Input text to get a employee code');
 
-            $table->uuid('group_uuid')
-                  ->nullable()
-                  ->comment('A group uuid to group questions. Automatically generated');
+            $table->boolean('is_used_for_personal_data')
+                  ->default(false)
+                  ->comment('Used to be only seen by gdpr profiles');
 
-            $table->unsignedInteger('version')
-                  ->comment('We can have several versions of the same question. Still this needs to be used in edge cases');
+            $table->boolean('is_single_value')
+                  ->default(true)
+                  ->comment('Accepted values: single - Just returns one value (even from several widgets), multiple, returns all the values');
 
-            $table->unsignedInteger('index')
-                  ->comment('The question index in the questionnaire. AKA sequence in the questionnaire. Can be automatically generated');
-
-            $table->unsignedInteger('page_num')
+            $table->unsignedInteger('page_index')
                   ->default(1)
                   ->comment('The questionnaire page number that this question will belong to. By default we just have one page, but we could have multiple too');
 
-            $table->uuid('widget_group_uuid')
-                  ->nullable()
-                  ->comment('Related widget group uuid. For new questionnaires, the widget is rendered in the last active version');
+            $table->unsignedInteger('index')
+                  ->default(1)
+                  ->comment('The question index in the questionnaire. AKA sequence in the questionnaire. Can be automatically generated');
 
             $table->boolean('is_required')
                   ->default(false)
@@ -448,60 +467,51 @@ return new class extends Migration
 
             $table->timestamps();
             $table->softDeletes();
-
-            $table->foreign('widget_group_uuid')
-                  ->references('group_uuid')
-                  ->on('widgets');
-
-            $table->index(['group_uuid', 'version']);
         });
 
+        /**
+         * The response is the final data entity from the full qrfeedz
+         * data chain. It stores the value that the visitor gave to a
+         * specific question (composed of widgets).
+         */
         Schema::create('responses', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('question_id')
-                  ->comment('This is referenced to the exact question version that was answered for');
-
-            $table->foreignId('widget_id')
-                  ->comment('The relatable exact widget id that this question was answered for');
-
-            $table->longText('data')
-                  ->nullable()
-                  ->comment('Answers need to be json-structured since it can be a complex answer type');
+                  ->comment('Related question where this response was answered');
 
             $table->string('value')
                   ->nullable()
-                  ->comment('This is the concluded value(s) from the data json structure');
+                  ->comment('The concluded response value');
 
             $table->timestamps();
             $table->softDeletes();
         });
 
+        /**
+         * This model relates questions with widgets in a N-N relationship.
+         * It is not only a relation but a model itself, since its ID is
+         * used for the polymorphic N-N with locales. Meaning a question
+         * that has widgets will then have caption locales for the
+         * question and related widgets.
+         */
         Schema::create('question_widget', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('questionnaire_id');
             $table->foreignId('widget_id');
 
-            $table->foreignId('locale_id')
-                  ->nullable()
-                  ->comment('Related locale instance');
-
             $table->unsignedInteger('index')
                   ->default(1)
-                  ->comment('The sequence of the index in the question, in case it is a multi-widget question');
+                  ->comment('The sequence of the widget in case it is a multi-widget question');
 
             $table->json('settings_data')
                   ->nullable()
-                  ->comment('The settings override from the question-widget pair. These are general settings');
+                  ->comment('The settings override from the question-widget');
 
             $table->json('settings_conditionals')
                   ->nullable()
                   ->comment('The settings conditionals from the question-widget pair. Like if we want to extend a textarea if the value is < XX');
-
-            $table->json('settings_captions')
-                  ->nullable()
-                  ->comment('To be used in case this widget has multiple captions, like a yes-no one-liner radio button, for instance');
 
             $table->timestamps();
             $table->softDeletes();
