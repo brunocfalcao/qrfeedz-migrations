@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         /**
@@ -61,12 +58,21 @@ return new class extends Migration
          * admin users and questionnaires) but with some limitations, like it
          * can't manage clients that are not related to its account.
          *
+         * QUESTIONNAIRE-VIEW - A standard role that will allow view access
+         * to the questionnaire answers. Kind'a of the least access role
+         * that a user can have, and given to other users that belong to
+         * the same client, but can't do much except analyzing data to
+         * take actions later.
+         *
          * Authorizations are mostly used in the model policies where they
          * will reflect directly in the Nova admin, the backoffice and the
          * frontend, and also in the different data store actions.
          */
         Schema::create('authorizations', function (Blueprint $table) {
             $table->id();
+
+            $table->string('code')
+                  ->comment('The authorization code name');
 
             $table->string('name')
                   ->comment('The authorization name');
@@ -416,6 +422,20 @@ return new class extends Migration
             $table->softDeletes();
         });
 
+        Schema::create('categorizables', function (Blueprint $table) {
+            $table->id();
+
+            $table->morphs('categorizable');
+            $table->foreignId('category_id');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        /**
+         * Super important polymorphic N-N relationship that maps caption
+         * locales to questions captions and to widget captions.
+         */
         Schema::create('localables', function (Blueprint $table) {
             $table->id();
 
@@ -428,16 +448,6 @@ return new class extends Migration
             $table->string('variable')
                   ->nullable()
                   ->comment('Used from widgets in case we have several locales for the same widget id. If nullable then it is just used for default purposes (will be most of the time)');
-
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
-        Schema::create('categorizables', function (Blueprint $table) {
-            $table->id();
-
-            $table->morphs('categorizable');
-            $table->foreignId('category_id');
 
             $table->timestamps();
             $table->softDeletes();
@@ -570,9 +580,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         //

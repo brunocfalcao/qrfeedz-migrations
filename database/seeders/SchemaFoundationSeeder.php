@@ -300,22 +300,32 @@ class SchemaFoundationSeeder extends Seeder
          * affiliate
          */
         Authorization::create([
-            'name' => 'admin',
+            'code' => 'admin',
+            'name' => 'Client Administrator',
             'description' => 'Generic admin, can admin its own client, respective groups and questionnaires. Can delete questionnaires that dont have data yet. Can change users, and delete them, but not delete himself. Can trigger reset passwords']);
 
         Authorization::create([
-            'name' => 'questionnaire-admin',
+            'code' => 'questionnaire-admin',
+            'name' => 'Questionnaire Administrator',
             'description' => 'Can only admin questionnaires, create, change and delete (both data-limited) from its own client',
         ]);
 
         Authorization::create([
-            'name' => 'affiliate',
+            'code' => 'affiliate',
+            'name' => 'Affiliate',
             'description' => 'Its an admin for the clients that are attached to the affiliate. Used for commercial reasons',
         ]);
 
         Authorization::create([
-            'name' => 'gdpr',
+            'code' => 'gdpr',
+            'name' => 'GDPR',
             'description' => 'The GDPR role allows the user to see personal data, like visitors emails, widgets instances marked as having personal data',
+        ]);
+
+        Authorization::create([
+            'code' => 'questionnaire-view',
+            'name' => 'View-Only to Questionnaires',
+            'description' => 'Standard questionnaire role, for view access only',
         ]);
 
         /**
@@ -324,27 +334,27 @@ class SchemaFoundationSeeder extends Seeder
          */
         Locale::create([
             'code' => 'en',
-            'name' => 'English'
+            'name' => 'English',
         ]);
 
         Locale::create([
             'code' => 'fr',
-            'name' => 'French'
+            'name' => 'French',
         ]);
 
         Locale::create([
             'code' => 'it',
-            'name' => 'Italian'
+            'name' => 'Italian',
         ]);
 
         Locale::create([
             'code' => 'pt',
-            'name' => 'Portuguese'
+            'name' => 'Portuguese',
         ]);
 
         Locale::create([
             'code' => 'de',
-            'name' => 'German'
+            'name' => 'German',
         ]);
 
         /**
