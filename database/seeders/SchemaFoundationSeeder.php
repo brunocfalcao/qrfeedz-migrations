@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use QRFeedz\Cube\Models\Authorization;
 use QRFeedz\Cube\Models\Category;
 use QRFeedz\Cube\Models\Country;
+use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
 
@@ -284,16 +285,6 @@ class SchemaFoundationSeeder extends Seeder
         ]);
 
         /**
-         * Widgets creation.
-         */
-        Widget::create([
-            'name' => 'Emoji rating',
-            'canonical' => 'emoji-rating',
-            'description' => 'An emoji rating, 5 faces from very sad to very happy. Gray-based, then when the visitor touches the emoji it gets transformed into color',
-            'view_component_namespace' => 'emoji-rating',
-        ]);
-
-        /**
          * Add default categories.
          */
         Category::create(['name' => 'Event']);
@@ -325,6 +316,63 @@ class SchemaFoundationSeeder extends Seeder
         Authorization::create([
             'name' => 'gdpr',
             'description' => 'The GDPR role allows the user to see personal data, like visitors emails, widgets instances marked as having personal data',
+        ]);
+
+        /**
+         * Locales creation.
+         * en, pt, de, fr, it
+         */
+        Locale::create([
+            'code' => 'en',
+            'name' => 'English'
+        ]);
+
+        Locale::create([
+            'code' => 'fr',
+            'name' => 'French'
+        ]);
+
+        Locale::create([
+            'code' => 'it',
+            'name' => 'Italian'
+        ]);
+
+        Locale::create([
+            'code' => 'pt',
+            'name' => 'Portuguese'
+        ]);
+
+        Locale::create([
+            'code' => 'de',
+            'name' => 'German'
+        ]);
+
+        /**
+         * Widgets creation.
+         *
+         * Emoji rating.
+         * Stars rating.
+         * One Liner.
+         */
+        Widget::create([
+            'name' => 'Emoji faces rating',
+            'canonical' => 'emoji-faces-rating',
+            'description' => 'An emoji rating, 5 faces from very sad to very happy. Gray-based, then when the visitor touches the emoji it gets transformed into color',
+            'view_component_namespace' => 'emoji-faces-rating',
+        ]);
+
+        Widget::create([
+            'name' => 'Stars rating',
+            'canonical' => 'stars-rating',
+            'description' => 'A stars rating with stars. Visitor touches a star and it selects the right value of it',
+            'view_component_namespace' => 'emoji-faces-rating',
+        ]);
+
+        Widget::create([
+            'name' => 'Emoji slider rating',
+            'canonical' => 'emoji-slider-rating',
+            'description' => 'A slider that shows emoji faces as long as the visitor slides it',
+            'view_component_namespace' => 'emoji-slider-rating',
         ]);
     }
 }

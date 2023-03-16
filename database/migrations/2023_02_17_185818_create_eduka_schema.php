@@ -319,6 +319,60 @@ return new class extends Migration
         });
 
         /**
+         * The OpenAI prompt settings for the questionnaires. Each questionnaire
+         * can have a specific prompt type for a better AI feedback conclusion
+         * from the clients feedbacks. For example, a restaurant can be more
+         * interested of specific type of feedback than others.
+         *
+         * The OpenAI configuration is based on the following parameters:
+         *
+         * - My questionnaire is about:
+         *   (a restaurant, a town  hall event).
+         *
+         * - I am specially paying attention to:
+         *   (food quality, feedback from employees, ...).
+         *
+         * - I want to have a (balanced/worst cases/best cases) feedback type
+         *   Each will give a type of feedback conclusion focused on the
+         *   worst cases for improvement, the best cases for continuation, or
+         *   a balanced feedback conclusion (mix of both).
+         *
+         * - I want to know if I have new emails:
+         *   (This is an automated configuration that will tell the
+         *   questionnaire owner if on the previous feedback duration there
+         *   were someone that left the email).
+         *
+         * In case there is no OpenAI prompt configuration, qrfeedz will use
+         * a default prompt text, but it can give less quality results to the
+         * questionnaire owner.
+         */
+        Schema::create('openai_prompt_configurations', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('questionnaire_id')
+                  ->comment('Related questionnaire');
+
+            $table->text('my_questionnaire_is_about')
+                  ->nullable()
+                  ->comment('OpenAI specific prompt text');
+
+            $table->text('I_am_paying_attention_to')
+                  ->nullable()
+                  ->comment('OpenAI specific prompt text');
+
+            $table->string('balance_type')
+                  ->default('balanced')
+                  ->comment('balanced, worst-cases, best-cases');
+
+            $table->boolean('should_be_email_aware')
+                  ->default(true)
+                  ->comment('Notify if there were emails being received by visitors');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        /**
          * Categories are joker attributes that are related to clients,
          * groups, questionnaires, etc. They can be created and used as
          * requested.
@@ -404,23 +458,21 @@ return new class extends Migration
                   ->comment('E.g: Textbox, 1 to N, etc');
 
             $table->text('description')
-            ->nullable()
-            ->comment('Extended description, validation options, integration details, etc');
+                  ->nullable()
+                  ->comment('Extended description, validation options, integration details, etc');
 
             $table->string('canonical')
-            ->comment('Widget canonical, easier to find when relating with questions');
+                  ->comment('Widget canonical, easier to find when relating with questions');
 
             $table->json('settings')
-            ->nullable()
-            ->comment('Widgets default settings, so it can be UI redered by default');
+                  ->nullable()
+                  ->comment('Widgets default settings, so it can be UI redered by default');
 
             $table->string('view_component_namespace')
-            ->comment('The view component namespace and path. All questions are rendered via blade components');
+                  ->comment('The view component namespace and path. All questions are rendered via blade components');
 
             $table->timestamps();
             $table->softDeletes();
-
-            $table->index(['group_uuid', 'version']);
         });
 
         /**
