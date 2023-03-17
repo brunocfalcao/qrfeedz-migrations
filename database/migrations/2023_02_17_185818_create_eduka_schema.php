@@ -358,17 +358,17 @@ return new class extends Migration
             $table->foreignId('questionnaire_id')
                   ->comment('Related questionnaire');
 
-            $table->text('my_questionnaire_is_about')
+            $table->text('prompt_i_am_a_business_of')
                   ->nullable()
-                  ->comment('OpenAI specific prompt text');
+                  ->comment('OpenAI specific prompt text about what the questionnaire/business is about');
 
-            $table->text('I_am_paying_attention_to')
+            $table->text('prompt_I_am_paying_attention_to')
                   ->nullable()
                   ->comment('OpenAI specific prompt text');
 
             $table->string('balance_type')
                   ->default('balanced')
-                  ->comment('balanced, worst-cases, best-cases');
+                  ->comment('balanced, worst-cases, best-cases. This will be auto-generated prompt text');
 
             $table->boolean('should_be_email_aware')
                   ->default(true)
