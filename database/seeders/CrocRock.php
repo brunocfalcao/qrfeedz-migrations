@@ -8,8 +8,11 @@ use QRFeedz\Cube\Models\Authorization;
 use QRFeedz\Cube\Models\Client;
 use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Locale;
+use QRFeedz\Cube\Models\OpenAIPrompt;
+use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\Questionnaire;
 use QRFeedz\Cube\Models\User;
+use QRFeedz\Cube\Models\Widget;
 
 class CrocRock extends Seeder
 {
@@ -124,7 +127,6 @@ class CrocRock extends Seeder
         ]);
 
         $questionnaire->client()->associate($client);
-        $questionnaire->locale()->associate(Locale::firstWhere('code', 'Frech'));
         $questionnaire->save();
 
         /**
@@ -135,5 +137,49 @@ class CrocRock extends Seeder
          * know if visitors left their emails so they can reach to them
          * with more information.
          */
+        $prompt = OpenAIPrompt::make([
+            'prompt_i_am_a_business_of' => 'a restaurant in Nancy',
+            'prompt_I_am_paying_attention_to' => 'my food quality, and if tourists like it or not',
+            'balance_type' => 'balanced',
+            'should_be_email_aware' => true,
+        ]);
+
+        $prompt->questionnaire()->associate($questionnaire);
+        $prompt->save();
+
+        /**
+         * Next step is to assign widgets to the questionnaire.
+         * When we scan the qr code we should see:
+         * A page with a unique stars rating, with the conditionals.
+         * Then a page telling about a promotion.
+         * Then a page about social links sharing.
+         */
+        $question = Question::make([
+            'is_required' => true,
+        ]);
+
+        $question->questionnaire()->associate($questionnaire);
+        $question->save();
+
+        /**
+         * Lets create the locale captions.
+         * We will have 2 languages: French and English.
+         */
+        $localeEN = Locale::firstWhere('code', 'en');
+        $localeFR = Locale::firstWhere('code', 'fr');
+
+        $question->captions()->attach($localeEN->id, ['caption' => 'How was your meal?']);
+        $question->captions()->attach($localeFR->id, ['caption' => 'Comme avez vous passez?']);
+
+        /**
+         * Next is to add a stars rating widget to the question, and then
+         * attach the respective caption locales to the widget instance.
+         *
+         * Remember that you have a QuestionsWidget model that will ease the
+         * life of understanding what widgets belong to what question.
+         */
+        $widget = Widget::firstWhere('canonical', 'stars-rating');
+
+        $question->widgets()->save($widget);
     }
 }

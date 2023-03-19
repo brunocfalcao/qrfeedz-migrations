@@ -294,6 +294,10 @@ return new class extends Migration
                   ->nullable()
                   ->comment('The default locale for this questionnaire');
 
+            $table->boolean('welcomes_visitors')
+                  ->default(false)
+                  ->comment('If it shows a first page to welcome the visitor, no questions asked here');
+
             $table->string('file_logo')
                   ->nullable()
                   ->comment('Image logo, appears in the questionnaire headers, preferably SVG or PNG/transparent');
@@ -563,10 +567,10 @@ return new class extends Migration
         Schema::create('question_widget', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('questionnaire_id');
+            $table->foreignId('question_id');
             $table->foreignId('widget_id');
 
-            $table->unsignedInteger('index')
+            $table->unsignedInteger('widget_index')
                   ->default(1)
                   ->comment('The sequence of the widget in case it is a multi-widget question');
 

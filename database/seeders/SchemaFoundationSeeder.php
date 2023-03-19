@@ -338,13 +338,13 @@ class SchemaFoundationSeeder extends Seeder
         ]);
 
         Locale::create([
-            'code' => 'fr',
-            'name' => 'French',
+            'code' => 'it',
+            'name' => 'Italian',
         ]);
 
         Locale::create([
-            'code' => 'it',
-            'name' => 'Italian',
+            'code' => 'fr',
+            'name' => 'French',
         ]);
 
         Locale::create([
