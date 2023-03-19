@@ -146,6 +146,10 @@ return new class extends Migration
                   ->nullable()
                   ->comment('The affiliate locality');
 
+            $table->foreignId('user_id')
+                  ->nullable()
+                  ->comment('Related user id');
+
             $table->foreignId('country_id')
                   ->comment('Affiliate country');
 
@@ -207,22 +211,13 @@ return new class extends Migration
          */
         Schema::table('users', function (Blueprint $table) {
             $table->foreignId('client_id')
-            ->after('id')
-            ->nullable();
+                  ->nullable()
+                  ->after('id');
 
             $table->boolean('is_admin')
-            ->after('client_id')
-            ->default(false)
-            ->comment('Super admin role');
-
-            $table->boolean('is_affiliate')
-            ->after('is_admin')
-            ->default(false)
-            ->comment('Affiliate super role');
-
-            $table->string('phone_number')
-            ->after('email')
-            ->nullable();
+                  ->default(false)
+                  ->after('client_id')
+                  ->comment('Super admin role');
 
             $table->dropColumn('email_verified_at');
 
@@ -279,6 +274,10 @@ return new class extends Migration
                   ->nullable()
                   ->comment('Human name that the questionnaire is used for. E.g.: Terrace Summer 2021, used for the title html tag too');
 
+            $table->string('title')
+                  ->nullable()
+                  ->comment('Used for the questionnaire title, and for the title html tag');
+
             $table->text('description')
                   ->nullable()
                   ->comment('In case we want to describe a specific qr code instance for whatever reason');
@@ -292,31 +291,27 @@ return new class extends Migration
                   ->comment('Related groups where the questionnaire will be used');
 
             $table->foreignId('locale_id')
+                  ->nullable()
                   ->comment('The default locale for this questionnaire');
 
-            $table->string('image_filename')
+            $table->string('file_logo')
                   ->nullable()
-                  ->comment('Image logo, appears in the questionnaire header');
+                  ->comment('Image logo, appears in the questionnaire headers, preferably SVG or PNG/transparent');
 
             $table->boolean('is_active')
                   ->default(true)
                   ->comment('Overrides the active dates. In case we want to immediate inactivate the questionnaire');
 
             $table->dateTime('starts_at')
-                  ->nullable();
+                  ->nullable()
+                  ->comment('When is the questionnaire active, and ready to receive data');
 
             $table->dateTime('ends_at')
-                  ->nullable();
-
-            $table->longText('logo_svg')
                   ->nullable()
-                  ->comment('SVG code in case we want to have a header background with a pattern, image, etc. It will be all the css inside the bg-header { } class');
-
-            $table->boolean('asks_for_email')
-                  ->default(true)
-                  ->comment('Will it ask for the visitors email at the end of the questionnaire');
+                  ->comment('When will the questionnaire stop receiving data');
 
             $table->uuid()
+                  ->unique()
                   ->nullable()
                   ->comment('This will be the unique questionnaire qr code that will be scanned by a client.');
 
@@ -352,7 +347,7 @@ return new class extends Migration
          * a default prompt text, but it can give less quality results to the
          * questionnaire owner.
          */
-        Schema::create('openai_prompt_configurations', function (Blueprint $table) {
+        Schema::create('openai_prompts', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('questionnaire_id')
@@ -478,8 +473,16 @@ return new class extends Migration
                   ->nullable()
                   ->comment('Widgets default settings, so it can be UI redered by default');
 
+            $table->boolean('is_countable')
+                  ->default(true)
+                  ->comment('If it is countable, then it will be part of the questionnaire count (pages). If not then it is used for the last pages like direct message or social sharing');
+
+            $table->boolean('is_full_page')
+                  ->default(false)
+                  ->comment('Full page widget means the widget will not have other widgets with it and occupies a full page, like direct visitor messaging or social sharing full screen pages. Also a full page widget will not have the placeholder for the question');
+
             $table->string('view_component_namespace')
-                  ->comment('The view component namespace and path. All questions are rendered via blade components');
+                  ->comment('The view component namespace and path. All widgets are rendered via blade components');
 
             $table->timestamps();
             $table->softDeletes();

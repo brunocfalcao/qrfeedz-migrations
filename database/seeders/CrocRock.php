@@ -8,6 +8,7 @@ use QRFeedz\Cube\Models\Authorization;
 use QRFeedz\Cube\Models\Client;
 use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Locale;
+use QRFeedz\Cube\Models\Questionnaire;
 use QRFeedz\Cube\Models\User;
 
 class CrocRock extends Seeder
@@ -28,8 +29,8 @@ class CrocRock extends Seeder
          *
          * Final page is the social sharing of the restaurant.
          *
-         * Users: They are 3 partners. In this case two will have "admin"
-         * profile, and the 3rd one will have a "non-admin" profile.
+         * Users: They are 2 partners. In this case one will have "admin"
+         * profile, and the 2nd one will have a "non-admin" profile.
          *
          * There will also be one affiliate (Karine) that will be connected
          * to the client.
@@ -42,6 +43,7 @@ class CrocRock extends Seeder
             'country_id' => Country::firstWhere('name', 'Switzerland')->id,
         ]);
 
+        // Create CrocRock client.
         $client = Client::create([
             'name' => 'Croc & Rock',
             'address' => '27 avenue du XX ème corps',
@@ -52,14 +54,17 @@ class CrocRock extends Seeder
             'locale_id' => Locale::firstWhere('code', 'fr')->id,
         ]);
 
-        $affiliate = User::create([
-            'client_id' => $client->id,
-            'is_affiliate' => true,
+        // This is the user connected to the afilliate.
+        $affiliateUser = User::create([
             'name' => env('CROCROCK_AFFILIATE_NAME'),
             'email' => env('CROCROCK_AFFILIATE_EMAIL'),
             'password' => bcrypt(env('CROCROCK_AFFILIATE_PASSWORD')),
         ]);
 
+        // Associate Karine affiliate with the user Karine.
+        $affiliate->user()->associate($affiliateUser)->save();
+
+        // Create restaurant admin.
         $admin = User::create([
             'client_id' => $client->id,
             'name' => env('CROCROCK_ADMIN_NAME'),
@@ -67,6 +72,7 @@ class CrocRock extends Seeder
             'password' => bcrypt(env('CROCROCK_ADMIN_PASSWORD')),
         ]);
 
+        // Create restaurant standard user.
         $user = User::create([
             'client_id' => $client->id,
             'name' => env('CROCROCK_USER_NAME'),
@@ -79,21 +85,47 @@ class CrocRock extends Seeder
          *
          * The client that will have Karine ($affiliate) as affiliate.
          * The client that will have Peres as admin.
-         * The client that will have Francois as questionnaire admin.
+         * The 2nd user (non-admin) will not have direct permissions.
          */
         Authorization::firstWhere('code', 'affiliate')
                      ->clients()
                      ->attach(
                          $client->id,
-                         ['user_id' => $affiliate->id] // Karine
+                         ['user_id' => $affiliateUser->id] // Karine User
                      );
 
         Authorization::firstWhere('code', 'admin')
                      ->clients()
                      ->attach(
                          $client->id,
-                         ['user_id' => $admin->id] // Peres
+                         ['user_id' => $admin->id] // Peres User
                      );
+
+        /**
+         * Time to create the questionnaire. This will be a simple questionnaire
+         * with just one question: How do you rate us?. It will have 3 main
+         * locales: FR, EN, PT. In case the rating is <2 or =5 a textarea
+         * should slide down to ask for more information (optional).
+         *
+         * 1 questionnaire, 3 locales
+         * 1 widget - stars rating + textarea conditional
+         * 2 conditionals ( <=2 and =5 ).
+         *
+         * After there will be a promo message (written in the 3 locales) and
+         * a final page for the social sharing links.
+         *
+         * The promo message and the final social page are not questionnaire
+         * pages, "per se", so they don't count for the questionnaire counter.
+         */
+        $questionnaire = Questionnaire::create([
+            'name' => 'CrocRock 2024',
+            'title' => 'Restaurant CrocRock',
+            'starts_at' => now(),
+        ]);
+
+        $questionnaire->client()->associate($client);
+        $questionnaire->locale()->associate(Locale::firstWhere('code', 'Frech'));
+        $questionnaire->save();
 
         /**
          * Now it's time to configure the OpenAI prompt. On this case,
