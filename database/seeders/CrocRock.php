@@ -11,6 +11,7 @@ use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\OpenAIPrompt;
 use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\Questionnaire;
+use QRFeedz\Cube\Models\QuestionWidget;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
 
@@ -177,9 +178,34 @@ class CrocRock extends Seeder
          *
          * Remember that you have a QuestionsWidget model that will ease the
          * life of understanding what widgets belong to what question.
+         *
+         * We also add 2 conditionals on the widget:
+         * <=2 or =5 opens textarea.
+         *
+         * The textarea is not a widget, but a feature from almost all the
+         * widgets that accept ratings in a certain way.
+         *
+         * Conditionals exist in certain options:
+         * textarea = will slide down a textarea to request more details.
+         * subtext = will show a message below the widget.
          */
         $widget = Widget::firstWhere('canonical', 'stars-rating');
 
-        $question->widgets()->save($widget);
+        // We need to save the data using the Pivot model, and not the N-N.
+
+        $questionWidget = new QuestionWidget();
+        $questionWidget->question_id = $question->id;
+        $questionWidget->widget_id = $widget->id;
+
+        $questionWidget->save();
+
+        /**
+         * The pivot is now the PK for the Locales (Poly-N-N) and needs to
+         * have entries for the different languages.
+         */
+
+        // Create the locale versions for the subtext.
+        $questionWidget->captions()->attach($localeEN, ['caption' => 'Right in the spot!', 'variable' => 'subtext']);
+        $questionWidget->captions()->attach($localeFR, ['caption' => 'La mouche!', 'variable' => 'subtext']);
     }
 }

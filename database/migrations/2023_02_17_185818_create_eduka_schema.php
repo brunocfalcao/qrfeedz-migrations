@@ -414,7 +414,7 @@ return new class extends Migration
         Schema::create('taggables', function (Blueprint $table) {
             $table->id();
 
-            $table->morphs('taggable');
+            $table->morphs('model');
             $table->foreignId('tag_id');
 
             $table->timestamps();
@@ -424,7 +424,7 @@ return new class extends Migration
         Schema::create('categorizables', function (Blueprint $table) {
             $table->id();
 
-            $table->morphs('categorizable');
+            $table->morphs('model');
             $table->foreignId('category_id');
 
             $table->timestamps();
@@ -438,15 +438,19 @@ return new class extends Migration
         Schema::create('localables', function (Blueprint $table) {
             $table->id();
 
-            $table->morphs('localable');
+            $table->morphs('model');
             $table->foreignId('locale_id');
 
             $table->string('caption')
                   ->comment('The sentence in the respective locale');
 
-            $table->string('variable')
+            $table->string('variable_type')
                   ->nullable()
-                  ->comment('Used from widgets in case we have several locales for the same widget id. If nullable then it is just used for default purposes (will be most of the time)');
+                  ->comment('Defines widget type conditionals types, as example: subtext, it will be used in the UI generator');
+
+            $table->uuid('variable_uuid')
+                  ->nullable()
+                  ->comment('Defines a unique code that is used for the variable type, it will be used in the UI generator');
 
             $table->timestamps();
             $table->softDeletes();
@@ -574,13 +578,51 @@ return new class extends Migration
                   ->default(1)
                   ->comment('The sequence of the widget in case it is a multi-widget question');
 
-            $table->json('settings_data')
+            $table->json('widget_data')
                   ->nullable()
-                  ->comment('The settings override from the question-widget');
+                  ->comment('The settings override for the QuestionWidget instance');
 
-            $table->json('settings_conditionals')
-                  ->nullable()
-                  ->comment('The settings conditionals from the question-widget pair. Like if we want to extend a textarea if the value is < XX');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        /**
+         * This table stores all the conditional types for a specific widget
+         * pivot vs the respective conditionals it will have.
+         *
+         * Examples:
+         * If a stars rating <=2 then it slides down a textarea.
+         * If an emoji rating = 3 then it shows sub-text "Right in the middle!".
+         */
+        Schema::create('question_widget_conditionals', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('question_widget_id');
+
+            /**
+             * This is a javascript eval expression like:
+             * 'widget.value <=2 or widget.value ==5'.
+             * The value is the widget.value.
+             * Later there will be more types and options, like access
+             * to other question values, widget values, etc.
+             */
+            $table->string('when')
+                  ->comment('Conditional that will trigger the condition');
+
+            /**
+             * The available conditions at the moment are:
+             * textarea-slidedown
+             * subtext-appear
+             * jump-to-page
+             *
+             * Then the respective value if needed. E.g.:
+             * ["jump-to-page" => 2]
+             * ["textarea-slidedown"]
+             * ["subtext-appear" => WidgetPivot on the localables with
+             *                      'variable' => 'subtext-<uuid>']
+             */
+            $table->json('then')
+                  ->comment('Consequence of the conditional when it is triggered');
 
             $table->timestamps();
             $table->softDeletes();
