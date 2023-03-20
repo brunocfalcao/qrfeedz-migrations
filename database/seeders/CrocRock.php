@@ -258,12 +258,56 @@ class CrocRock extends Seeder
 
         /**
          * Now it's time to add the locales for the promotion.
-         * For the promo widget, the locales would need locale placeholders:
-         * - title ("Your coupon")
-         * - promotion-title ("10% off on your next visit")
-         * - promotion-subtext "Just bring the QR our paper you received by email"
-         * - [ Then there is the system locale "Write your email"]
-         * - Widget promo-email (input-text email)
+         * For the promo widget, the locales would need locale placeholders
+         * and also the placeholder codes.
+         * - promot-title ("Your coupon")
+         * - promo-text ("10% off on your next visit")
+         * - promo-subtext "Just bring the QR our paper you received by email"
+         * - promo-email "Please enter your email"
+         * - The input text is already part of the widget.
+         * - Special button that sends an email with the promo code generation.
+         * - The promo code generation is attached to the promotions that the
+         *   client is creating for the questionnaires. The promotion is
+         *   attached to a questionnaire, and can have an end date.
          */
+        $questionWidget->captions()->attach(
+            $localeEN->id,
+            ['caption' => 'Get your promotion code!', 'placeholder' => 'promo-title']
+        );
+
+        $questionWidget->captions()->attach(
+            $localeFR->id,
+            ['caption' => 'Trouvez votre code promo!', 'placeholder' => 'promo-title']
+        );
+
+        $questionWidget->captions()->attach(
+            $localeEN->id,
+            ['caption' => '25% discount on your next visit', 'placeholder' => 'promo-text']
+        );
+
+        $questionWidget->captions()->attach(
+            $localeFR->id,
+            ['caption' => '25% rabais dans votre prochaine visite', 'placeholder' => 'promo-text']
+        );
+
+        $questionWidget->captions()->attach(
+            $localeEN->id,
+            ['caption' => 'Bring us the received promo code next time', 'placeholder' => 'promo-subtext']
+        );
+
+        $questionWidget->captions()->attach(
+            $localeFR->id,
+            ['caption' => 'Vieullez nous trouvez votre code la prochaine fois', 'placeholder' => 'promo-subtext']
+        );
+
+        $questionWidget->captions()->attach(
+            $localeEN->id,
+            ['caption' => 'Enter your email to receive the promotion', 'placeholder' => 'promo-email']
+        );
+
+        $questionWidget->captions()->attach(
+            $localeFR->id,
+            ['caption' => 'S il vous plait mettez votre email ici', 'placeholder' => 'promo-email']
+        );
     }
 }
