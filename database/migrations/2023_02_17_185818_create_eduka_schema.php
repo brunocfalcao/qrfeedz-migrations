@@ -444,13 +444,9 @@ return new class extends Migration
             $table->string('caption')
                   ->comment('The sentence in the respective locale');
 
-            $table->string('variable_type')
+            $table->string('placeholder')
                   ->nullable()
-                  ->comment('Defines widget type conditionals types, as example: subtext, it will be used in the UI generator');
-
-            $table->uuid('variable_uuid')
-                  ->nullable()
-                  ->comment('Defines a unique code that is used for the variable type, it will be used in the UI generator');
+                  ->comment('Used in case a widget has several placeholders of text.g.: "subtext" or "promo-coupon-header"');
 
             $table->timestamps();
             $table->softDeletes();
@@ -476,10 +472,6 @@ return new class extends Migration
 
             $table->string('canonical')
                   ->comment('Widget canonical, easier to find when relating with questions');
-
-            $table->json('settings')
-                  ->nullable()
-                  ->comment('Widgets default settings, so it can be UI redered by default');
 
             $table->boolean('is_countable')
                   ->default(true)
@@ -509,10 +501,6 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('questionnaire_id');
-
-            $table->foreignId('locale_id')
-                  ->nullable()
-                  ->comment('The related caption locale values. If null then we dont render a label but only the widget');
 
             $table->boolean('is_analytical')
                   ->default(true)
@@ -619,7 +607,8 @@ return new class extends Migration
              * ["jump-to-page" => 2]
              * ["textarea-slidedown"]
              * ["subtext-appear" => WidgetPivot on the localables with
-             *                      'variable' => 'subtext-<uuid>']
+             *                      'variable_type' => 'subtext',
+             *                      'variable_uuid' => uuid()]
              */
             $table->json('then')
                   ->comment('Consequence of the conditional when it is triggered');

@@ -12,6 +12,7 @@ use QRFeedz\Cube\Models\OpenAIPrompt;
 use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\Questionnaire;
 use QRFeedz\Cube\Models\QuestionWidget;
+use QRFeedz\Cube\Models\QuestionWidgetConditional;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
 
@@ -192,6 +193,62 @@ class CrocRock extends Seeder
         $widget = Widget::firstWhere('canonical', 'stars-rating');
 
         // We need to save the data using the Pivot model, and not the N-N.
+        $questionWidget = new QuestionWidget();
+        $questionWidget->question_id = $question->id;
+        $questionWidget->widget_id = $widget->id;
+
+        $questionWidget->save();
+
+        /**
+         * This question widget doesn't have a caption "per se", but the
+         * conditionals have, specially the subtext conditional. Lets add
+         * a new entry in the question_widget_conditionals on it.
+         *
+         * Also, add the textarea slide down.
+         */
+        QuestionWidgetConditional::make([
+            'when' => 'value <=2 || value > 2',
+            'then' => ['textarea-slidedown'],
+        ])->questionWidget()->associate($questionWidget)
+          ->save();
+
+        $subtext = QuestionWidgetConditional::make([
+            'when' => 'value == 3',
+            'then' => ['subtext-appear'],
+        ]);
+
+        $subtext->questionWidget()->associate($questionWidget);
+        $subtext->save();
+
+        // The subtext needs to have respective locales (EN and FR).
+        $subtext->captions()
+                ->attach(
+                    $localeEN->id,
+                    ['caption' => 'Right in the middle!']
+                );
+
+        $subtext->captions()
+                ->attach(
+                    $localeFR->id,
+                    ['caption' => 'Au millieux! Parfait!']
+                );
+
+        /**
+         * Lets add a question, without caption, that just serves as a
+         * placeholder for the promo-coupon-page widget.
+         */
+        $question = Question::make([
+            'is_required' => false,
+            'is_analytical' => false,
+            'is_used_for_personal_data' => true, //because we retrieve emails
+            'is_single_value' => true,
+            'page_index' => $question->page_index + 1,
+        ]);
+
+        $question->questionnaire()->associate($questionnaire);
+        $question->save();
+
+        $widget = Widget::firstWhere('canonical', 'promo-coupon-page');
 
         $questionWidget = new QuestionWidget();
         $questionWidget->question_id = $question->id;
@@ -200,12 +257,13 @@ class CrocRock extends Seeder
         $questionWidget->save();
 
         /**
-         * The pivot is now the PK for the Locales (Poly-N-N) and needs to
-         * have entries for the different languages.
+         * Now it's time to add the locales for the promotion.
+         * For the promo widget, the locales would need locale placeholders:
+         * - title ("Your coupon")
+         * - promotion-title ("10% off on your next visit")
+         * - promotion-subtext "Just bring the QR our paper you received by email"
+         * - [ Then there is the system locale "Write your email"]
+         * - Widget promo-email (input-text email)
          */
-
-        // Create the locale versions for the subtext.
-        $questionWidget->captions()->attach($localeEN, ['caption' => 'Right in the spot!', 'variable' => 'subtext']);
-        $questionWidget->captions()->attach($localeFR, ['caption' => 'La mouche!', 'variable' => 'subtext']);
     }
 }

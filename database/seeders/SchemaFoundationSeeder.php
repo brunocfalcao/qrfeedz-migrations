@@ -384,5 +384,14 @@ class SchemaFoundationSeeder extends Seeder
             'description' => 'A slider that shows emoji faces as long as the visitor slides it',
             'view_component_namespace' => 'emoji-slider-rating',
         ]);
+
+        Widget::create([
+            'name' => 'Promo Coupon Page',
+            'canonical' => 'promo-coupon-page',
+            'description' => 'Offers a coupon to the visitor, after entering the email. Will have the social links from the questionnaire in the bottom',
+            'view_component_namespace' => 'promo-coupon-page',
+            'is_countable' => false,
+            'is_full_page' => true,
+        ]);
     }
 }
