@@ -218,6 +218,10 @@ return new class extends Migration
                   ->nullable()
                   ->change();
 
+            $table->string('email')
+                  ->nullable()
+                  ->change();
+
             $table->boolean('is_admin')
                   ->default(false)
                   ->after('client_id')
