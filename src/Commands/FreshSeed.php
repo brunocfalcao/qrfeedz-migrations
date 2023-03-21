@@ -39,6 +39,8 @@ class FreshSeed extends Command
     {
         $this->info('=> Installing QR Feedz schema...');
 
+        putenv('APP_ENV=local');
+
         /**
          * Create all tables and indexes.
          */
