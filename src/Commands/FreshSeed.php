@@ -39,15 +39,18 @@ class FreshSeed extends Command
     {
         $this->info('=> Installing QR Feedz schema...');
 
-        putenv('APP_ENV=local');
-
         /**
          * Create all tables and indexes.
          */
+
+        Process::run('php artisan migrate:fresh --force');
+
+        /*
         $this->call('migrate:fresh', [
             '--force' => 1,
             '--quiet' => 1,
         ]);
+        */
 
         /**
          * The foundation seeder populates de system tables with the
