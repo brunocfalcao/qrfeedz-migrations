@@ -44,6 +44,8 @@ class FreshSeed extends Command
          * Create all tables and indexes.
          */
 
+        $this->info('Running process...');
+
         Process::run('php artisan migrate:fresh --force');
 
         /*
