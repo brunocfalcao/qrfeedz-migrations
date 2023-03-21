@@ -21,3 +21,8 @@ Homestead.yaml
 Homestead.json
 /.vagrant
 .phpunit.result.cache
+database/factories/AffiliateFactory.php
+database/migrations/2023_02_17_185818_create_eduka_schema.php
+database/seeders/CrocRock.php
+database/seeders/FactoryTest.php
+database/seeders/SchemaFoundationSeeder.php
