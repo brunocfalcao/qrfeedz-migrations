@@ -3,7 +3,6 @@
 namespace QRFeedz\Migrations\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Process;
 
 class FreshSeed extends Command
 {
