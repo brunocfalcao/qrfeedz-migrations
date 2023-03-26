@@ -9,10 +9,12 @@ use QRFeedz\Cube\Models\Client;
 use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\OpenAIPrompt;
+use QRFeedz\Cube\Models\Page;
+use QRFeedz\Cube\Models\PageType;
 use QRFeedz\Cube\Models\Question;
-use QRFeedz\Cube\Models\Questionnaire;
 use QRFeedz\Cube\Models\QuestionWidget;
 use QRFeedz\Cube\Models\QuestionWidgetConditional;
+use QRFeedz\Cube\Models\Questionnaire;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
 
@@ -56,7 +58,7 @@ class CrocRock extends Seeder
             'locality' => 'Nancy',
             'country_id' => Country::firstWhere('name', 'France')->id,
             'affiliate_id' => Affiliate::firstWhere('name', 'Karine Esnault')->id,
-            'locale_id' => Locale::firstWhere('code', 'fr')->id,
+            'locale_id' => Locale::firstWhere('canonical', 'fr')->id,
         ]);
 
         // This is the user connected to the afilliate.
@@ -92,14 +94,14 @@ class CrocRock extends Seeder
          * The client that will have Peres as admin.
          * The 2nd user (non-admin) will not have direct permissions.
          */
-        Authorization::firstWhere('code', 'affiliate')
+        Authorization::firstWhere('canonical', 'affiliate')
                      ->clients()
                      ->attach(
                          $client->id,
                          ['user_id' => $affiliateUser->id] // Karine User
                      );
 
-        Authorization::firstWhere('code', 'admin')
+        Authorization::firstWhere('canonical', 'admin')
                      ->clients()
                      ->attach(
                          $client->id,
@@ -150,6 +152,37 @@ class CrocRock extends Seeder
         $prompt->save();
 
         /**
+         * Let's create the pages sequence.
+         * 1st page - Welcome, blank.
+         * 2nd page - Survey page.
+         * 3rd page - Info page.
+         */
+
+        $pageWelcome = Page::make([
+            'footer_link' => 'home',
+        ]);
+
+        $pageWelcome->questionnaire()->associate($questionnaire);
+        $pageWelcome->pageType()->associate(PageType::firstWhere('canonical', 'welcome-blank'));
+        $pageWelcome->save();
+
+        $pageSurvey = Page::make([
+            'footer_link' => 'survey'
+        ]);
+
+        $pageSurvey->questionnaire()->associate($questionnaire);
+        $pageSurvey->pageType()->associate(PageType::firstWhere('canonical', 'form-standard'));
+        $pageSurvey->save();
+
+        $pagePromo = Page::make([
+            'footer_link' => 'promo'
+        ]);
+
+        $pagePromo->questionnaire()->associate($questionnaire);
+        $pagePromo->pageType()->associate(PageType::firstWhere('canonical', 'promo-standard'));
+        $pagePromo->save();
+
+        /**
          * Next step is to assign widgets to the questionnaire.
          * When we scan the qr code we should see:
          * A page with a unique stars rating, with the conditionals.
@@ -160,15 +193,15 @@ class CrocRock extends Seeder
             'is_required' => true,
         ]);
 
-        $question->questionnaire()->associate($questionnaire);
+        $question->page()->associate($pageSurvey);
         $question->save();
 
         /**
          * Lets create the locale captions.
          * We will have 2 languages: French and English.
          */
-        $localeEN = Locale::firstWhere('code', 'en');
-        $localeFR = Locale::firstWhere('code', 'fr');
+        $localeEN = Locale::firstWhere('canonical', 'en');
+        $localeFR = Locale::firstWhere('canonical', 'fr');
 
         $question->captions()->attach($localeEN->id, ['caption' => 'How was your meal?']);
         $question->captions()->attach($localeFR->id, ['caption' => 'Comme avez vous passez?']);
@@ -209,7 +242,8 @@ class CrocRock extends Seeder
         QuestionWidgetConditional::make([
             'when' => 'value <=2 || value > 2',
             'then' => ['textarea-slidedown'],
-        ])->questionWidget()->associate($questionWidget)
+        ])->questionWidget()
+          ->associate($questionWidget)
           ->save();
 
         $subtext = QuestionWidgetConditional::make([
@@ -217,7 +251,8 @@ class CrocRock extends Seeder
             'then' => ['subtext-appear'],
         ]);
 
-        $subtext->questionWidget()->associate($questionWidget);
+        $subtext->questionWidget()
+                ->associate($questionWidget);
         $subtext->save();
 
         // The subtext needs to have respective locales (EN and FR).
@@ -235,17 +270,16 @@ class CrocRock extends Seeder
 
         /**
          * Lets add a question, without caption, that just serves as a
-         * placeholder for the promo-coupon-page widget.
+         * placeholder for the promo-page.
          */
         $question = Question::make([
             'is_required' => false,
             'is_analytical' => false,
             'is_used_for_personal_data' => true, //because we retrieve emails
-            'is_single_value' => true,
-            'page_index' => $question->page_index + 1,
+            'is_single_value' => true
         ]);
 
-        $question->questionnaire()->associate($questionnaire);
+        $question->page()->associate($pagePromo);
         $question->save();
 
         $widget = Widget::firstWhere('canonical', 'promo-coupon-page');

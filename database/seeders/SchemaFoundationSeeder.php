@@ -301,30 +301,30 @@ class SchemaFoundationSeeder extends Seeder
          * affiliate
          */
         Authorization::create([
-            'code' => 'admin',
+            'canonical' => 'admin',
             'name' => 'Client Administrator',
             'description' => 'Generic admin, can admin its own client, respective groups and questionnaires. Can delete questionnaires that dont have data yet. Can change users, and delete them, but not delete himself. Can trigger reset passwords']);
 
         Authorization::create([
-            'code' => 'questionnaire-admin',
+            'canonical' => 'questionnaire-admin',
             'name' => 'Questionnaire Administrator',
             'description' => 'Can only admin questionnaires, create, change and delete (both data-limited) from its own client',
         ]);
 
         Authorization::create([
-            'code' => 'affiliate',
+            'canonical' => 'affiliate',
             'name' => 'Affiliate',
             'description' => 'Its an admin for the clients that are attached to the affiliate. Used for commercial reasons',
         ]);
 
         Authorization::create([
-            'code' => 'gdpr',
+            'canonical' => 'gdpr',
             'name' => 'GDPR',
             'description' => 'The GDPR role allows the user to see personal data, like visitors emails, widgets instances marked as having personal data',
         ]);
 
         Authorization::create([
-            'code' => 'questionnaire-view',
+            'canonical' => 'questionnaire-view',
             'name' => 'View-Only to Questionnaires',
             'description' => 'Standard questionnaire role, for view access only',
         ]);
@@ -334,27 +334,27 @@ class SchemaFoundationSeeder extends Seeder
          * en, pt, de, fr, it
          */
         Locale::create([
-            'code' => 'en',
+            'canonical' => 'en',
             'name' => 'English',
         ]);
 
         Locale::create([
-            'code' => 'it',
+            'canonical' => 'it',
             'name' => 'Italian',
         ]);
 
         Locale::create([
-            'code' => 'fr',
+            'canonical' => 'fr',
             'name' => 'French',
         ]);
 
         Locale::create([
-            'code' => 'pt',
+            'canonical' => 'pt',
             'name' => 'Portuguese',
         ]);
 
         Locale::create([
-            'code' => 'de',
+            'canonical' => 'de',
             'name' => 'German',
         ]);
 
@@ -378,31 +378,36 @@ class SchemaFoundationSeeder extends Seeder
          *                     items.
          */
         PageType::create([
-            'name' => 'welcome-flags',
+            'name' => 'Welcome page with locale flags',
+            'canonical' => 'welcome-flags',
             'description' => 'Welcome page, with available locale flags',
             'view_component' => 'welcome-flags',
         ]);
 
         PageType::create([
-            'name' => 'welcome-blank',
+            'name' => 'Welcome page, blank',
+            'canonical' => 'welcome-blank',
             'description' => 'Welcome page, blank, just a button to start the questionnaire',
             'view_component' => 'welcome-blank',
         ]);
 
         PageType::create([
-            'name' => 'select-type',
+            'name' => 'Welcome page with selection types',
+            'canonical' => 'select-type',
             'description' => 'Page with 3 buttons (improvement, survey, complain) + voice recording',
             'view_component' => 'select-type',
         ]);
 
         PageType::create([
-            'name' => 'form-standard',
+            'name' => 'Default questionnaire form structure',
+            'canonical' => 'form-standard',
             'description' => 'Content page placeholder for a standard questionnaire form',
             'view_component' => 'select-type',
         ]);
 
         PageType::create([
-            'name' => 'promo-standard',
+            'name' => 'Promotional page',
+            'canonical' => 'promo-standard',
             'description' => 'Promo page, text, promotion and input type for email',
             'view_component' => 'promo-standard',
         ]);
