@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('locales', function (Blueprint $table) {
             $table->id();
 
-            $table->string('code')
+            $table->string('canonical')
                   ->unique()
-                  ->comment('Locale code, like pt, en, cn, etc');
+                  ->comment('Locale canonical, like pt, en, cn, etc');
 
             $table->string('name')
                   ->comment('The described locale name');
@@ -71,8 +71,8 @@ return new class extends Migration
         Schema::create('authorizations', function (Blueprint $table) {
             $table->id();
 
-            $table->string('code')
-                  ->comment('The authorization code name');
+            $table->string('canonical')
+                  ->comment('The authorization canonical name');
 
             $table->string('name')
                   ->comment('The authorization name');
@@ -184,13 +184,13 @@ return new class extends Migration
 
             $table->foreignId('affiliate_id')
                   ->nullable()
-                  ->comment('Related affiliate, if exists');
+                  ->comment('Related affiliate');
 
             $table->foreignId('country_id')
-                  ->comment('Client country');
+                  ->comment('Related  country');
 
             $table->foreignId('locale_id')
-                  ->comment('The related default locale');
+                  ->comment('Related default locale');
 
             $table->string('vat_number')
                   ->nullable()
@@ -497,6 +497,70 @@ return new class extends Migration
         });
 
         /**
+         * Page types are content structure types that define a questionnaire
+         * page. Currently:
+         * 'welcome-flags'  => A "welcome" brand page, with flads to select
+         *                     the language that the questionnaire should be
+         *                     placed on.
+         *
+         * 'welcome-blank'  => Just a welcome page, no flags, and a link to
+         *                     start the questionnaire.
+         *
+         * 'select-type'    => A page with 3 links to give feedback, to
+         *                     make a complain, or to suggest an improvement.
+         *
+         * 'form-standard'  => 'Standard' survey page placeholder.
+         *
+         * 'promo-standard' => Promotional page that offers a promo item to
+         *                     the visitor. Also, with a input type to add
+         *                     the visitor email, plus some social sharing
+         *                     items.
+         */
+        Schema::create('page_types', function (Blueprint $table) {
+            $table->id();
+
+            $table->string('name');
+            $table->text('description')
+                  ->nullable();
+
+            $table->string('view_component');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        /**
+         * Pages are dynamic screens that will store questions, or any other
+         * widget that is directly related with the page. For instance, a
+         * page can be a full survey form with questions, can be a page
+         * like "welcome" with links to select the questionnaire
+         * language, or can be a page for promo info, etc.
+         */
+        Schema::create('pages', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('page_type_id')
+                  ->nullable()
+                  ->comment('Related page type, to undertand what strucutre should be loaded. If null, then a view component override is needed');
+
+            $table->foreignId('questionnaire_id')
+                  ->comment('Related questionnaire id');
+
+            $table->unsignedInteger('index')
+                  ->comment('The page index in the respective related questionnaire');
+
+            $table->string('footer_link')
+                  ->comment('There are 3 footer link types: home, survey and promo');
+
+            $table->string('view_component_override')
+                  ->nullable()
+                  ->comment('If we have a specific view component, instead of using the ones from the page types');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        /**
          * Questions are one of the topmost rich data entity. It will create
          * the foundation of questionnaires, by asking something to the
          * visitors. Questions are related with widgets (1 to many) and
@@ -508,7 +572,8 @@ return new class extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('questionnaire_id');
+            $table->foreignId('page_id')
+                  ->comment('Related page');
 
             $table->boolean('is_analytical')
                   ->default(true)
@@ -522,13 +587,9 @@ return new class extends Migration
                   ->default(true)
                   ->comment('Accepted values: single - Just returns one value (even from several widgets), multiple, returns all the values');
 
-            $table->unsignedInteger('page_index')
-                  ->default(1)
-                  ->comment('The questionnaire page number that this question will belong to. By default we just have one page, but we could have multiple too');
-
             $table->unsignedInteger('index')
                   ->default(1)
-                  ->comment('The question index in the questionnaire. AKA sequence in the questionnaire. Can be automatically generated');
+                  ->comment('The question index in related page');
 
             $table->boolean('is_required')
                   ->default(false)

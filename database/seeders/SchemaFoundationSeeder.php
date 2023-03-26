@@ -7,6 +7,7 @@ use QRFeedz\Cube\Models\Authorization;
 use QRFeedz\Cube\Models\Category;
 use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Locale;
+use QRFeedz\Cube\Models\PageType;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
 
@@ -355,6 +356,55 @@ class SchemaFoundationSeeder extends Seeder
         Locale::create([
             'code' => 'de',
             'name' => 'German',
+        ]);
+
+        /**
+         * Pages type creation.
+         * 'welcome-flags'  => A "welcome" brand page, with flads to select
+         *                     the language that the questionnaire should be
+         *                     placed on.
+         *
+         * 'welcome-blank'  => Just a welcome page, no flags, and a link to
+         *                     start the questionnaire.
+         *
+         * 'select-type'    => A page with 3 links to give feedback, to
+         *                     make a complain, or to suggest an improvement.
+         *
+         * 'form-standard'  => 'Standard' survey page placeholder.
+         *
+         * 'promo-standard' => Promotional page that offers a promo item to
+         *                     the visitor. Also, with a input type to add
+         *                     the visitor email, plus some social sharing
+         *                     items.
+         */
+        PageType::create([
+            'name' => 'welcome-flags',
+            'description' => 'Welcome page, with available locale flags',
+            'view_component' => 'welcome-flags',
+        ]);
+
+        PageType::create([
+            'name' => 'welcome-blank',
+            'description' => 'Welcome page, blank, just a button to start the questionnaire',
+            'view_component' => 'welcome-blank',
+        ]);
+
+        PageType::create([
+            'name' => 'select-type',
+            'description' => 'Page with 3 buttons (improvement, survey, complain) + voice recording',
+            'view_component' => 'select-type',
+        ]);
+
+        PageType::create([
+            'name' => 'form-standard',
+            'description' => 'Content page placeholder for a standard questionnaire form',
+            'view_component' => 'select-type',
+        ]);
+
+        PageType::create([
+            'name' => 'promo-standard',
+            'description' => 'Promo page, text, promotion and input type for email',
+            'view_component' => 'promo-standard',
         ]);
 
         /**
