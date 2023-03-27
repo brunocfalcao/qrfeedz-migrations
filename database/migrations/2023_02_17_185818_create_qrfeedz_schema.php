@@ -306,6 +306,18 @@ return new class extends Migration
                   ->default(false)
                   ->comment('If it shows a first page to welcome the visitor, no questions asked here');
 
+            $table->string('color_primary')
+                  ->comment('Primary color, should be the main logo/brand color. RGB without #');
+
+            $table->string('color_secondary')
+                  ->comment('Secondary color, should be the complementary logo/brand color. RGB without #');
+
+            $table->string('color_warning')
+                  ->comment('Warning color, mostly used with there are form validation errors. RGB without #');
+
+            $table->string('color_info')
+                  ->comment('Info color, mostly used as a supporting color to the primary color. RGB without #');
+
             $table->string('file_logo')
                   ->nullable()
                   ->comment('Image logo, appears in the questionnaire headers, preferably SVG or PNG/transparent');

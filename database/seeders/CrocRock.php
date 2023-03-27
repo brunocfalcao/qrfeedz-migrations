@@ -128,6 +128,10 @@ class CrocRock extends Seeder
             'name' => 'CrocRock 2024',
             'title' => 'Restaurant CrocRock',
             'starts_at' => now(),
+            'color_primary' => 'F5CC7D',
+            'color_secondary' => '000000',
+            'color_warning' => 'FF0000',
+            'color_info' => 'AFDE12'
         ]);
 
         $questionnaire->client()->associate($client);
