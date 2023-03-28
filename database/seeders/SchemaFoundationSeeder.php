@@ -381,35 +381,35 @@ class SchemaFoundationSeeder extends Seeder
             'name' => 'Welcome page with locale flags',
             'canonical' => 'welcome-flags',
             'description' => 'Welcome page, with available locale flags',
-            'view_component' => 'welcome-flags',
+            'view_component' => 'qrfeedz::welcome-flags',
         ]);
 
         PageType::create([
             'name' => 'Welcome page, blank',
             'canonical' => 'welcome-blank',
             'description' => 'Welcome page, blank, just a button to start the questionnaire',
-            'view_component' => 'welcome-blank',
+            'view_component' => 'qrfeedz::pages.welcome.blank',
         ]);
 
         PageType::create([
             'name' => 'Welcome page with selection types',
-            'canonical' => 'select-type',
+            'canonical' => 'welcome-select',
             'description' => 'Page with 3 buttons (improvement, survey, complain) + voice recording',
-            'view_component' => 'select-type',
+            'view_component' => 'qrfeedz::pages.welcome.select',
         ]);
 
         PageType::create([
             'name' => 'Default questionnaire form structure',
-            'canonical' => 'form-standard',
+            'canonical' => 'form-default',
             'description' => 'Content page placeholder for a standard questionnaire form',
-            'view_component' => 'select-type',
+            'view_component' => 'qrfeedz::pages.form.default',
         ]);
 
         PageType::create([
-            'name' => 'Promotional page',
-            'canonical' => 'promo-standard',
+            'name' => 'Default Promotional page',
+            'canonical' => 'promo-default',
             'description' => 'Promo page, text, promotion and input type for email',
-            'view_component' => 'promo-standard',
+            'view_component' => 'qrfeedz::pages.promo.default',
         ]);
 
         /**

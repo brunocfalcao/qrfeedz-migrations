@@ -307,16 +307,10 @@ return new class extends Migration
                   ->comment('If it shows a first page to welcome the visitor, no questions asked here');
 
             $table->string('color_primary')
-                  ->comment('Primary color, should be the main logo/brand color. RGB without #');
+                  ->comment('Primary color, normally used for the background colors, widgets background buttons, etc');
 
             $table->string('color_secondary')
-                  ->comment('Secondary color, should be the complementary logo/brand color. RGB without #');
-
-            $table->string('color_warning')
-                  ->comment('Warning color, mostly used with there are form validation errors. RGB without #');
-
-            $table->string('color_info')
-                  ->comment('Info color, mostly used as a supporting color to the primary color. RGB without #');
+                  ->comment('Secondary color, normally used for the actionable buttons like "start questionnaire"');
 
             $table->string('file_logo')
                   ->nullable()
@@ -553,7 +547,6 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('page_type_id')
-                  ->nullable()
                   ->comment('Related page type, to undertand what strucutre should be loaded. If null, then a view component override is needed');
 
             $table->foreignId('questionnaire_id')

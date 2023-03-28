@@ -12,9 +12,9 @@ use QRFeedz\Cube\Models\OpenAIPrompt;
 use QRFeedz\Cube\Models\Page;
 use QRFeedz\Cube\Models\PageType;
 use QRFeedz\Cube\Models\Question;
+use QRFeedz\Cube\Models\Questionnaire;
 use QRFeedz\Cube\Models\QuestionWidget;
 use QRFeedz\Cube\Models\QuestionWidgetConditional;
-use QRFeedz\Cube\Models\Questionnaire;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
 
@@ -128,10 +128,7 @@ class CrocRock extends Seeder
             'name' => 'CrocRock 2024',
             'title' => 'Restaurant CrocRock',
             'starts_at' => now(),
-            'color_primary' => 'F5CC7D',
-            'color_secondary' => '000000',
-            'color_warning' => 'FF0000',
-            'color_info' => 'AFDE12'
+            //'color_primary' => 'F5CC7D'
         ]);
 
         $questionnaire->client()->associate($client);
@@ -161,7 +158,6 @@ class CrocRock extends Seeder
          * 2nd page - Survey page.
          * 3rd page - Info page.
          */
-
         $pageWelcome = Page::make([
             'footer_link' => 'home',
         ]);
@@ -171,19 +167,19 @@ class CrocRock extends Seeder
         $pageWelcome->save();
 
         $pageSurvey = Page::make([
-            'footer_link' => 'survey'
+            'footer_link' => 'survey',
         ]);
 
         $pageSurvey->questionnaire()->associate($questionnaire);
-        $pageSurvey->pageType()->associate(PageType::firstWhere('canonical', 'form-standard'));
+        $pageSurvey->pageType()->associate(PageType::firstWhere('canonical', 'form-default'));
         $pageSurvey->save();
 
         $pagePromo = Page::make([
-            'footer_link' => 'promo'
+            'footer_link' => 'promo',
         ]);
 
         $pagePromo->questionnaire()->associate($questionnaire);
-        $pagePromo->pageType()->associate(PageType::firstWhere('canonical', 'promo-standard'));
+        $pagePromo->pageType()->associate(PageType::firstWhere('canonical', 'promo-default'));
         $pagePromo->save();
 
         /**
@@ -280,7 +276,7 @@ class CrocRock extends Seeder
             'is_required' => false,
             'is_analytical' => false,
             'is_used_for_personal_data' => true, //because we retrieve emails
-            'is_single_value' => true
+            'is_single_value' => true,
         ]);
 
         $question->page()->associate($pagePromo);
