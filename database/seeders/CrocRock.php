@@ -163,7 +163,7 @@ class CrocRock extends Seeder
         ]);
 
         $pageWelcome->questionnaire()->associate($questionnaire);
-        $pageWelcome->pageType()->associate(PageType::firstWhere('canonical', 'welcome-blank'));
+        $pageWelcome->pageType()->associate(PageType::firstWhere('canonical', 'welcome-select'));
         $pageWelcome->save();
 
         $pageSurvey = Page::make([
