@@ -474,7 +474,7 @@ return new class extends Migration
          * and a widget is the QuestionWidget model. It will related
          * both entities to create questions enriched with widgets.
          */
-        Schema::create('widgets', function (Blueprint $table) {
+        Schema::create('widget_types', function (Blueprint $table) {
             $table->id();
 
             $table->string('name')
@@ -530,7 +530,7 @@ return new class extends Migration
             $table->text('description')
                   ->nullable();
 
-            $table->string('view_component');
+            $table->string('view_component_namespace');
 
             $table->timestamps();
             $table->softDeletes();

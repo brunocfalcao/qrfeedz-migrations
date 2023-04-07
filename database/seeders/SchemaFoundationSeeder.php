@@ -381,35 +381,35 @@ class SchemaFoundationSeeder extends Seeder
             'name' => 'Welcome page with locale flags',
             'canonical' => 'welcome-flags',
             'description' => 'Welcome page, with available locale flags',
-            'view_component' => 'qrfeedz::welcome-flags',
+            'view_component_namespace' => 'qrfeedz::welcome-flags',
         ]);
 
         PageType::create([
             'name' => 'Welcome page, blank',
             'canonical' => 'welcome-blank',
             'description' => 'Welcome page, blank, just a button to start the questionnaire',
-            'view_component' => 'qrfeedz::pages.welcome.blank',
+            'view_component_namespace' => 'qrfeedz::pages.welcome.blank',
         ]);
 
         PageType::create([
             'name' => 'Welcome page with selection types',
             'canonical' => 'welcome-select',
             'description' => 'Page with 3 buttons (improvement, survey, complain) + voice recording',
-            'view_component' => 'qrfeedz::pages.welcome.select',
+            'view_component_namespace' => 'qrfeedz::pages.welcome.select',
         ]);
 
         PageType::create([
             'name' => 'Default questionnaire form structure',
             'canonical' => 'form-default',
             'description' => 'Content page placeholder for a standard questionnaire form',
-            'view_component' => 'qrfeedz::pages.form.default',
+            'view_component_namespace' => 'qrfeedz::pages.form.default',
         ]);
 
         PageType::create([
             'name' => 'Default Promotional page',
             'canonical' => 'promo-default',
             'description' => 'Promo page, text, promotion and input type for email',
-            'view_component' => 'qrfeedz::pages.promo.default',
+            'view_component_namespace' => 'qrfeedz::pages.promo.default',
         ]);
 
         /**
@@ -419,28 +419,28 @@ class SchemaFoundationSeeder extends Seeder
          * Stars rating.
          * One Liner.
          */
-        Widget::create([
+        WidgetType::create([
             'name' => 'Emoji faces rating',
             'canonical' => 'emoji-faces-rating',
             'description' => 'An emoji rating, 5 faces from very sad to very happy. Gray-based, then when the visitor touches the emoji it gets transformed into color',
             'view_component_namespace' => 'emoji-faces-rating',
         ]);
 
-        Widget::create([
+        WidgetType::create([
             'name' => 'Stars rating',
             'canonical' => 'stars-rating',
             'description' => 'A stars rating with stars. Visitor touches a star and it selects the right value of it',
             'view_component_namespace' => 'emoji-faces-rating',
         ]);
 
-        Widget::create([
+        WidgetType::create([
             'name' => 'Emoji slider rating',
             'canonical' => 'emoji-slider-rating',
             'description' => 'A slider that shows emoji faces as long as the visitor slides it',
             'view_component_namespace' => 'emoji-slider-rating',
         ]);
 
-        Widget::create([
+        WidgetType::create([
             'name' => 'Promo Coupon Page',
             'canonical' => 'promo-coupon-page',
             'description' => 'Offers a coupon to the visitor, after entering the email. Will have the social links from the questionnaire in the bottom',
