@@ -300,11 +300,15 @@ return new class extends Migration
 
             $table->foreignId('locale_id')
                   ->nullable()
-                  ->comment('The default locale for this questionnaire');
+                  ->comment('The default locale for this questionnaire, in case a language is not selected');
 
-            $table->boolean('welcomes_visitors')
+            $table->boolean('has_splash_screen')
                   ->default(false)
-                  ->comment('If it shows a first page to welcome the visitor, no questions asked here');
+                  ->comment('A 5 seconds splash screen with the logo/name of the questionnaire');
+
+            $table->boolean('has_select_language_screen')
+                  ->default(false)
+                  ->comment('A default select language page will appear, prior to the survey');
 
             $table->string('color_primary')
                   ->comment('Primary color, normally used for the background colors, widgets background buttons, etc');
