@@ -16,7 +16,7 @@ use QRFeedz\Cube\Models\Questionnaire;
 use QRFeedz\Cube\Models\QuestionWidget;
 use QRFeedz\Cube\Models\QuestionWidgetConditional;
 use QRFeedz\Cube\Models\User;
-use QRFeedz\Cube\Models\Widget;
+use QRFeedz\Cube\Models\WidgetType;
 
 class CrocRock extends Seeder
 {
@@ -223,7 +223,7 @@ class CrocRock extends Seeder
          * textarea = will slide down a textarea to request more details.
          * subtext = will show a message below the widget.
          */
-        $widget = Widget::firstWhere('canonical', 'stars-rating');
+        $widget = WidgetType::firstWhere('canonical', 'stars-rating');
 
         // We need to save the data using the Pivot model, and not the N-N.
         $questionWidget = new QuestionWidget();
@@ -282,7 +282,7 @@ class CrocRock extends Seeder
         $question->page()->associate($pagePromo);
         $question->save();
 
-        $widget = Widget::firstWhere('canonical', 'promo-coupon-page');
+        $widget = WidgetType::firstWhere('canonical', 'promo-coupon-page');
 
         $questionWidget = new QuestionWidget();
         $questionWidget->question_id = $question->id;

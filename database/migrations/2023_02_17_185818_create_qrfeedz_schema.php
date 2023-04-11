@@ -542,8 +542,12 @@ return new class extends Migration
          * page can be a full survey form with questions, can be a page
          * like "welcome" with links to select the questionnaire
          * language, or can be a page for promo info, etc.
+         *
+         * Pages can also have a group name. In this case they will be rendered
+         * together, and in a sub-section of the main global sequence. They
+         * are used, for sub-surveys (like oneliner groups).
          */
-        Schema::create('pages', function (Blueprint $table) {
+        Schema::create('page_type_questionnaire', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('page_type_id')
@@ -553,10 +557,11 @@ return new class extends Migration
                   ->comment('Related questionnaire id');
 
             $table->unsignedInteger('index')
-                  ->comment('The page index in the respective related questionnaire');
+                  ->comment('The page index in the respective related questionnaire, or to the group name');
 
-            $table->string('footer_link')
-                  ->comment('There are 3 footer link types: home, survey and promo');
+            $table->string('group')
+                  ->nullable()
+                  ->comment('A group joins different pages to create sub-questionnaire pages, e.g.: when using group oneliners');
 
             $table->string('view_component_override')
                   ->nullable()
@@ -635,7 +640,7 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('question_id');
-            $table->foreignId('widget_id');
+            $table->foreignId('widget_type_id');
 
             $table->unsignedInteger('widget_index')
                   ->default(1)

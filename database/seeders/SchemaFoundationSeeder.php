@@ -9,7 +9,7 @@ use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\PageType;
 use QRFeedz\Cube\Models\User;
-use QRFeedz\Cube\Models\Widget;
+use QRFeedz\Cube\Models\WidgetType;
 
 class SchemaFoundationSeeder extends Seeder
 {
