@@ -359,57 +359,70 @@ class SchemaFoundationSeeder extends Seeder
         ]);
 
         /**
-         * Pages type creation.
-         * 'welcome-flags'  => A "welcome" brand page, with flads to select
-         *                     the language that the questionnaire should be
-         *                     placed on.
+         * Pages creation.
          *
-         * 'welcome-blank'  => Just a welcome page, no flags, and a link to
-         *                     start the questionnaire.
+         * 'splash-page' - Blank splash page with logo + questionnaire title.
+         * 'locale-select' - Flags, oneliner for locale selection.
+         * 'survey' - Default survey form (header, content, voice recorder).
+         * 'promo'  - Default promo page (header, message title, email field).
+         * 'social' - Social sharing page, normally the last page.
          *
-         * 'select-type'    => A page with 3 links to give feedback, to
-         *                     make a complain, or to suggest an improvement.
+         * There are the following sliding contexts:
+         * 'global' - The slide/paging will happen at the highest level.
+         * 'survey' - The slide/paging will happen at the survey pages.
          *
-         * 'form-standard'  => 'Standard' survey page placeholder.
+         * The transitions are calculated by the UI framework, but mostly
+         * between globals are full page transitions, and between surveys
+         * are component transitions.
+         * A transition can also reload the page. Like for instance when the
+         * visitor selects a new language. The page is reloaded to a specific
+         * page rendering (not to the beginning of the 1st page).
          *
-         * 'promo-standard' => Promotional page that offers a promo item to
-         *                     the visitor. Also, with a input type to add
-         *                     the visitor email, plus some social sharing
-         *                     items.
+         * A page reload is used as:
+         * <url>.ai/<uuid>?p=<uuid>&locale=??
+         *
+         * This will reload a survey directly to the uuid page, from the
+         * qrcode uuid. They both need to math in the same data model.
+         * The locale querystring will render the survey with that locale.
          */
         PageType::create([
-            'name' => 'Welcome page with locale flags',
-            'canonical' => 'welcome-flags',
-            'description' => 'Welcome page, with available locale flags',
-            'view_component_namespace' => 'qrfeedz::welcome-flags',
+            'name' => 'Splash page - 5 seconds',
+            'canonical' => 'splash-page-5-secs',
+            'sliding_context' => 'global',
+            'description' => 'A splash full page, with logo or questionnaire title, lasts 5 seconds',
+            'view_component_namespace' => 'qrfeedz::splash-5-secs',
         ]);
 
         PageType::create([
-            'name' => 'Welcome page, blank',
-            'canonical' => 'welcome-blank',
-            'description' => 'Welcome page, blank, just a button to start the questionnaire',
-            'view_component_namespace' => 'qrfeedz::pages.welcome.blank',
+            'name' => 'Local selection page',
+            'canonical' => 'locale-select-page',
+            'sliding_context' => 'global',
+            'description' => 'A list of locales that are available for the questionnaire',
+            'view_component_namespace' => 'qrfeedz::locale-select',
         ]);
 
         PageType::create([
-            'name' => 'Welcome page with selection types',
-            'canonical' => 'welcome-select',
-            'description' => 'Page with 3 buttons (improvement, survey, complain) + voice recording',
-            'view_component_namespace' => 'qrfeedz::pages.welcome.select',
+            'name' => 'Survey page (default)',
+            'canonical' => 'survey-page-default',
+            'sliding_context' => 'survey',
+            'description' => 'Survey structure page - default questions structure',
+            'view_component_namespace' => 'qrfeedz::survey-page-default',
         ]);
 
         PageType::create([
-            'name' => 'Default questionnaire form structure',
-            'canonical' => 'form-default',
-            'description' => 'Content page placeholder for a standard questionnaire form',
-            'view_component_namespace' => 'qrfeedz::pages.form.default',
+            'name' => 'Promo page',
+            'canonical' => 'promo-page-default',
+            'sliding_context' => 'global',
+            'description' => 'Promotional default page',
+            'view_component_namespace' => 'qrfeedz::promo-page-default',
         ]);
 
         PageType::create([
-            'name' => 'Default Promotional page',
-            'canonical' => 'promo-default',
-            'description' => 'Promo page, text, promotion and input type for email',
-            'view_component_namespace' => 'qrfeedz::pages.promo.default',
+            'name' => 'Social sharing page',
+            'canonical' => 'social-page-default',
+            'sliding_context' => 'global',
+            'description' => 'Social sharing default page',
+            'view_component_namespace' => 'qrfeedz::social-page-default',
         ]);
 
         /**

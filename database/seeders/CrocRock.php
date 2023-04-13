@@ -9,7 +9,6 @@ use QRFeedz\Cube\Models\Client;
 use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\OpenAIPrompt;
-use QRFeedz\Cube\Models\Page;
 use QRFeedz\Cube\Models\PageType;
 use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\Questionnaire;
@@ -57,7 +56,6 @@ class CrocRock extends Seeder
             'postal_code' => '54000',
             'locality' => 'Nancy',
             'country_id' => Country::firstWhere('name', 'France')->id,
-            'affiliate_id' => Affiliate::firstWhere('name', 'Karine Esnault')->id,
             'locale_id' => Locale::firstWhere('canonical', 'fr')->id,
         ]);
 
@@ -128,7 +126,6 @@ class CrocRock extends Seeder
             'name' => 'CrocRock 2024',
             'title' => 'Restaurant CrocRock',
             'starts_at' => now(),
-            //'color_primary' => 'F5CC7D'
         ]);
 
         $questionnaire->client()->associate($client);
@@ -153,34 +150,35 @@ class CrocRock extends Seeder
         $prompt->save();
 
         /**
-         * Let's create the pages sequence.
-         * 1st page - Welcome, blank.
-         * 2nd page - Survey page.
-         * 3rd page - Info page.
+         * Lets create the pages:
+         *
+         * 1. Splash screen.
+         * 2. Select language.
+         * 3. 1 question - Overall rating.
+         * 4. 1 question - Anything specific to improve?
+         * 5. promo page.
+         *
+         * Pages are added to the via the PageTypeQuestionnaire pivot table.
          */
-        $pageWelcome = Page::make([
-            'footer_link' => 'home',
-        ]);
+        $splashPage = $questionnaire->pageTypes()->attach(
+            PageType::firstWhere('canonical', 'splash-page-5-secs')->id
+        );
 
-        $pageWelcome->questionnaire()->associate($questionnaire);
-        $pageWelcome->pageType()->associate(PageType::firstWhere('canonical', 'welcome-select'));
-        $pageWelcome->save();
+        $localePage = $questionnaire->pageTypes()->attach(
+            PageType::firstWhere('canonical', 'locale-select-page')->id
+        );
 
-        $pageSurvey = Page::make([
-            'footer_link' => 'survey',
-        ]);
+        $surveyPage1 = $questionnaire->pageTypes()->attach(
+            PageType::firstWhere('canonical', 'survey-page-default')->id
+        );
 
-        $pageSurvey->questionnaire()->associate($questionnaire);
-        $pageSurvey->pageType()->associate(PageType::firstWhere('canonical', 'form-default'));
-        $pageSurvey->save();
+        $surveyPage2 = $questionnaire->pageTypes()->attach(
+            PageType::firstWhere('canonical', 'survey-page-default')->id
+        );
 
-        $pagePromo = Page::make([
-            'footer_link' => 'promo',
-        ]);
-
-        $pagePromo->questionnaire()->associate($questionnaire);
-        $pagePromo->pageType()->associate(PageType::firstWhere('canonical', 'promo-default'));
-        $pagePromo->save();
+        $promo = $questionnaire->pageTypes()->attach(
+            PageType::firstWhere('canonical', 'promo-page-default')->id
+        );
 
         /**
          * Next step is to assign widgets to the questionnaire.

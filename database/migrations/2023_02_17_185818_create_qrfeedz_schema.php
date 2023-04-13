@@ -131,6 +131,10 @@ return new class extends Migration
         Schema::create('affiliates', function (Blueprint $table) {
             $table->id();
 
+            $table->foreignId('client_id')
+                  ->nullable()
+                  ->comment('Related client');
+
             $table->string('name')
                   ->comment('Affiliate name');
 
@@ -181,10 +185,6 @@ return new class extends Migration
             $table->string('locality')
                   ->nullable()
                   ->comment('The client locality');
-
-            $table->foreignId('affiliate_id')
-                  ->nullable()
-                  ->comment('Related affiliate');
 
             $table->foreignId('country_id')
                   ->comment('Related  country');
@@ -534,6 +534,10 @@ return new class extends Migration
             $table->text('description')
                   ->nullable();
 
+            $table->string('sliding_context')
+                  ->default('survey')
+                  ->comment('survey = slides on the sub-page level, global = slides on the master page level');
+
             $table->string('view_component_namespace');
 
             $table->timestamps();
@@ -587,8 +591,8 @@ return new class extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('page_id')
-                  ->comment('Related page');
+            $table->foreignId('page_type_questionnaire_id')
+                  ->comment('Related questionnaire page type model');
 
             $table->boolean('is_analytical')
                   ->default(true)
@@ -640,7 +644,7 @@ return new class extends Migration
          * that has widgets will then have caption locales for the
          * question and related widgets.
          */
-        Schema::create('question_widget', function (Blueprint $table) {
+        Schema::create('question_widget_type', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('question_id');
