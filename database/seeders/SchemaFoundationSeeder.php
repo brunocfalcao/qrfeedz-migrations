@@ -329,6 +329,24 @@ class SchemaFoundationSeeder extends Seeder
             'description' => 'Standard questionnaire role, for view access only',
         ]);
 
+        Authorization::create([
+            'canonical' => 'view',
+            'name' => 'View generic access',
+            'description' => 'Access to view a specific asset. Cannot update or delete it',
+        ]);
+
+        Authorization::create([
+            'canonical' => 'update',
+            'name' => 'Update generic access',
+            'description' => 'Access to update a specific asset. Cannot delete it',
+        ]);
+
+        Authorization::create([
+            'canonical' => 'delete',
+            'name' => 'Delete generic access',
+            'description' => 'Access to delete a specific asset. Normally for admins',
+        ]);
+
         /**
          * Locales creation.
          * en, pt, de, fr, it
