@@ -592,6 +592,7 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('page_type_questionnaire_id')
+                  ->nullable()
                   ->comment('Related questionnaire page type model');
 
             $table->boolean('is_analytical')

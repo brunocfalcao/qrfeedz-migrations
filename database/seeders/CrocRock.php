@@ -160,39 +160,49 @@ class CrocRock extends Seeder
          *
          * Pages are added to the via the PageTypeQuestionnaire pivot table.
          */
-        $splashPage = $questionnaire->pageTypes()->attach(
-            PageType::firstWhere('canonical', 'splash-page-5-secs')->id
+
+        $pivot = $questionnaire->pageTypes()->newPivot([
+            'questionnaire_id' => $questionnaire->id,
+            'page_type_id' => PageType::firstWhere('canonical', 'splash-page-5-secs')->id
+        ]);
+
+        $pivot->save();
+
+        dd('---');
+
+
+        $questionnaire->pageTypes()->attach(
         );
 
-        $localePage = $questionnaire->pageTypes()->attach(
+        $questionnaire->pageTypes()->attach(
             PageType::firstWhere('canonical', 'locale-select-page')->id
         );
 
-        $surveyPage1 = $questionnaire->pageTypes()->attach(
+        $questionnaire->pageTypes()->attach(
             PageType::firstWhere('canonical', 'survey-page-default')->id
         );
 
-        $surveyPage2 = $questionnaire->pageTypes()->attach(
+        $questionnaire->pageTypes()->attach(
             PageType::firstWhere('canonical', 'survey-page-default')->id
         );
 
-        $promo = $questionnaire->pageTypes()->attach(
+        $questionnaire->pageTypes()->attach(
             PageType::firstWhere('canonical', 'promo-page-default')->id
         );
 
         /**
-         * Next step is to assign widgets to the questionnaire.
-         * When we scan the qr code we should see:
-         * A page with a unique stars rating, with the conditionals.
-         * Then a page telling about a promotion.
-         * Then a page about social links sharing.
+         * Lets create que questions. There are 2 questions, one on each
+         * page type questionnaire instance. Our approach is to have
+         * one question per page.
          */
         $question = Question::make([
             'is_required' => true,
         ]);
 
-        $question->page()->associate($pageSurvey);
+        $question->pageTypeQuestionnaire()->associate($surveyPage1);
         $question->save();
+
+        dd('good.');
 
         /**
          * Lets create the locale captions.
