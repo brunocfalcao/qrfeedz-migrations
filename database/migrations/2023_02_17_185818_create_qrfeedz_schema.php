@@ -456,7 +456,7 @@ return new class extends Migration
         Schema::create('localables', function (Blueprint $table) {
             $table->id();
 
-            $table->morphs('model');
+            $table->morphs('localable');
             $table->foreignId('locale_id');
 
             $table->string('caption')

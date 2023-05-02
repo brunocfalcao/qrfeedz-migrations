@@ -107,14 +107,11 @@ class CrocRock extends Seeder
                      );
 
         /**
-         * Time to create the questionnaire. This will be a simple questionnaire
-         * with just one question: How do you rate us?. It will have 3 main
-         * locales: FR, EN, PT. In case the rating is <2 or =5 a textarea
-         * should slide down to ask for more information (optional).
+         * Time to create the questionnaire.
          *
-         * 1 questionnaire, 3 locales
-         * 1 widget - stars rating + textarea conditional
-         * 2 conditionals ( <=2 and =5 ).
+         * 2 survey pages, with one question each:
+         * 1 question - Overall rating.
+         * 1 question - Anything specific to improve?
          *
          * After there will be a promo message (written in the 3 locales) and
          * a final page for the social sharing links.
@@ -161,34 +158,120 @@ class CrocRock extends Seeder
          * Pages are added to the via the PageTypeQuestionnaire pivot table.
          */
 
-        $pivot = $questionnaire->pageTypes()->newPivot([
-            'questionnaire_id' => $questionnaire->id,
-            'page_type_id' => PageType::firstWhere('canonical', 'splash-page-5-secs')->id
-        ]);
+        $pageTypeIds = [
+            PageType::firstWhere('canonical', 'splash-page-5-secs')->id,
+            PageType::firstWhere('canonical', 'locale-select-page')->id,
+            PageType::firstWhere('canonical', 'survey-page-default')->id,
+            PageType::firstWhere('canonical', 'survey-page-default')->id,
+            PageType::firstWhere('canonical', 'promo-page-default')->id
+        ];
 
-        $pivot->save();
+        foreach ($pageTypeIds as $pageTypeId) {
+            $pageType = $questionnaire->pageTypes()->newPivot([
+                'questionnaire_id' => $questionnaire->id,
+                'page_type_id' => $pageTypeId
+            ]);
+
+            $pageType->save();
+        }
+
+        /**
+         * Lets create the questions associated with each survey page.
+         * Each question will have a localable in each of the available
+         * languages. And will then have a widget(s) collection if needed.
+         *
+         * On this case, we want to create 1 question per survey page:
+         *
+         * 1st page:
+         * - Overall, how do you rate your experience with us?
+         *
+         * 2nd page:
+         * - Anything to let us know to help us improve?
+         *
+         */
+
+        // Obtain the page type questionnaire instances (ordered by index).
+        $pageTypes = $questionnaire->pageTypes;
+
+        /**
+         * The first 2 pages they don't need any work.
+         * The next 2 pages they need to have questions, one question per page.
+         * The last promo page doesn't need to have anything.
+         */
+        foreach ($pageTypes as $pageType) {
+            $pivot = $pageType->pivot;
+
+            if ($pageType->canonical == 'survey-page-default' && $pivot->index == 3) {
+                /**
+                 * Add the overall question stars rating.
+                 * - Question
+                 * - Locales
+                 * - Widgets
+                 * - Conditionals
+                 */
+
+                // Add question.
+                $question = Question::create([
+                    'page_type_questionnaire_id' => $pageType->pivot->id,
+                    'is_analytical' => true,
+                    'is_used_for_personal_data' => false,
+                    'is_single_value' => true,
+                    'is_required' => true
+                ]);
+
+                // Add locales.
+                Locale::firstWhere('canonical', 'en')
+                      ->questions()
+                      ->attach(
+                          $question->id,
+                          ['caption' => 'How do you rate us, in overall?']
+                      );
+
+                Locale::firstWhere('canonical', 'fr')
+                      ->questions()
+                      ->attach(
+                          $question->id,
+                          ['caption' => 'Comment nous évaluez-vous, globalement ?']
+                      );
+
+                Locale::firstWhere('canonical', 'de')
+                      ->questions()
+                      ->attach(
+                          $question->id,
+                          ['caption' => 'Wie bewerten Sie uns insgesamt?']
+                      );
+
+                // Add widget.
+                $question->widgetTypes()
+                         ->attach(
+                             WidgetType::firstWhere('canonical', 'stars-rating')->id
+                         );
+
+                // Add widget conditional.
+
+
+                /*
+                Authorization::firstWhere('canonical', 'affiliate')
+                     ->clients()
+                     ->attach(
+                         $client->id,
+                         ['user_id' => $affiliateUser->id] // Karine User
+                     );
+                */
+
+
+
+
+
+                dd($question);
+            }
+
+            if ($pageType->canonical == 'survey-page-default' && $pivot->index == 4) {
+                dd('4');
+            }
+        };
 
         dd('---');
-
-
-        $questionnaire->pageTypes()->attach(
-        );
-
-        $questionnaire->pageTypes()->attach(
-            PageType::firstWhere('canonical', 'locale-select-page')->id
-        );
-
-        $questionnaire->pageTypes()->attach(
-            PageType::firstWhere('canonical', 'survey-page-default')->id
-        );
-
-        $questionnaire->pageTypes()->attach(
-            PageType::firstWhere('canonical', 'survey-page-default')->id
-        );
-
-        $questionnaire->pageTypes()->attach(
-            PageType::firstWhere('canonical', 'promo-page-default')->id
-        );
 
         /**
          * Lets create que questions. There are 2 questions, one on each
