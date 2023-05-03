@@ -11,9 +11,10 @@ use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\OpenAIPrompt;
 use QRFeedz\Cube\Models\PageType;
 use QRFeedz\Cube\Models\Question;
-use QRFeedz\Cube\Models\Questionnaire;
 use QRFeedz\Cube\Models\QuestionWidget;
-use QRFeedz\Cube\Models\QuestionWidgetConditional;
+use QRFeedz\Cube\Models\QuestionWidgetTypeConditional;
+use QRFeedz\Cube\Models\QuestionWidgetType;
+use QRFeedz\Cube\Models\Questionnaire;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\WidgetType;
 
@@ -241,198 +242,79 @@ class CrocRock extends Seeder
                           ['caption' => 'Wie bewerten Sie uns insgesamt?']
                       );
 
-                // Add widget.
-                $question->widgetTypes()
-                         ->attach(
-                             WidgetType::firstWhere('canonical', 'stars-rating')->id
-                         );
+                /**
+                 * Add the widget type to the question, by then creating a
+                 * QuestionWidgetType model instance (pivot).
+                 */
+                $questionWidgetType = new QuestionWidgetType();
+                $questionWidgetType->question_id = $question->id;
+                $questionWidgetType->widget_type_id = WidgetType::firstWhere('canonical', 'stars-rating')->id;
+                $questionWidgetType->save();
 
-                // Add widget conditional.
+                // Now, lets create the widget type conditionals.
+                $questionWidgetTypeConditional = QuestionWidgetTypeConditional::create([
+                    'question_widget_type_id' => $questionWidgetType->id,
+                    'when' => ['value' => '<=2'],
+                    'then' => ['action' => 'textarea.open']
+                ]);
 
-
-                /*
-                Authorization::firstWhere('canonical', 'affiliate')
-                     ->clients()
-                     ->attach(
-                         $client->id,
-                         ['user_id' => $affiliateUser->id] // Karine User
-                     );
-                */
-
-
-
-
-
-                dd($question);
+                $questionWidgetTypeConditional = QuestionWidgetTypeConditional::create([
+                    'question_widget_type_id' => $questionWidgetType->id,
+                    'when' => ['value' => '==5'],
+                    'then' => ['action' => 'textarea.open']
+                ]);
             }
 
             if ($pageType->canonical == 'survey-page-default' && $pivot->index == 4) {
-                dd('4');
+                /**
+                 * Add anything else to let us know.
+                 * - Question
+                 * - Locales
+                 * - Widgets
+                 * - Conditionals
+                 */
+                // Add question.
+                $question = Question::create([
+                    'page_type_questionnaire_id' => $pageType->pivot->id,
+                    'is_analytical' => true,
+                    'is_used_for_personal_data' => false,
+                    'is_single_value' => true,
+                    'is_required' => true
+                ]);
+
+                // Add locales.
+                Locale::firstWhere('canonical', 'en')
+                      ->questions()
+                      ->attach(
+                          $question->id,
+                          ['caption' => 'Anything else to let us know?']
+                      );
+
+                Locale::firstWhere('canonical', 'fr')
+                      ->questions()
+                      ->attach(
+                          $question->id,
+                          ['caption' => 'Y a-t-il autre chose que vous souhaitez nous communiquer ?']
+                      );
+
+                Locale::firstWhere('canonical', 'de')
+                      ->questions()
+                      ->attach(
+                          $question->id,
+                          ['caption' => 'Gibt es sonst noch etwas, das Sie uns mitteilen möchten?']
+                      );
+
+                /**
+                 * Add the widget type to the question, by then creating a
+                 * QuestionWidgetType model instance (pivot).
+                 */
+                $questionWidgetType = new QuestionWidgetType();
+                $questionWidgetType->question_id = $question->id;
+                $questionWidgetType->widget_type_id = WidgetType::firstWhere('canonical', 'textarea')->id;
+                $questionWidgetType->save();
             }
         };
 
-        dd('---');
-
-        /**
-         * Lets create que questions. There are 2 questions, one on each
-         * page type questionnaire instance. Our approach is to have
-         * one question per page.
-         */
-        $question = Question::make([
-            'is_required' => true,
-        ]);
-
-        $question->pageTypeQuestionnaire()->associate($surveyPage1);
-        $question->save();
-
-        dd('good.');
-
-        /**
-         * Lets create the locale captions.
-         * We will have 2 languages: French and English.
-         */
-        $localeEN = Locale::firstWhere('canonical', 'en');
-        $localeFR = Locale::firstWhere('canonical', 'fr');
-
-        $question->captions()->attach($localeEN->id, ['caption' => 'How was your meal?']);
-        $question->captions()->attach($localeFR->id, ['caption' => 'Comme avez vous passez?']);
-
-        /**
-         * Next is to add a stars rating widget to the question, and then
-         * attach the respective caption locales to the widget instance.
-         *
-         * Remember that you have a QuestionsWidget model that will ease the
-         * life of understanding what widgets belong to what question.
-         *
-         * We also add 2 conditionals on the widget:
-         * <=2 or =5 opens textarea.
-         *
-         * The textarea is not a widget, but a feature from almost all the
-         * widgets that accept ratings in a certain way.
-         *
-         * Conditionals exist in certain options:
-         * textarea = will slide down a textarea to request more details.
-         * subtext = will show a message below the widget.
-         */
-        $widget = WidgetType::firstWhere('canonical', 'stars-rating');
-
-        // We need to save the data using the Pivot model, and not the N-N.
-        $questionWidget = new QuestionWidget();
-        $questionWidget->question_id = $question->id;
-        $questionWidget->widget_id = $widget->id;
-
-        $questionWidget->save();
-
-        /**
-         * This question widget doesn't have a caption "per se", but the
-         * conditionals have, specially the subtext conditional. Lets add
-         * a new entry in the question_widget_conditionals on it.
-         *
-         * Also, add the textarea slide down.
-         */
-        QuestionWidgetConditional::make([
-            'when' => 'value <=2 || value > 2',
-            'then' => ['textarea-slidedown'],
-        ])->questionWidget()
-          ->associate($questionWidget)
-          ->save();
-
-        $subtext = QuestionWidgetConditional::make([
-            'when' => 'value == 3',
-            'then' => ['subtext-appear'],
-        ]);
-
-        $subtext->questionWidget()
-                ->associate($questionWidget);
-        $subtext->save();
-
-        // The subtext needs to have respective locales (EN and FR).
-        $subtext->captions()
-                ->attach(
-                    $localeEN->id,
-                    ['caption' => 'Right in the middle!']
-                );
-
-        $subtext->captions()
-                ->attach(
-                    $localeFR->id,
-                    ['caption' => 'Au millieux! Parfait!']
-                );
-
-        /**
-         * Lets add a question, without caption, that just serves as a
-         * placeholder for the promo-page.
-         */
-        $question = Question::make([
-            'is_required' => false,
-            'is_analytical' => false,
-            'is_used_for_personal_data' => true, //because we retrieve emails
-            'is_single_value' => true,
-        ]);
-
-        $question->page()->associate($pagePromo);
-        $question->save();
-
-        $widget = WidgetType::firstWhere('canonical', 'promo-coupon-page');
-
-        $questionWidget = new QuestionWidget();
-        $questionWidget->question_id = $question->id;
-        $questionWidget->widget_id = $widget->id;
-
-        $questionWidget->save();
-
-        /**
-         * Now it's time to add the locales for the promotion.
-         * For the promo widget, the locales would need locale placeholders
-         * and also the placeholder codes.
-         * - promot-title ("Your coupon")
-         * - promo-text ("10% off on your next visit")
-         * - promo-subtext "Just bring the QR our paper you received by email"
-         * - promo-email "Please enter your email"
-         * - The input text is already part of the widget.
-         * - Special button that sends an email with the promo code generation.
-         * - The promo code generation is attached to the promotions that the
-         *   client is creating for the questionnaires. The promotion is
-         *   attached to a questionnaire, and can have an end date.
-         */
-        $questionWidget->captions()->attach(
-            $localeEN->id,
-            ['caption' => 'Get your promotion code!', 'placeholder' => 'promo-title']
-        );
-
-        $questionWidget->captions()->attach(
-            $localeFR->id,
-            ['caption' => 'Trouvez votre code promo!', 'placeholder' => 'promo-title']
-        );
-
-        $questionWidget->captions()->attach(
-            $localeEN->id,
-            ['caption' => '25% discount on your next visit', 'placeholder' => 'promo-text']
-        );
-
-        $questionWidget->captions()->attach(
-            $localeFR->id,
-            ['caption' => '25% rabais dans votre prochaine visite', 'placeholder' => 'promo-text']
-        );
-
-        $questionWidget->captions()->attach(
-            $localeEN->id,
-            ['caption' => 'Bring us the received promo code next time', 'placeholder' => 'promo-subtext']
-        );
-
-        $questionWidget->captions()->attach(
-            $localeFR->id,
-            ['caption' => 'Vieullez nous trouvez votre code la prochaine fois', 'placeholder' => 'promo-subtext']
-        );
-
-        $questionWidget->captions()->attach(
-            $localeEN->id,
-            ['caption' => 'Enter your email to receive the promotion', 'placeholder' => 'promo-email']
-        );
-
-        $questionWidget->captions()->attach(
-            $localeFR->id,
-            ['caption' => 'S il vous plait mettez votre email ici', 'placeholder' => 'promo-email']
-        );
+        dd('roger that!');
     }
 }

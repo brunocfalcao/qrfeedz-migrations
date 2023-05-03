@@ -671,10 +671,10 @@ return new class extends Migration
          * If a stars rating <=2 then it slides down a textarea.
          * If an emoji rating = 3 then it shows sub-text "Right in the middle!".
          */
-        Schema::create('question_widget_conditionals', function (Blueprint $table) {
+        Schema::create('question_widget_type_conditionals', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('question_widget_id');
+            $table->foreignId('question_widget_type_id');
 
             /**
              * This is a javascript eval expression like:

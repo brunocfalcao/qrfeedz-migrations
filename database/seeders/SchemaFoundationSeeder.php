@@ -461,7 +461,7 @@ class SchemaFoundationSeeder extends Seeder
             'name' => 'Stars rating',
             'canonical' => 'stars-rating',
             'description' => 'A stars rating with stars. Visitor touches a star and it selects the right value of it',
-            'view_component_namespace' => 'emoji-faces-rating',
+            'view_component_namespace' => 'stars-rating',
         ]);
 
         WidgetType::create([
@@ -472,12 +472,10 @@ class SchemaFoundationSeeder extends Seeder
         ]);
 
         WidgetType::create([
-            'name' => 'Promo Coupon Page',
-            'canonical' => 'promo-coupon-page',
-            'description' => 'Offers a coupon to the visitor, after entering the email. Will have the social links from the questionnaire in the bottom',
-            'view_component_namespace' => 'promo-coupon-page',
-            'is_countable' => false,
-            'is_full_page' => true,
+            'name' => 'Textarea',
+            'canonical' => 'textarea',
+            'description' => 'An absolute standard textarea to store feedback text',
+            'view_component_namespace' => 'textarea',
         ]);
     }
 }
