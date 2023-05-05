@@ -315,6 +315,15 @@ class CrocRock extends Seeder
             }
         };
 
-        dd('roger that!');
+        /**
+         * Lets also add categories, groups and tags, to test the questionnaire.
+         * Category: Restaurant
+         * Tag:      Nancy (location)
+         * Group:    Pioneer
+         */
+        Tag::create([
+            'name' => 'Nancy',
+            'description' => 'Nancy location'
+        ]);
     }
 }

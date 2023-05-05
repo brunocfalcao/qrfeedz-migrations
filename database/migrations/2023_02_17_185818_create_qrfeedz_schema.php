@@ -135,6 +135,14 @@ return new class extends Migration
                   ->nullable()
                   ->comment('Related client');
 
+
+            $table->foreignId('user_id')
+                  ->nullable()
+                  ->comment('Related user id');
+
+            $table->foreignId('country_id')
+                  ->comment('Affiliate country');
+
             $table->string('name')
                   ->comment('Affiliate name');
 
@@ -150,13 +158,6 @@ return new class extends Migration
                   ->nullable()
                   ->comment('The affiliate locality');
 
-            $table->foreignId('user_id')
-                  ->nullable()
-                  ->comment('Related user id');
-
-            $table->foreignId('country_id')
-                  ->comment('Affiliate country');
-
             $table->timestamps();
             $table->softDeletes();
         });
@@ -170,6 +171,12 @@ return new class extends Migration
          */
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('country_id')
+                  ->comment('Related  country');
+
+            $table->foreignId('locale_id')
+                  ->comment('Related default locale');
 
             $table->string('name')
                   ->comment('The client name');
@@ -185,12 +192,6 @@ return new class extends Migration
             $table->string('locality')
                   ->nullable()
                   ->comment('The client locality');
-
-            $table->foreignId('country_id')
-                  ->comment('Related  country');
-
-            $table->foreignId('locale_id')
-                  ->comment('Related default locale');
 
             $table->string('vat_number')
                   ->nullable()
@@ -245,19 +246,19 @@ return new class extends Migration
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
 
+            $table->foreignId('client_id')
+                  ->nullable();
+
             $table->string('name')
-            ->comment('The group name, can be a specific location or a restaurant/hotel, etc');
+                  ->comment('The group name, can be a specific location or a restaurant/hotel, etc');
 
             $table->text('description')
-            ->nullable()
-            ->comment('If necessary can have a bit more description context to understand what this group is');
+                  ->nullable()
+                  ->comment('If necessary can have a bit more description context to understand what this group is');
 
             $table->json('data')
-            ->nullable()
-            ->comment('Additional data that identifies this group, like a brand, a restaurant, etc');
-
-            $table->foreignId('client_id')
-            ->nullable();
+                  ->nullable()
+                  ->comment('Additional data that identifies this group, like a brand, a restaurant, etc');
 
             $table->timestamps();
             $table->softDeletes();
@@ -278,17 +279,10 @@ return new class extends Migration
         Schema::create('questionnaires', function (Blueprint $table) {
             $table->id();
 
-            $table->string('name')
+            $table->uuid()
+                  ->unique()
                   ->nullable()
-                  ->comment('Human name that the questionnaire is used for. E.g.: Terrace Summer 2021, used for the title html tag too');
-
-            $table->string('title')
-                  ->nullable()
-                  ->comment('Used for the questionnaire title, and for the title html tag');
-
-            $table->text('description')
-                  ->nullable()
-                  ->comment('In case we want to describe a specific qr code instance for whatever reason');
+                  ->comment('This will be the unique questionnaire qr code that will be scanned by a client.');
 
             $table->foreignId('client_id')
                   ->nullable()
@@ -302,13 +296,17 @@ return new class extends Migration
                   ->nullable()
                   ->comment('The default locale for this questionnaire, in case a language is not selected');
 
-            $table->boolean('has_splash_screen')
-                  ->default(false)
-                  ->comment('A 5 seconds splash screen with the logo/name of the questionnaire');
+            $table->string('name')
+                  ->nullable()
+                  ->comment('Human name that the questionnaire is used for. E.g.: Terrace Summer 2021, used for the title html tag too');
 
-            $table->boolean('has_select_language_screen')
-                  ->default(false)
-                  ->comment('A default select language page will appear, prior to the survey');
+            $table->string('title')
+                  ->nullable()
+                  ->comment('Used for the questionnaire title, and for the title html tag');
+
+            $table->text('description')
+                  ->nullable()
+                  ->comment('In case we want to describe a specific qr code instance for whatever reason');
 
             $table->string('color_primary')
                   ->comment('Primary color, normally used for the background colors, widgets background buttons, etc');
@@ -331,11 +329,6 @@ return new class extends Migration
             $table->dateTime('ends_at')
                   ->nullable()
                   ->comment('When will the questionnaire stop receiving data');
-
-            $table->uuid()
-                  ->unique()
-                  ->nullable()
-                  ->comment('This will be the unique questionnaire qr code that will be scanned by a client.');
 
             $table->timestamps();
             $table->softDeletes();
@@ -403,6 +396,10 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
 
+            $table->foreignId('client_id')
+                  ->nullable()
+                  ->comment('Related client');
+
             $table->string('name');
 
             $table->text('description')
@@ -419,6 +416,10 @@ return new class extends Migration
          */
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('client_id')
+                  ->nullable()
+                  ->comment('Related client');
 
             $table->string('name');
 
@@ -680,10 +681,11 @@ return new class extends Migration
              * This is a javascript eval expression like:
              * 'widget.value <=2 or widget.value ==5'.
              * The value is the widget.value.
+             * Each json entry is an OR clause.
              * Later there will be more types and options, like access
              * to other question values, widget values, etc.
              */
-            $table->string('when')
+            $table->json('when')
                   ->comment('Conditional that will trigger the condition');
 
             /**
