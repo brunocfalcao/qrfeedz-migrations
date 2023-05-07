@@ -17,11 +17,11 @@ return new class extends Migration
             $table->id();
 
             $table->string('canonical')
-                  ->unique()
-                  ->comment('Locale canonical, like pt, en, cn, etc');
+                ->unique()
+                ->comment('Locale canonical, like pt, en, cn, etc');
 
             $table->string('name')
-                  ->comment('The described locale name');
+                ->comment('The described locale name');
 
             $table->timestamps();
             $table->softDeletes();
@@ -72,14 +72,14 @@ return new class extends Migration
             $table->id();
 
             $table->string('canonical')
-                  ->comment('The authorization canonical name');
+                ->comment('The authorization canonical name');
 
             $table->string('name')
-                  ->comment('The authorization name');
+                ->comment('The authorization name');
 
             $table->text('description')
-                  ->nullable()
-                  ->comment('Details on the authorization type');
+                ->nullable()
+                ->comment('Details on the authorization type');
 
             $table->timestamps();
             $table->softDeletes();
@@ -109,10 +109,10 @@ return new class extends Migration
             $table->id();
 
             $table->string('code')
-                  ->comment('Country code');
+                ->comment('Country code');
 
             $table->string('name')
-                  ->comment('Country name');
+                ->comment('Country name');
 
             $table->timestamps();
             $table->softDeletes();
@@ -132,31 +132,30 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('client_id')
-                  ->nullable()
-                  ->comment('Related client');
-
+                ->nullable()
+                ->comment('Related client');
 
             $table->foreignId('user_id')
-                  ->nullable()
-                  ->comment('Related user id');
+                ->nullable()
+                ->comment('Related user id');
 
             $table->foreignId('country_id')
-                  ->comment('Affiliate country');
+                ->comment('Affiliate country');
 
             $table->string('name')
-                  ->comment('Affiliate name');
+                ->comment('Affiliate name');
 
             $table->text('address')
-                  ->nullable()
-                  ->comment('The affiliate address');
+                ->nullable()
+                ->comment('The affiliate address');
 
             $table->string('postal_code')
-                  ->nullable()
-                  ->comment('The affiliate postal code');
+                ->nullable()
+                ->comment('The affiliate postal code');
 
             $table->string('locality')
-                  ->nullable()
-                  ->comment('The affiliate locality');
+                ->nullable()
+                ->comment('The affiliate locality');
 
             $table->timestamps();
             $table->softDeletes();
@@ -173,29 +172,29 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('country_id')
-                  ->comment('Related  country');
+                ->comment('Related  country');
 
             $table->foreignId('locale_id')
-                  ->comment('Related default locale');
+                ->comment('Related default locale');
 
             $table->string('name')
-                  ->comment('The client name');
+                ->comment('The client name');
 
             $table->text('address')
-                  ->nullable()
-                  ->comment('The client address');
+                ->nullable()
+                ->comment('The client address');
 
             $table->string('postal_code')
-                  ->nullable()
-                  ->comment('The client postal code');
+                ->nullable()
+                ->comment('The client postal code');
 
             $table->string('locality')
-                  ->nullable()
-                  ->comment('The client locality');
+                ->nullable()
+                ->comment('The client locality');
 
             $table->string('vat_number')
-                  ->nullable()
-                  ->comment('Client fiscal number');
+                ->nullable()
+                ->comment('Client fiscal number');
 
             $table->timestamps();
             $table->softDeletes();
@@ -212,21 +211,21 @@ return new class extends Migration
          */
         Schema::table('users', function (Blueprint $table) {
             $table->foreignId('client_id')
-                  ->nullable()
-                  ->after('id');
+                ->nullable()
+                ->after('id');
 
             $table->string('name')
-                  ->nullable()
-                  ->change();
+                ->nullable()
+                ->change();
 
             $table->string('email')
-                  ->nullable()
-                  ->change();
+                ->nullable()
+                ->change();
 
             $table->boolean('is_admin')
-                  ->default(false)
-                  ->after('client_id')
-                  ->comment('Super admin role');
+                ->default(false)
+                ->after('client_id')
+                ->comment('Super admin role');
 
             $table->dropColumn('email_verified_at');
 
@@ -247,18 +246,18 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('client_id')
-                  ->nullable();
+                ->nullable();
 
             $table->string('name')
-                  ->comment('The group name, can be a specific location or a restaurant/hotel, etc');
+                ->comment('The group name, can be a specific location or a restaurant/hotel, etc');
 
             $table->text('description')
-                  ->nullable()
-                  ->comment('If necessary can have a bit more description context to understand what this group is');
+                ->nullable()
+                ->comment('If necessary can have a bit more description context to understand what this group is');
 
             $table->json('data')
-                  ->nullable()
-                  ->comment('Additional data that identifies this group, like a brand, a restaurant, etc');
+                ->nullable()
+                ->comment('Additional data that identifies this group, like a brand, a restaurant, etc');
 
             $table->timestamps();
             $table->softDeletes();
@@ -280,55 +279,55 @@ return new class extends Migration
             $table->id();
 
             $table->uuid()
-                  ->unique()
-                  ->nullable()
-                  ->comment('This will be the unique questionnaire qr code that will be scanned by a client.');
+                ->unique()
+                ->nullable()
+                ->comment('This will be the unique questionnaire qr code that will be scanned by a client.');
 
             $table->foreignId('client_id')
-                  ->nullable()
-                  ->comment('Related client');
+                ->nullable()
+                ->comment('Related client');
 
             $table->foreignId('group_id')
-                  ->nullable()
-                  ->comment('Related groups where the questionnaire will be used');
+                ->nullable()
+                ->comment('Related groups where the questionnaire will be used');
 
             $table->foreignId('locale_id')
-                  ->nullable()
-                  ->comment('The default locale for this questionnaire, in case a language is not selected');
+                ->nullable()
+                ->comment('The default locale for this questionnaire, in case a language is not selected');
 
             $table->string('name')
-                  ->nullable()
-                  ->comment('Human name that the questionnaire is used for. E.g.: Terrace Summer 2021, used for the title html tag too');
+                ->nullable()
+                ->comment('Human name that the questionnaire is used for. E.g.: Terrace Summer 2021, used for the title html tag too');
 
             $table->string('title')
-                  ->nullable()
-                  ->comment('Used for the questionnaire title, and for the title html tag');
+                ->nullable()
+                ->comment('Used for the questionnaire title, and for the title html tag');
 
             $table->text('description')
-                  ->nullable()
-                  ->comment('In case we want to describe a specific qr code instance for whatever reason');
+                ->nullable()
+                ->comment('In case we want to describe a specific qr code instance for whatever reason');
 
             $table->string('color_primary')
-                  ->comment('Primary color, normally used for the background colors, widgets background buttons, etc');
+                ->comment('Primary color, normally used for the background colors, widgets background buttons, etc');
 
             $table->string('color_secondary')
-                  ->comment('Secondary color, normally used for the actionable buttons like "start questionnaire"');
+                ->comment('Secondary color, normally used for the actionable buttons like "start questionnaire"');
 
             $table->string('file_logo')
-                  ->nullable()
-                  ->comment('Image logo, appears in the questionnaire headers, preferably SVG or PNG/transparent');
+                ->nullable()
+                ->comment('Image logo, appears in the questionnaire headers, preferably SVG or PNG/transparent');
 
             $table->boolean('is_active')
-                  ->default(true)
-                  ->comment('Overrides the active dates. In case we want to immediate inactivate the questionnaire');
+                ->default(true)
+                ->comment('Overrides the active dates. In case we want to immediate inactivate the questionnaire');
 
             $table->dateTime('starts_at')
-                  ->nullable()
-                  ->comment('When is the questionnaire active, and ready to receive data');
+                ->nullable()
+                ->comment('When is the questionnaire active, and ready to receive data');
 
             $table->dateTime('ends_at')
-                  ->nullable()
-                  ->comment('When will the questionnaire stop receiving data');
+                ->nullable()
+                ->comment('When will the questionnaire stop receiving data');
 
             $table->timestamps();
             $table->softDeletes();
@@ -366,23 +365,23 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('questionnaire_id')
-                  ->comment('Related questionnaire');
+                ->comment('Related questionnaire');
 
             $table->text('prompt_i_am_a_business_of')
-                  ->nullable()
-                  ->comment('OpenAI specific prompt text about what the questionnaire/business is about');
+                ->nullable()
+                ->comment('OpenAI specific prompt text about what the questionnaire/business is about');
 
             $table->text('prompt_I_am_paying_attention_to')
-                  ->nullable()
-                  ->comment('OpenAI specific prompt text');
+                ->nullable()
+                ->comment('OpenAI specific prompt text');
 
             $table->string('balance_type')
-                  ->default('balanced')
-                  ->comment('balanced, worst-cases, best-cases. This will be auto-generated prompt text');
+                ->default('balanced')
+                ->comment('balanced, worst-cases, best-cases. This will be auto-generated prompt text');
 
             $table->boolean('should_be_email_aware')
-                  ->default(true)
-                  ->comment('Notify if there were emails being received by visitors');
+                ->default(true)
+                ->comment('Notify if there were emails being received by visitors');
 
             $table->timestamps();
             $table->softDeletes();
@@ -397,13 +396,13 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('client_id')
-                  ->nullable()
-                  ->comment('Related client');
+                ->nullable()
+                ->comment('Related client');
 
             $table->string('name');
 
             $table->text('description')
-                  ->nullable();
+                ->nullable();
 
             $table->timestamps();
             $table->softDeletes();
@@ -418,13 +417,13 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('client_id')
-                  ->nullable()
-                  ->comment('Related client');
+                ->nullable()
+                ->comment('Related client');
 
             $table->string('name');
 
             $table->text('description')
-                  ->nullable();
+                ->nullable();
 
             $table->timestamps();
             $table->softDeletes();
@@ -461,11 +460,11 @@ return new class extends Migration
             $table->foreignId('locale_id');
 
             $table->string('caption')
-                  ->comment('The sentence in the respective locale');
+                ->comment('The sentence in the respective locale');
 
             $table->string('placeholder')
-                  ->nullable()
-                  ->comment('Used in case a widget has several placeholders of text.g.: "subtext" or "promo-coupon-header"');
+                ->nullable()
+                ->comment('Used in case a widget has several placeholders of text.g.: "subtext" or "promo-coupon-header"');
 
             $table->timestamps();
             $table->softDeletes();
@@ -483,25 +482,25 @@ return new class extends Migration
             $table->id();
 
             $table->string('name')
-                  ->comment('E.g: Textbox, 1 to N, etc');
+                ->comment('E.g: Textbox, 1 to N, etc');
 
             $table->text('description')
-                  ->nullable()
-                  ->comment('Extended description, validation options, integration details, etc');
+                ->nullable()
+                ->comment('Extended description, validation options, integration details, etc');
 
             $table->string('canonical')
-                  ->comment('Widget canonical, easier to find when relating with questions');
+                ->comment('Widget canonical, easier to find when relating with questions');
 
             $table->boolean('is_countable')
-                  ->default(true)
-                  ->comment('If it is countable, then it will be part of the questionnaire count (pages). If not then it is used for the last pages like direct message or social sharing');
+                ->default(true)
+                ->comment('If it is countable, then it will be part of the questionnaire count (pages). If not then it is used for the last pages like direct message or social sharing');
 
             $table->boolean('is_full_page')
-                  ->default(false)
-                  ->comment('Full page widget means the widget will not have other widgets with it and occupies a full page, like direct visitor messaging or social sharing full screen pages. Also a full page widget will not have the placeholder for the question');
+                ->default(false)
+                ->comment('Full page widget means the widget will not have other widgets with it and occupies a full page, like direct visitor messaging or social sharing full screen pages. Also a full page widget will not have the placeholder for the question');
 
             $table->string('view_component_namespace')
-                  ->comment('The view component namespace and path. All widgets are rendered via blade components');
+                ->comment('The view component namespace and path. All widgets are rendered via blade components');
 
             $table->timestamps();
             $table->softDeletes();
@@ -533,11 +532,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('canonical');
             $table->text('description')
-                  ->nullable();
+                ->nullable();
 
             $table->string('sliding_context')
-                  ->default('survey')
-                  ->comment('survey = slides on the sub-page level, global = slides on the master page level');
+                ->default('survey')
+                ->comment('survey = slides on the sub-page level, global = slides on the master page level');
 
             $table->string('view_component_namespace');
 
@@ -560,21 +559,21 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('page_type_id')
-                  ->comment('Related page type, to undertand what strucutre should be loaded. If null, then a view component override is needed');
+                ->comment('Related page type, to undertand what strucutre should be loaded. If null, then a view component override is needed');
 
             $table->foreignId('questionnaire_id')
-                  ->comment('Related questionnaire id');
+                ->comment('Related questionnaire id');
 
             $table->unsignedInteger('index')
-                  ->comment('The page index in the respective related questionnaire, or to the group name');
+                ->comment('The page index in the respective related questionnaire, or to the group name');
 
             $table->string('group')
-                  ->nullable()
-                  ->comment('A group joins different pages to create sub-questionnaire pages, e.g.: when using group oneliners');
+                ->nullable()
+                ->comment('A group joins different pages to create sub-questionnaire pages, e.g.: when using group oneliners');
 
             $table->string('view_component_override')
-                  ->nullable()
-                  ->comment('If we have a specific view component, instead of using the ones from the page types');
+                ->nullable()
+                ->comment('If we have a specific view component, instead of using the ones from the page types');
 
             $table->timestamps();
             $table->softDeletes();
@@ -593,28 +592,28 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('page_type_questionnaire_id')
-                  ->nullable()
-                  ->comment('Related questionnaire page type model');
+                ->nullable()
+                ->comment('Related questionnaire page type model');
 
             $table->boolean('is_analytical')
-                  ->default(true)
-                  ->comment('If the question value will be used for reports. If it is not then it can be to display a message, or to capture custom information. E.g.: Input text to get a employee code');
+                ->default(true)
+                ->comment('If the question value will be used for reports. If it is not then it can be to display a message, or to capture custom information. E.g.: Input text to get a employee code');
 
             $table->boolean('is_used_for_personal_data')
-                  ->default(false)
-                  ->comment('Used to be only seen by gdpr profiles');
+                ->default(false)
+                ->comment('Used to be only seen by gdpr profiles');
 
             $table->boolean('is_single_value')
-                  ->default(true)
-                  ->comment('Accepted values: single - Just returns one value (even from several widgets), multiple, returns all the values');
+                ->default(true)
+                ->comment('Accepted values: single - Just returns one value (even from several widgets), multiple, returns all the values');
 
             $table->unsignedInteger('index')
-                  ->default(1)
-                  ->comment('The question index in related page');
+                ->default(1)
+                ->comment('The question index in related page');
 
             $table->boolean('is_required')
-                  ->default(false)
-                  ->comment('If this question is required to be answered');
+                ->default(false)
+                ->comment('If this question is required to be answered');
 
             $table->timestamps();
             $table->softDeletes();
@@ -629,11 +628,11 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('question_id')
-                  ->comment('Related question where this response was answered');
+                ->comment('Related question where this response was answered');
 
             $table->string('value')
-                  ->nullable()
-                  ->comment('The concluded response value');
+                ->nullable()
+                ->comment('The concluded response value');
 
             $table->timestamps();
             $table->softDeletes();
@@ -653,12 +652,12 @@ return new class extends Migration
             $table->foreignId('widget_type_id');
 
             $table->unsignedInteger('widget_index')
-                  ->default(1)
-                  ->comment('The sequence of the widget in case it is a multi-widget question');
+                ->default(1)
+                ->comment('The sequence of the widget in case it is a multi-widget question');
 
             $table->json('widget_data')
-                  ->nullable()
-                  ->comment('The settings override for the QuestionWidget instance');
+                ->nullable()
+                ->comment('The settings override for the QuestionWidget instance');
 
             $table->timestamps();
             $table->softDeletes();
@@ -686,7 +685,7 @@ return new class extends Migration
              * to other question values, widget values, etc.
              */
             $table->json('when')
-                  ->comment('Conditional that will trigger the condition');
+                ->comment('Conditional that will trigger the condition');
 
             /**
              * The available conditions at the moment are:
@@ -702,7 +701,7 @@ return new class extends Migration
              *                      'variable_uuid' => uuid()]
              */
             $table->json('then')
-                  ->comment('Consequence of the conditional when it is triggered');
+                ->comment('Consequence of the conditional when it is triggered');
 
             $table->timestamps();
             $table->softDeletes();

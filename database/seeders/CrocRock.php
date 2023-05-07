@@ -5,16 +5,18 @@ namespace QRFeedz\Database\Seeders;
 use Illuminate\Database\Seeder;
 use QRFeedz\Cube\Models\Affiliate;
 use QRFeedz\Cube\Models\Authorization;
+use QRFeedz\Cube\Models\Category;
 use QRFeedz\Cube\Models\Client;
 use QRFeedz\Cube\Models\Country;
+use QRFeedz\Cube\Models\Group;
 use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\OpenAIPrompt;
 use QRFeedz\Cube\Models\PageType;
 use QRFeedz\Cube\Models\Question;
-use QRFeedz\Cube\Models\QuestionWidget;
-use QRFeedz\Cube\Models\QuestionWidgetTypeConditional;
-use QRFeedz\Cube\Models\QuestionWidgetType;
 use QRFeedz\Cube\Models\Questionnaire;
+use QRFeedz\Cube\Models\QuestionWidgetType;
+use QRFeedz\Cube\Models\QuestionWidgetTypeConditional;
+use QRFeedz\Cube\Models\Tag;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\WidgetType;
 
@@ -94,18 +96,18 @@ class CrocRock extends Seeder
          * The 2nd user (non-admin) will not have direct permissions.
          */
         Authorization::firstWhere('canonical', 'affiliate')
-                     ->clients()
-                     ->attach(
-                         $client->id,
-                         ['user_id' => $affiliateUser->id] // Karine User
-                     );
+            ->clients()
+            ->attach(
+                $client->id,
+                ['user_id' => $affiliateUser->id] // Karine User
+            );
 
         Authorization::firstWhere('canonical', 'admin')
-                     ->clients()
-                     ->attach(
-                         $client->id,
-                         ['user_id' => $admin->id] // Peres User
-                     );
+            ->clients()
+            ->attach(
+                $client->id,
+                ['user_id' => $admin->id] // Peres User
+            );
 
         /**
          * Time to create the questionnaire.
@@ -158,19 +160,18 @@ class CrocRock extends Seeder
          *
          * Pages are added to the via the PageTypeQuestionnaire pivot table.
          */
-
         $pageTypeIds = [
             PageType::firstWhere('canonical', 'splash-page-5-secs')->id,
             PageType::firstWhere('canonical', 'locale-select-page')->id,
             PageType::firstWhere('canonical', 'survey-page-default')->id,
             PageType::firstWhere('canonical', 'survey-page-default')->id,
-            PageType::firstWhere('canonical', 'promo-page-default')->id
+            PageType::firstWhere('canonical', 'promo-page-default')->id,
         ];
 
         foreach ($pageTypeIds as $pageTypeId) {
             $pageType = $questionnaire->pageTypes()->newPivot([
                 'questionnaire_id' => $questionnaire->id,
-                'page_type_id' => $pageTypeId
+                'page_type_id' => $pageTypeId,
             ]);
 
             $pageType->save();
@@ -188,7 +189,6 @@ class CrocRock extends Seeder
          *
          * 2nd page:
          * - Anything to let us know to help us improve?
-         *
          */
 
         // Obtain the page type questionnaire instances (ordered by index).
@@ -217,30 +217,30 @@ class CrocRock extends Seeder
                     'is_analytical' => true,
                     'is_used_for_personal_data' => false,
                     'is_single_value' => true,
-                    'is_required' => true
+                    'is_required' => true,
                 ]);
 
                 // Add locales.
                 Locale::firstWhere('canonical', 'en')
-                      ->questions()
-                      ->attach(
-                          $question->id,
-                          ['caption' => 'How do you rate us, in overall?']
-                      );
+                    ->questions()
+                    ->attach(
+                        $question->id,
+                        ['caption' => 'How do you rate us, in overall?']
+                    );
 
                 Locale::firstWhere('canonical', 'fr')
-                      ->questions()
-                      ->attach(
-                          $question->id,
-                          ['caption' => 'Comment nous évaluez-vous, globalement ?']
-                      );
+                    ->questions()
+                    ->attach(
+                        $question->id,
+                        ['caption' => 'Comment nous évaluez-vous, globalement ?']
+                    );
 
                 Locale::firstWhere('canonical', 'de')
-                      ->questions()
-                      ->attach(
-                          $question->id,
-                          ['caption' => 'Wie bewerten Sie uns insgesamt?']
-                      );
+                    ->questions()
+                    ->attach(
+                        $question->id,
+                        ['caption' => 'Wie bewerten Sie uns insgesamt?']
+                    );
 
                 /**
                  * Add the widget type to the question, by then creating a
@@ -255,13 +255,13 @@ class CrocRock extends Seeder
                 $questionWidgetTypeConditional = QuestionWidgetTypeConditional::create([
                     'question_widget_type_id' => $questionWidgetType->id,
                     'when' => ['value' => '<=2'],
-                    'then' => ['action' => 'textarea.open']
+                    'then' => ['action' => 'textarea.open'],
                 ]);
 
                 $questionWidgetTypeConditional = QuestionWidgetTypeConditional::create([
                     'question_widget_type_id' => $questionWidgetType->id,
                     'when' => ['value' => '==5'],
-                    'then' => ['action' => 'textarea.open']
+                    'then' => ['action' => 'textarea.open'],
                 ]);
             }
 
@@ -279,30 +279,30 @@ class CrocRock extends Seeder
                     'is_analytical' => true,
                     'is_used_for_personal_data' => false,
                     'is_single_value' => true,
-                    'is_required' => true
+                    'is_required' => true,
                 ]);
 
                 // Add locales.
                 Locale::firstWhere('canonical', 'en')
-                      ->questions()
-                      ->attach(
-                          $question->id,
-                          ['caption' => 'Anything else to let us know?']
-                      );
+                    ->questions()
+                    ->attach(
+                        $question->id,
+                        ['caption' => 'Anything else to let us know?']
+                    );
 
                 Locale::firstWhere('canonical', 'fr')
-                      ->questions()
-                      ->attach(
-                          $question->id,
-                          ['caption' => 'Y a-t-il autre chose que vous souhaitez nous communiquer ?']
-                      );
+                    ->questions()
+                    ->attach(
+                        $question->id,
+                        ['caption' => 'Y a-t-il autre chose que vous souhaitez nous communiquer ?']
+                    );
 
                 Locale::firstWhere('canonical', 'de')
-                      ->questions()
-                      ->attach(
-                          $question->id,
-                          ['caption' => 'Gibt es sonst noch etwas, das Sie uns mitteilen möchten?']
-                      );
+                    ->questions()
+                    ->attach(
+                        $question->id,
+                        ['caption' => 'Gibt es sonst noch etwas, das Sie uns mitteilen möchten?']
+                    );
 
                 /**
                  * Add the widget type to the question, by then creating a
@@ -313,17 +313,43 @@ class CrocRock extends Seeder
                 $questionWidgetType->widget_type_id = WidgetType::firstWhere('canonical', 'textarea')->id;
                 $questionWidgetType->save();
             }
-        };
+        }
 
         /**
          * Lets also add categories, groups and tags, to test the questionnaire.
-         * Category: Restaurant
          * Tag:      Nancy (location)
          * Group:    Pioneer
          */
-        Tag::create([
+        $tag = Tag::create([
             'name' => 'Nancy',
-            'description' => 'Nancy location'
+            'description' => 'Nancy location',
+            'client_id' => $client->id,
         ]);
+
+        $group = Group::create([
+            'name' => 'Pioneer',
+            'client_id' => $client->id,
+        ]);
+
+        $category = Category::create([
+            'name' => 'Restaurant',
+            'client_id' => $client->id,
+        ]);
+
+        /**
+         * Add this questionnaire to the categorizables, tagables and
+         * groupables polymorphic relationships.
+         */
+        $questionnaire->tags()->attach(
+            $tag->id
+        );
+
+        $questionnaire->categories()->attach(
+            $category->id
+        );
+
+        $questionnaire->group()->associate($group->id)->save();
+
+        // Now comes the complex part. To render it on an UI...
     }
 }

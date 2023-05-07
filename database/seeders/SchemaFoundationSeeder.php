@@ -4,7 +4,6 @@ namespace QRFeedz\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use QRFeedz\Cube\Models\Authorization;
-use QRFeedz\Cube\Models\Category;
 use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\PageType;
@@ -284,15 +283,6 @@ class SchemaFoundationSeeder extends Seeder
             'password' => bcrypt(env('QRFEEDZ_SUPER_ADMIN_PASSWORD')),
             'is_admin' => true,
         ]);
-
-        /**
-         * Add default categories.
-         */
-        Category::create(['name' => 'Event']);
-        Category::create(['name' => 'Hotel']);
-        Category::create(['name' => 'Cantine']);
-        Category::create(['name' => 'Restaurant']);
-        Category::create(['name' => 'Store']);
 
         /**
          * Authorizations creation.
