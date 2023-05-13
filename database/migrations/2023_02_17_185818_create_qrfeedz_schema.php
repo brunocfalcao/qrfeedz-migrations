@@ -532,11 +532,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('canonical');
             $table->text('description')
-                  ->nullable();
+                ->nullable();
 
             $table->string('view_component_container_namespace')
-                  ->default('survey')
-                  ->comment('The view component name that will encapsulate the page type view component namespace. It is the component name under components/containers/...');
+                ->default('survey')
+                ->comment('The view component name that will encapsulate the page type view component namespace. It is the component name under components/containers/...');
 
             $table->string('view_component_namespace');
 
