@@ -350,6 +350,6 @@ class CrocRock extends Seeder
 
         $questionnaire->group()->associate($group->id)->save();
 
-        // Now comes the complex part. To render it on an UI...
+        // Now comes the complex part. To render it on an UI...Good luck!
     }
 }

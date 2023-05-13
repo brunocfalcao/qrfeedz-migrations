@@ -396,41 +396,40 @@ class SchemaFoundationSeeder extends Seeder
         PageType::create([
             'name' => 'Splash page - 5 seconds',
             'canonical' => 'splash-page-5-secs',
-            'sliding_context' => 'global',
+            'view_component_container_namespace' => 'full',
             'description' => 'A splash full page, with logo or questionnaire title, lasts 5 seconds',
-            'view_component_namespace' => 'qrfeedz::splash-5-secs',
+            'view_component_namespace' => 'widgets.splash-5-secs',
         ]);
 
         PageType::create([
             'name' => 'Local selection page',
             'canonical' => 'locale-select-page',
-            'sliding_context' => 'global',
+            'view_component_container_namespace' => 'full',
             'description' => 'A list of locales that are available for the questionnaire',
-            'view_component_namespace' => 'qrfeedz::locale-select',
+            'view_component_namespace' => 'widgets.locale-select',
         ]);
 
         PageType::create([
             'name' => 'Survey page (default)',
             'canonical' => 'survey-page-default',
-            'sliding_context' => 'survey',
             'description' => 'Survey structure page - default questions structure',
-            'view_component_namespace' => 'qrfeedz::survey-page-default',
+            'view_component_namespace' => 'widgets.survey-page-default',
         ]);
 
         PageType::create([
             'name' => 'Promo page',
             'canonical' => 'promo-page-default',
-            'sliding_context' => 'global',
+            'view_component_container_namespace' => 'full',
             'description' => 'Promotional default page',
-            'view_component_namespace' => 'qrfeedz::promo-page-default',
+            'view_component_namespace' => 'widgets.promo-page-default',
         ]);
 
         PageType::create([
             'name' => 'Social sharing page',
             'canonical' => 'social-page-default',
-            'sliding_context' => 'global',
+            'view_component_container_namespace' => 'full',
             'description' => 'Social sharing default page',
-            'view_component_namespace' => 'qrfeedz::social-page-default',
+            'view_component_namespace' => 'widgets.social-page-default',
         ]);
 
         /**
@@ -444,28 +443,28 @@ class SchemaFoundationSeeder extends Seeder
             'name' => 'Emoji faces rating',
             'canonical' => 'emoji-faces-rating',
             'description' => 'An emoji rating, 5 faces from very sad to very happy. Gray-based, then when the visitor touches the emoji it gets transformed into color',
-            'view_component_namespace' => 'emoji-faces-rating',
+            'view_component_namespace' => 'widgets.emoji-faces-rating',
         ]);
 
         WidgetType::create([
             'name' => 'Stars rating',
             'canonical' => 'stars-rating',
             'description' => 'A stars rating with stars. Visitor touches a star and it selects the right value of it',
-            'view_component_namespace' => 'stars-rating',
+            'view_component_namespace' => 'widgets.stars-rating',
         ]);
 
         WidgetType::create([
             'name' => 'Emoji slider rating',
             'canonical' => 'emoji-slider-rating',
             'description' => 'A slider that shows emoji faces as long as the visitor slides it',
-            'view_component_namespace' => 'emoji-slider-rating',
+            'view_component_namespace' => 'widgets.emoji-slider-rating',
         ]);
 
         WidgetType::create([
             'name' => 'Textarea',
             'canonical' => 'textarea',
             'description' => 'An absolute standard textarea to store feedback text',
-            'view_component_namespace' => 'textarea',
+            'view_component_namespace' => 'widgets.textarea',
         ]);
     }
 }
