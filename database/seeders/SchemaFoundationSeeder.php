@@ -396,40 +396,35 @@ class SchemaFoundationSeeder extends Seeder
         PageType::create([
             'name' => 'Splash page - 5 seconds',
             'canonical' => 'splash-page-5-secs',
-            'view_component_container_namespace' => 'full',
-            'description' => 'A splash full page, with logo or questionnaire title, lasts 5 seconds',
-            'view_component_namespace' => 'widgets.splash-5-secs',
+            'view_component_namespace' => 'pages.full-screen',
+            'description' => 'A splash full page, with logo or questionnaire title, lasts 5 seconds'
         ]);
 
         PageType::create([
             'name' => 'Local selection page',
             'canonical' => 'locale-select-page',
-            'view_component_container_namespace' => 'full',
-            'description' => 'A list of locales that are available for the questionnaire',
-            'view_component_namespace' => 'widgets.locale-select',
+            'view_component_namespace' => 'pages.full-screen',
+            'description' => 'A list of locales that are available for the questionnaire'
         ]);
 
         PageType::create([
             'name' => 'Survey page (default)',
             'canonical' => 'survey-page-default',
-            'description' => 'Survey structure page - default questions structure',
-            'view_component_namespace' => 'widgets.survey-page-default',
+            'description' => 'Survey structure page - default questions structure'
         ]);
 
         PageType::create([
             'name' => 'Promo page',
             'canonical' => 'promo-page-default',
-            'view_component_container_namespace' => 'full',
-            'description' => 'Promotional default page',
-            'view_component_namespace' => 'widgets.promo-page-default',
+            'view_component_namespace' => 'pages.full-screen',
+            'description' => 'Promotional default page'
         ]);
 
         PageType::create([
             'name' => 'Social sharing page',
             'canonical' => 'social-page-default',
-            'view_component_container_namespace' => 'full',
-            'description' => 'Social sharing default page',
-            'view_component_namespace' => 'widgets.social-page-default',
+            'view_component_namespace' => 'pages.full-screen',
+            'description' => 'Social sharing default page'
         ]);
 
         /**
@@ -442,29 +437,44 @@ class SchemaFoundationSeeder extends Seeder
         WidgetType::create([
             'name' => 'Emoji faces rating',
             'canonical' => 'emoji-faces-rating',
-            'description' => 'An emoji rating, 5 faces from very sad to very happy. Gray-based, then when the visitor touches the emoji it gets transformed into color',
+            'description' => 'Emoji rating, 5 faces from very sad to very happy. Gray-based, then when the visitor touches the emoji it gets transformed into color',
             'view_component_namespace' => 'widgets.emoji-faces-rating',
         ]);
 
         WidgetType::create([
             'name' => 'Stars rating',
             'canonical' => 'stars-rating',
-            'description' => 'A stars rating with stars. Visitor touches a star and it selects the right value of it',
+            'description' => 'Stars rating with stars. Visitor touches a star and it selects the right value of it',
             'view_component_namespace' => 'widgets.stars-rating',
         ]);
 
         WidgetType::create([
             'name' => 'Emoji slider rating',
             'canonical' => 'emoji-slider-rating',
-            'description' => 'A slider that shows emoji faces as long as the visitor slides it',
+            'description' => 'Slider that shows emoji faces as long as the visitor slides it',
             'view_component_namespace' => 'widgets.emoji-slider-rating',
         ]);
 
         WidgetType::create([
             'name' => 'Textarea',
             'canonical' => 'textarea',
-            'description' => 'An absolute standard textarea to store feedback text',
+            'description' => 'Standard textarea to store feedback text',
             'view_component_namespace' => 'widgets.textarea',
+        ]);
+
+        /** ----- Special Widgets for "full page" page types ---- */
+        WidgetType::create([
+            'name' => 'Splash 1',
+            'canonical' => 'splash-1',
+            'description' => 'Horizontally and centered logo + questionnaire name + footer with client name, for full screen pages. Fades in and out the logo / questionnaire title',
+            'view_component_namespace' => 'widgets.splash-1',
+        ]);
+
+        WidgetType::create([
+            'name' => 'Locales selectors',
+            'canonical' => 'locale-selectors-1',
+            'description' => 'Big buttons for a full screen, to select a locale from a locales list',
+            'view_component_namespace' => 'widgets.locale-selectors-1',
         ]);
     }
 }

@@ -202,6 +202,22 @@ class CrocRock extends Seeder
         foreach ($pageTypes as $pageType) {
             $pivot = $pageType->pivot;
 
+            if ($pageType->canonical == 'splash-page-5-secs') {
+                /**
+                 * Add a question without caption, and the full-centered
+                 * image + questionnaire name. This widget will show a
+                 * full screen image (in case it exists) or just the
+                 * text and the client name (if it's not the same as the
+                 * questionnaire name).
+                 */
+                /**
+                 * - Question (with non visibility, no caption)
+                 * - Locales (no locale for the question)
+                 * - Widgets (the splash-1 widget)
+                 * - Conditionals (no conditionals)
+                 */
+            };
+
             if ($pageType->canonical == 'survey-page-default' && $pivot->index == 3) {
                 /**
                  * Add the overall question stars rating.
