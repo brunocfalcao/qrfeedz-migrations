@@ -203,6 +203,13 @@ class CrocRock extends Seeder
             $pivot = $pageType->pivot;
 
             if ($pageType->canonical == 'splash-page-5-secs') {
+
+                /**
+                 *  ||
+                $pageType->canonical == 'locale-select-page' ||
+                $pageType->canonical == 'promo-page-default'
+                 */
+
                 /**
                  * Add a question without caption, and the full-centered
                  * image + questionnaire name. This widget will show a
@@ -216,6 +223,17 @@ class CrocRock extends Seeder
                  * - Widgets (the splash-1 widget)
                  * - Conditionals (no conditionals)
                  */
+                $question = Question::create([
+                    'page_type_questionnaire_id' => $pageType->id,
+                    'is_analytical' => false,
+                    'is_single_value' => false,
+                    'is_used_for_personal_data' => false
+                ]);
+
+                $questionWidgetType = new QuestionWidgetType();
+                $questionWidgetType->question_id = $question->id;
+                $questionWidgetType->widget_type_id = WidgetType::firstWhere('canonical', 'splash-1')->id;
+                $questionWidgetType->save();
             };
 
             if ($pageType->canonical == 'survey-page-default' && $pivot->index == 3) {
