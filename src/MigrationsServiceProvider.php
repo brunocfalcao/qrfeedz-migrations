@@ -19,7 +19,7 @@ class MigrationsServiceProvider extends ServiceProvider
         //
     }
 
-    protected function registerCommands(): void
+    protected function registerCommands()
     {
         $this->commands([
             FreshSeed::class,

@@ -397,34 +397,34 @@ class SchemaFoundationSeeder extends Seeder
             'name' => 'Splash page - 5 seconds',
             'canonical' => 'splash-page-5-secs',
             'view_component_namespace' => 'pages.full-screen',
-            'description' => 'A splash full page, with logo or questionnaire title, lasts 5 seconds'
+            'description' => 'A splash full page, with logo or questionnaire title, lasts 5 seconds',
         ]);
 
         PageType::create([
             'name' => 'Local selection page',
             'canonical' => 'locale-select-page',
             'view_component_namespace' => 'pages.full-screen',
-            'description' => 'A list of locales that are available for the questionnaire'
+            'description' => 'A list of locales that are available for the questionnaire',
         ]);
 
         PageType::create([
             'name' => 'Survey page (default)',
             'canonical' => 'survey-page-default',
-            'description' => 'Survey structure page - default questions structure'
+            'description' => 'Survey structure page - default questions structure',
         ]);
 
         PageType::create([
             'name' => 'Promo page',
             'canonical' => 'promo-page-default',
             'view_component_namespace' => 'pages.full-screen',
-            'description' => 'Promotional default page'
+            'description' => 'Promotional default page',
         ]);
 
         PageType::create([
             'name' => 'Social sharing page',
             'canonical' => 'social-page-default',
             'view_component_namespace' => 'pages.full-screen',
-            'description' => 'Social sharing default page'
+            'description' => 'Social sharing default page',
         ]);
 
         /**

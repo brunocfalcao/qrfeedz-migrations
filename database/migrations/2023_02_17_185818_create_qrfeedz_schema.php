@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    public function up()
     {
         /**
          * Locales are used to define the caption language. By default, the
@@ -532,11 +532,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('canonical');
             $table->text('description')
-                  ->nullable();
+                ->nullable();
 
             $table->string('view_component_namespace')
-                  ->default('survey')
-                  ->comment('The view component name that will encapsulate the widget(s) namespaces. Normally will the components inside components/pages/...');
+                ->default('survey')
+                ->comment('The view component name that will encapsulate the widget(s) namespaces. Normally will the components inside components/pages/...');
 
             $table->timestamps();
             $table->softDeletes();
@@ -706,7 +706,7 @@ return new class extends Migration
         });
     }
 
-    public function down(): void
+    public function down()
     {
         //
     }

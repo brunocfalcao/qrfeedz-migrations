@@ -12,10 +12,10 @@ use QRFeedz\Cube\Models\Group;
 use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\OpenAIPrompt;
 use QRFeedz\Cube\Models\PageType;
+use QRFeedz\Cube\Models\Pivots\QuestionWidgetType;
+use QRFeedz\Cube\Models\Pivots\QuestionWidgetTypeConditional;
 use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\Questionnaire;
-use QRFeedz\Cube\Models\QuestionWidgetType;
-use QRFeedz\Cube\Models\QuestionWidgetTypeConditional;
 use QRFeedz\Cube\Models\Tag;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\WidgetType;
@@ -227,14 +227,14 @@ class CrocRock extends Seeder
                     'page_type_questionnaire_id' => $pageType->id,
                     'is_analytical' => false,
                     'is_single_value' => false,
-                    'is_used_for_personal_data' => false
+                    'is_used_for_personal_data' => false,
                 ]);
 
                 $questionWidgetType = new QuestionWidgetType();
                 $questionWidgetType->question_id = $question->id;
                 $questionWidgetType->widget_type_id = WidgetType::firstWhere('canonical', 'splash-1')->id;
                 $questionWidgetType->save();
-            };
+            }
 
             if ($pageType->canonical == 'survey-page-default' && $pivot->index == 3) {
                 /**
