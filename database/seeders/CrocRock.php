@@ -11,14 +11,14 @@ use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Group;
 use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\OpenAIPrompt;
-use QRFeedz\Cube\Models\PageType;
+use QRFeedz\Cube\Models\Page;
 use QRFeedz\Cube\Models\Pivots\QuestionWidgetType;
-use QRFeedz\Cube\Models\Pivots\QuestionWidgetTypeConditional;
 use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\Questionnaire;
 use QRFeedz\Cube\Models\Tag;
 use QRFeedz\Cube\Models\User;
-use QRFeedz\Cube\Models\WidgetType;
+use QRFeedz\Cube\Models\Widget;
+use QRFeedz\Cube\Models\WidgetInstanceConditional;
 
 class CrocRock extends Seeder
 {
@@ -62,7 +62,7 @@ class CrocRock extends Seeder
             'locale_id' => Locale::firstWhere('canonical', 'fr')->id,
         ]);
 
-        // This is the user connected to the afilliate.
+        // This is the user connected to the afilliate. For testing purposes.
         $affiliateUser = User::create([
             'name' => env('CROCROCK_AFFILIATE_NAME'),
             'email' => env('CROCROCK_AFFILIATE_EMAIL'),
@@ -95,12 +95,7 @@ class CrocRock extends Seeder
          * The client that will have Peres as admin.
          * The 2nd user (non-admin) will not have direct permissions.
          */
-        Authorization::firstWhere('canonical', 'affiliate')
-            ->clients()
-            ->attach(
-                $client->id,
-                ['user_id' => $affiliateUser->id] // Karine User
-            );
+        $client->affiliate()->associate($affiliate)->save();
 
         Authorization::firstWhere('canonical', 'admin')
             ->clients()
@@ -161,17 +156,17 @@ class CrocRock extends Seeder
          * Pages are added to the via the PageTypeQuestionnaire pivot table.
          */
         $pageTypeIds = [
-            PageType::firstWhere('canonical', 'splash-page-5-secs')->id,
-            PageType::firstWhere('canonical', 'locale-select-page')->id,
-            PageType::firstWhere('canonical', 'survey-page-default')->id,
-            PageType::firstWhere('canonical', 'survey-page-default')->id,
-            PageType::firstWhere('canonical', 'promo-page-default')->id,
+            Page::firstWhere('canonical', 'splash-page-5-secs')->id,
+            Page::firstWhere('canonical', 'locale-select-page')->id,
+            Page::firstWhere('canonical', 'survey-page-default')->id,
+            Page::firstWhere('canonical', 'survey-page-default')->id,
+            Page::firstWhere('canonical', 'promo-page-default')->id,
         ];
 
         foreach ($pageTypeIds as $pageTypeId) {
             $pageType = $questionnaire->pageTypes()->newPivot([
                 'questionnaire_id' => $questionnaire->id,
-                'page_type_id' => $pageTypeId,
+                'page_id' => $pageTypeId,
             ]);
 
             $pageType->save();
@@ -232,7 +227,7 @@ class CrocRock extends Seeder
 
                 $questionWidgetType = new QuestionWidgetType();
                 $questionWidgetType->question_id = $question->id;
-                $questionWidgetType->widget_type_id = WidgetType::firstWhere('canonical', 'splash-1')->id;
+                $questionWidgetType->widget_id = Widget::firstWhere('canonical', 'splash-1')->id;
                 $questionWidgetType->save();
             }
 
@@ -282,17 +277,17 @@ class CrocRock extends Seeder
                  */
                 $questionWidgetType = new QuestionWidgetType();
                 $questionWidgetType->question_id = $question->id;
-                $questionWidgetType->widget_type_id = WidgetType::firstWhere('canonical', 'stars-rating')->id;
+                $questionWidgetType->widget_id = Widget::firstWhere('canonical', 'stars-rating')->id;
                 $questionWidgetType->save();
 
                 // Now, lets create the widget type conditionals.
-                $questionWidgetTypeConditional = QuestionWidgetTypeConditional::create([
+                $questionWidgetTypeConditional = WidgetInstanceConditional::create([
                     'question_widget_type_id' => $questionWidgetType->id,
                     'when' => ['value' => '<=2'],
                     'then' => ['action' => 'textarea.open'],
                 ]);
 
-                $questionWidgetTypeConditional = QuestionWidgetTypeConditional::create([
+                $questionWidgetTypeConditional = WidgetInstanceConditional::create([
                     'question_widget_type_id' => $questionWidgetType->id,
                     'when' => ['value' => '==5'],
                     'then' => ['action' => 'textarea.open'],
@@ -344,7 +339,7 @@ class CrocRock extends Seeder
                  */
                 $questionWidgetType = new QuestionWidgetType();
                 $questionWidgetType->question_id = $question->id;
-                $questionWidgetType->widget_type_id = WidgetType::firstWhere('canonical', 'textarea')->id;
+                $questionWidgetType->widget_id = Widget::firstWhere('canonical', 'textarea')->id;
                 $questionWidgetType->save();
             }
         }

@@ -6,9 +6,9 @@ use Illuminate\Database\Seeder;
 use QRFeedz\Cube\Models\Authorization;
 use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Locale;
-use QRFeedz\Cube\Models\PageType;
+use QRFeedz\Cube\Models\Page;
 use QRFeedz\Cube\Models\User;
-use QRFeedz\Cube\Models\WidgetType;
+use QRFeedz\Cube\Models\Widget;
 
 class SchemaFoundationSeeder extends Seeder
 {
@@ -281,14 +281,11 @@ class SchemaFoundationSeeder extends Seeder
             'name' => env('QRFEEDZ_SUPER_ADMIN_NAME'),
             'email' => env('QRFEEDZ_SUPER_ADMIN_EMAIL'),
             'password' => bcrypt(env('QRFEEDZ_SUPER_ADMIN_PASSWORD')),
-            'is_admin' => true,
+            'is_super_admin' => true,
         ]);
 
         /**
-         * Authorizations creation.
-         * admin
-         * gpdr
-         * affiliate
+         * Authorizations types creation.
          */
         Authorization::create([
             'canonical' => 'admin',
@@ -299,12 +296,6 @@ class SchemaFoundationSeeder extends Seeder
             'canonical' => 'questionnaire-admin',
             'name' => 'Questionnaire Administrator',
             'description' => 'Can only admin questionnaires, create, change and delete (both data-limited) from its own client',
-        ]);
-
-        Authorization::create([
-            'canonical' => 'affiliate',
-            'name' => 'Affiliate',
-            'description' => 'Its an admin for the clients that are attached to the affiliate. Used for commercial reasons',
         ]);
 
         Authorization::create([
@@ -393,34 +384,34 @@ class SchemaFoundationSeeder extends Seeder
          * qrcode uuid. They both need to math in the same data model.
          * The locale querystring will render the survey with that locale.
          */
-        PageType::create([
+        Page::create([
             'name' => 'Splash page - 5 seconds',
             'canonical' => 'splash-page-5-secs',
             'view_component_namespace' => 'pages.full-screen',
             'description' => 'A splash full page, with logo or questionnaire title, lasts 5 seconds',
         ]);
 
-        PageType::create([
+        Page::create([
             'name' => 'Local selection page',
             'canonical' => 'locale-select-page',
             'view_component_namespace' => 'pages.full-screen',
             'description' => 'A list of locales that are available for the questionnaire',
         ]);
 
-        PageType::create([
+        Page::create([
             'name' => 'Survey page (default)',
             'canonical' => 'survey-page-default',
             'description' => 'Survey structure page - default questions structure',
         ]);
 
-        PageType::create([
+        Page::create([
             'name' => 'Promo page',
             'canonical' => 'promo-page-default',
             'view_component_namespace' => 'pages.full-screen',
             'description' => 'Promotional default page',
         ]);
 
-        PageType::create([
+        Page::create([
             'name' => 'Social sharing page',
             'canonical' => 'social-page-default',
             'view_component_namespace' => 'pages.full-screen',
@@ -434,28 +425,28 @@ class SchemaFoundationSeeder extends Seeder
          * Stars rating.
          * One Liner.
          */
-        WidgetType::create([
+        Widget::create([
             'name' => 'Emoji faces rating',
             'canonical' => 'emoji-faces-rating',
             'description' => 'Emoji rating, 5 faces from very sad to very happy. Gray-based, then when the visitor touches the emoji it gets transformed into color',
             'view_component_namespace' => 'widgets.emoji-faces-rating',
         ]);
 
-        WidgetType::create([
+        Widget::create([
             'name' => 'Stars rating',
             'canonical' => 'stars-rating',
             'description' => 'Stars rating with stars. Visitor touches a star and it selects the right value of it',
             'view_component_namespace' => 'widgets.stars-rating',
         ]);
 
-        WidgetType::create([
+        Widget::create([
             'name' => 'Emoji slider rating',
             'canonical' => 'emoji-slider-rating',
             'description' => 'Slider that shows emoji faces as long as the visitor slides it',
             'view_component_namespace' => 'widgets.emoji-slider-rating',
         ]);
 
-        WidgetType::create([
+        Widget::create([
             'name' => 'Textarea',
             'canonical' => 'textarea',
             'description' => 'Standard textarea to store feedback text',
@@ -463,14 +454,14 @@ class SchemaFoundationSeeder extends Seeder
         ]);
 
         /** ----- Special Widgets for "full page" page types ---- */
-        WidgetType::create([
+        Widget::create([
             'name' => 'Splash 1',
             'canonical' => 'splash-1',
             'description' => 'Horizontally and centered logo + questionnaire name + footer with client name, for full screen pages. Fades in and out the logo / questionnaire title',
             'view_component_namespace' => 'widgets.splash-1',
         ]);
 
-        WidgetType::create([
+        Widget::create([
             'name' => 'Locales selectors',
             'canonical' => 'locale-selectors-1',
             'description' => 'Big buttons for a full screen, to select a locale from a locales list',
