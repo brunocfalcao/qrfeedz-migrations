@@ -147,11 +147,6 @@ return new class extends Migration
                   ->after('client_id')
                   ->comment('Related affiliate');
 
-            $table->foreignId('user_id')
-                  ->nullable()
-                  ->after('client_id')
-                  ->comment('Related affiliate id, if exists');
-
             $table->boolean('is_super_admin')
                   ->default(false)
                   ->after('affiliate_id')
@@ -195,10 +190,6 @@ return new class extends Migration
                   ->nullable()
                   ->comment('Related client');
 
-            $table->foreignId('group_id')
-                  ->nullable()
-                  ->comment('Related groups where the questionnaire will be used');
-
             $table->foreignId('locale_id')
                   ->nullable()
                   ->comment('The default locale for this questionnaire, in case a language is not selected');
@@ -236,6 +227,16 @@ return new class extends Migration
             $table->dateTime('ends_at')
                   ->nullable()
                   ->comment('When will the questionnaire stop receiving data');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('group_questionnaire', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('group_id');
+            $table->foreignId('questionnaire_id');
 
             $table->timestamps();
             $table->softDeletes();
