@@ -28,9 +28,9 @@ class CrocRock extends Seeder
          * The Croc & Rock restaurant example.
          *
          * A restaurant survey that will ask for the visitors for the
-         * overall experience. It will ask only one question, and in
-         * case it's very bad, or very good, it will ask for more
-         * details. At the end will ask for the email (optional).
+         * overall experience. It will ask only one question instance,
+         * and in case it's very bad, or very good, it will ask for
+         * more details. At the end will ask for the email (optional).
          *
          * Final page, will show a promotion for the next month, a
          * coupon that the person can use to come back. It will

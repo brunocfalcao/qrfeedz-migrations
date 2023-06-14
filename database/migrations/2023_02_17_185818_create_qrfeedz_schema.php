@@ -42,7 +42,7 @@ return new class extends Migration
         Schema::create('authorizables', function (Blueprint $table) {
             $table->id();
 
-            $table->morphs('authorizable');
+            $table->morphs('model');
             $table->foreignId('authorization_id');
             $table->foreignId('user_id');
 
@@ -325,10 +325,6 @@ return new class extends Migration
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('client_id')
-                  ->nullable()
-                  ->comment('Related client');
-
             $table->string('name');
 
             $table->text('description')
@@ -371,7 +367,7 @@ return new class extends Migration
         Schema::create('localables', function (Blueprint $table) {
             $table->id();
 
-            $table->morphs('localable');
+            $table->morphs('model');
             $table->foreignId('locale_id');
 
             $table->string('caption')
@@ -396,7 +392,7 @@ return new class extends Migration
                   ->comment('Extended description, validation options, integration details, etc');
 
             $table->string('canonical')
-                  ->comment('Widget canonical, easier to find when relating with questions');
+                  ->comment('Widget canonical, easier to find when relating with question instances');
 
             $table->boolean('is_countable')
                   ->default(true)
@@ -404,7 +400,7 @@ return new class extends Migration
 
             $table->boolean('is_full_page')
                   ->default(false)
-                  ->comment('Full page widget means the widget will not have other widgets with it and occupies a full page, like direct visitor messaging or social sharing full screen pages. Also a full page widget will not have the placeholder for the question');
+                  ->comment('Full page widget means the widget will not have other widgets with it and occupies a full page, like direct visitor messaging or social sharing full screen pages. Also a full page widget will not have the placeholder for the question instance');
 
             $table->string('view_component_namespace')
                   ->comment('The view component namespace and path. All widgets are rendered via blade components');
@@ -429,7 +425,7 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('page_type_questionnaire', function (Blueprint $table) {
+        Schema::create('page_instances', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('page_id')
@@ -449,24 +445,28 @@ return new class extends Migration
                   ->nullable()
                   ->comment('If we have a specific view component, instead of using the ones from the page types');
 
+            $table->json('data')
+                  ->nullable()
+                  ->comment('Any extra data we want to pass to the page instance');
+
             $table->timestamps();
             $table->softDeletes();
         });
 
-        Schema::create('questions', function (Blueprint $table) {
+        Schema::create('question_instances', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('page_type_questionnaire_id')
+            $table->foreignId('page_instance_id')
                   ->nullable()
-                  ->comment('Related questionnaire page type model');
+                  ->comment('Related questionnaire page instance');
 
             $table->boolean('is_analytical')
                   ->default(true)
-                  ->comment('If the question value will be used for reports. If it is not then it can be to display a message, or to capture custom information. E.g.: Input text to get a employee code');
+                  ->comment('If the question instance value will be used for reports. If it is not then it can be to display a message, or to capture custom information. E.g.: Input text to get a employee code');
 
             $table->boolean('is_used_for_personal_data')
                   ->default(false)
-                  ->comment('Used to be only seen by gdpr profiles');
+                  ->comment('Used to be only seen by GDPR profiles');
 
             $table->boolean('is_single_value')
                   ->default(true)
@@ -474,11 +474,11 @@ return new class extends Migration
 
             $table->unsignedInteger('index')
                   ->default(1)
-                  ->comment('The question index in related page');
+                  ->comment('The question instance index in related page');
 
             $table->boolean('is_required')
                   ->default(false)
-                  ->comment('If this question is required to be answered');
+                  ->comment('If this question instance is required to be answered');
 
             $table->timestamps();
             $table->softDeletes();
@@ -487,12 +487,16 @@ return new class extends Migration
         Schema::create('responses', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('question_id')
-                  ->comment('Related question where this response was answered');
+            $table->foreignId('question_instance_id')
+                  ->comment('Related question instance where this response was answered');
 
             $table->string('value')
                   ->nullable()
                   ->comment('The concluded response value');
+
+            $table->json('values')
+                  ->nullable()
+                  ->comment('A possible subset of values that are part of a response, like a multiple checkbox widget');
 
             $table->timestamps();
             $table->softDeletes();
@@ -501,12 +505,12 @@ return new class extends Migration
         Schema::create('question_widget_type', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('question_id');
+            $table->foreignId('question_instance_id');
             $table->foreignId('widget_id');
 
             $table->unsignedInteger('widget_index')
                   ->default(1)
-                  ->comment('The sequence of the widget in case it is a multi-widget question');
+                  ->comment('The sequence of the widget in case it is a multi-widget question instance');
 
             $table->json('widget_data')
                   ->nullable()
@@ -535,7 +539,7 @@ return new class extends Migration
              * The value is the widget.value.
              * Each json entry is an OR clause.
              * Later there will be more types and options, like access
-             * to other question values, widget values, etc.
+             * to other question instance values, widget values, etc.
              */
             $table->json('when')
                   ->comment('Conditional that will trigger the condition');
