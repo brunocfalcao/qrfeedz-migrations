@@ -502,19 +502,19 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('question_widget_type', function (Blueprint $table) {
+        Schema::create('widget_instances', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('question_instance_id');
             $table->foreignId('widget_id');
 
-            $table->unsignedInteger('widget_index')
+            $table->unsignedInteger('index')
                   ->default(1)
-                  ->comment('The sequence of the widget in case it is a multi-widget question instance');
+                  ->comment('The sequence of the widget instance in case it is a multi-widget instance question instance');
 
-            $table->json('widget_data')
+            $table->json('data')
                   ->nullable()
-                  ->comment('The settings override for the QuestionWidget instance');
+                  ->comment('The settings override for the widget instance data');
 
             $table->timestamps();
             $table->softDeletes();
