@@ -394,9 +394,9 @@ return new class extends Migration
             $table->string('canonical')
                   ->comment('Widget canonical, easier to find when relating with question instances');
 
-            $table->boolean('is_countable')
+            $table->boolean('is_progressable')
                   ->default(true)
-                  ->comment('If it is countable, then it will be part of the questionnaire count (pages). If not then it is used for the last pages like direct message or social sharing');
+                  ->comment('If it is progressable, then it will be part of the questionnaire count (pages). If not then it is used for the last pages like direct message or social sharing');
 
             $table->boolean('is_full_page')
                   ->default(false)
@@ -522,7 +522,7 @@ return new class extends Migration
 
         /**
          * This table stores all the conditional types for a specific widget
-         * pivot vs the respective conditionals it will have.
+         * instance vs the respective conditionals it will have.
          *
          * Examples:
          * If a stars rating <=2 then it slides down a textarea.
