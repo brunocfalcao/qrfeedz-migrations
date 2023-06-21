@@ -20,7 +20,7 @@ use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
 use QRFeedz\Cube\Models\WidgetInstanceConditional;
 
-class CrocRock extends Seeder
+class __CrocRock__ extends Seeder
 {
     public function run()
     {
@@ -70,15 +70,8 @@ class CrocRock extends Seeder
             'password' => bcrypt(env('CROCROCK_AFFILIATE_PASSWORD')),
         ]);
 
-        // Associate Karine affiliate with the user Karine (kaesnault@outlook.com).
-        $affiliate->user()
-                  ->save($affiliateUser);
-
-        $client->affiliate()
-               ->associate($affiliate)
-               ->save();
-
-        dd('---');
+        // Associate Karine affiliate with the user Karine.
+        $affiliate->user()->associate($affiliateUser)->save();
 
         // Create restaurant admin.
         $admin = User::create([
