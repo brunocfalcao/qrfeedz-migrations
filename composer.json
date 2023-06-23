@@ -20,6 +20,7 @@
         "fakerphp/faker": "^1.9.1",
         "illuminate/contracts": "^10.0",
         "brunocfalcao/qrfeedz-cube": "dev-master",
+        "brunocfalcao/qrfeedz-foundation": "dev-master",
         "brunocfalcao/qrfeedz-authorization": "dev-master"
     },
     "autoload": {

@@ -2,10 +2,10 @@
 
 namespace QRFeedz\Migrations;
 
-use Illuminate\Support\ServiceProvider;
+use QRFeedz\Foundation\Abstracts\QRFeedzServiceProvider;
 use QRFeedz\Migrations\Commands\FreshSeed;
 
-class MigrationsServiceProvider extends ServiceProvider
+class MigrationsServiceProvider extends QRFeedzServiceProvider
 {
     public function boot()
     {
