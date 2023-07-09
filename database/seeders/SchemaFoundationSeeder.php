@@ -275,13 +275,32 @@ class SchemaFoundationSeeder extends Seeder
         }
 
         /**
-         * Super system admin credentials registration.
+         * Locales creation.
+         * en, pt, de, fr, it
          */
-        $sysadmin = User::create([
-            'name' => env('QRFEEDZ_SUPER_ADMIN_NAME'),
-            'email' => env('QRFEEDZ_SUPER_ADMIN_EMAIL'),
-            'password' => bcrypt(env('QRFEEDZ_SUPER_ADMIN_PASSWORD')),
-            'is_super_admin' => true,
+        Locale::create([
+            'canonical' => 'en',
+            'name' => 'English',
+        ]);
+
+        Locale::create([
+            'canonical' => 'it',
+            'name' => 'Italian',
+        ]);
+
+        Locale::create([
+            'canonical' => 'fr',
+            'name' => 'French',
+        ]);
+
+        Locale::create([
+            'canonical' => 'pt',
+            'name' => 'Portuguese',
+        ]);
+
+        Locale::create([
+            'canonical' => 'de',
+            'name' => 'German',
         ]);
 
         /**
@@ -326,35 +345,6 @@ class SchemaFoundationSeeder extends Seeder
             'canonical' => 'delete',
             'name' => 'Delete generic access',
             'description' => 'Access to delete a specific asset. Normally for admins',
-        ]);
-
-        /**
-         * Locales creation.
-         * en, pt, de, fr, it
-         */
-        Locale::create([
-            'canonical' => 'en',
-            'name' => 'English',
-        ]);
-
-        Locale::create([
-            'canonical' => 'it',
-            'name' => 'Italian',
-        ]);
-
-        Locale::create([
-            'canonical' => 'fr',
-            'name' => 'French',
-        ]);
-
-        Locale::create([
-            'canonical' => 'pt',
-            'name' => 'Portuguese',
-        ]);
-
-        Locale::create([
-            'canonical' => 'de',
-            'name' => 'German',
         ]);
 
         /**
@@ -466,6 +456,16 @@ class SchemaFoundationSeeder extends Seeder
             'canonical' => 'locale-selectors-1',
             'description' => 'Big buttons for a full screen, to select a locale from a locales list',
             'view_component_namespace' => 'widgets.locale-selectors-1',
+        ]);
+
+        /**
+         * Super system admin credentials registration.
+         */
+        $sysadmin = User::create([
+            'name' => env('QRFEEDZ_SUPER_ADMIN_NAME'),
+            'email' => env('QRFEEDZ_SUPER_ADMIN_EMAIL'),
+            'password' => bcrypt(env('QRFEEDZ_SUPER_ADMIN_PASSWORD')),
+            'is_super_admin' => true,
         ]);
     }
 }

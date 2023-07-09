@@ -135,12 +135,16 @@ return new class extends Migration
                   ->change();
 
             $table->string('email')
-                ->nullable()
-                ->change();
+                  ->nullable()
+                  ->change();
 
             $table->foreignId('client_id')
                   ->nullable()
                   ->after('email');
+
+            $table->foreignId('locale_id')
+                  ->comment('The default locale of all notifications that are sent to this user')
+                  ->after('client_id');
 
             $table->foreignId('affiliate_id')
                   ->nullable()
