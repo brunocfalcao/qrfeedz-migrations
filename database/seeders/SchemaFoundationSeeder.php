@@ -9,6 +9,7 @@ use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\Page;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
+use QRFeedz\Services\Actions\Users\OnboardAsClient;
 
 class SchemaFoundationSeeder extends Seeder
 {
@@ -467,5 +468,8 @@ class SchemaFoundationSeeder extends Seeder
             'password' => bcrypt(env('QRFEEDZ_SUPER_ADMIN_PASSWORD')),
             'is_super_admin' => true,
         ]);
+
+        // Onboard sysadmin.
+        (new OnboardAsClient())->onQueue()->execute($sysadmin);
     }
 }
