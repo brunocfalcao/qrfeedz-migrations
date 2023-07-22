@@ -134,7 +134,7 @@ return new class extends Migration
                   ->nullable()
                   ->change();
 
-            $table->string('email')
+            $table->string('password')
                   ->nullable()
                   ->change();
 
