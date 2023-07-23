@@ -9,7 +9,6 @@ use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\Page;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
-use QRFeedz\Services\Actions\Users\OnboardAsClient;
 
 class SchemaFoundationSeeder extends Seeder
 {
