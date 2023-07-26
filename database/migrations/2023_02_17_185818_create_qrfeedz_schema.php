@@ -593,14 +593,6 @@ return new class extends Migration
                   ->nullable()
                   ->comment('Route name in case it exists');
 
-            $table->string('referrer_utm_source')
-                  ->nullable()
-                  ->comment('Referrer utm_source querystring, e.g.: ?utm_source=xxx, if it exists');
-
-            $table->string('referrer_domain')
-                  ->nullable()
-                  ->comment('Referrer url http header if it is present');
-
             $table->boolean('is_bot')
                   ->default(false);
 
