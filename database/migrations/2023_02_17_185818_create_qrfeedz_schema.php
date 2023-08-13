@@ -174,6 +174,10 @@ return new class extends Migration
                   ->nullable()
                   ->comment('If necessary can have a bit more description context to understand what this group is');
 
+            $table->string('type')
+                  ->default('user')
+                  ->comment('Can be "user" or "system". System are not selectable by any user by created by qrfeedz: E.g.: Pionners');
+
             $table->json('data')
                   ->nullable()
                   ->comment('Additional data that identifies this group, like a brand, a restaurant, etc');
