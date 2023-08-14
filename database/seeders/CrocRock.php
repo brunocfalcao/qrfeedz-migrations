@@ -12,14 +12,12 @@ use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\OpenAIPrompt;
 use QRFeedz\Cube\Models\Page;
 use QRFeedz\Cube\Models\PageInstance;
-use QRFeedz\Cube\Models\Pivots\QuestionWidgetType;
 use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\QuestionInstance;
 use QRFeedz\Cube\Models\Questionnaire;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
 use QRFeedz\Cube\Models\WidgetInstance;
-use QRFeedz\Cube\Models\WidgetInstanceConditional;
 
 class CrocRock extends Seeder
 {
@@ -267,6 +265,7 @@ class CrocRock extends Seeder
 
             /**
              * This is a promotional page from the
+             *
              * @var [type]
              */
             if ($pageInstance->id == 5) {
