@@ -26,14 +26,15 @@ return new class extends Migration
             $table->id();
 
             $table->string('canonical')
-                ->comment('The authorization canonical name');
+                  ->unique()
+                  ->comment('The authorization canonical name');
 
             $table->string('name')
-                ->comment('The authorization name');
+                  ->comment('The authorization name');
 
             $table->text('description')
-                ->nullable()
-                ->comment('Details on the authorization type');
+                  ->nullable()
+                  ->comment('Details on the authorization type');
 
             $table->timestamps();
             $table->softDeletes();
@@ -164,19 +165,16 @@ return new class extends Migration
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('client_id')
-                  ->nullable();
-
             $table->string('name')
                   ->comment('The group name, can be a specific location or a restaurant/hotel, etc');
+
+            $table->string('canonical')
+                  ->unique()
+                  ->comment('Widget canonical, easier to find when relating with question instances');
 
             $table->text('description')
                   ->nullable()
                   ->comment('If necessary can have a bit more description context to understand what this group is');
-
-            $table->string('type')
-                  ->default('user')
-                  ->comment('Can be "user" or "system". System are not selectable by any user by created by qrfeedz: E.g.: Pionners');
 
             $table->json('data')
                   ->nullable()
@@ -201,6 +199,10 @@ return new class extends Migration
             $table->foreignId('locale_id')
                   ->nullable()
                   ->comment('The default locale for this questionnaire, in case a language is not selected');
+
+            $table->foreignId('group_id')
+                  ->nullable()
+                  ->comment('Related group (hotel, restaurant, etc)');
 
             $table->string('name')
                   ->nullable()
@@ -239,16 +241,6 @@ return new class extends Migration
             $table->dateTime('ends_at')
                   ->nullable()
                   ->comment('When will the questionnaire stop receiving data');
-
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
-        Schema::create('group_questionnaire', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('group_id');
-            $table->foreignId('questionnaire_id');
 
             $table->timestamps();
             $table->softDeletes();
@@ -404,6 +396,7 @@ return new class extends Migration
                   ->comment('Extended description, validation options, integration details, etc');
 
             $table->string('canonical')
+                  ->unique()
                   ->comment('Widget canonical, easier to find when relating with question instances');
 
             $table->boolean('is_progressable')
@@ -425,7 +418,9 @@ return new class extends Migration
             $table->id();
 
             $table->string('name');
-            $table->string('canonical');
+            $table->string('canonical')
+                  ->unique();
+
             $table->text('description')
                   ->nullable();
 
@@ -489,7 +484,6 @@ return new class extends Migration
                   ->comment('Accepted values: single - Just returns one value (even from several widgets), multiple, returns all the values');
 
             $table->unsignedInteger('index')
-                  ->default(1)
                   ->comment('The question instance index in related page');
 
             $table->boolean('is_required')
@@ -525,7 +519,6 @@ return new class extends Migration
             $table->foreignId('widget_id');
 
             $table->unsignedInteger('index')
-                  ->default(1)
                   ->comment('The sequence of the widget instance in case it is a multi-widget instance question instance');
 
             $table->json('data')

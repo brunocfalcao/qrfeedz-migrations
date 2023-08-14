@@ -5,7 +5,6 @@ namespace QRFeedz\Database\Seeders;
 use Illuminate\Database\Seeder;
 use QRFeedz\Cube\Models\Affiliate;
 use QRFeedz\Cube\Models\Authorization;
-use QRFeedz\Cube\Models\Category;
 use QRFeedz\Cube\Models\Client;
 use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Group;
@@ -17,9 +16,9 @@ use QRFeedz\Cube\Models\Pivots\QuestionWidgetType;
 use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\QuestionInstance;
 use QRFeedz\Cube\Models\Questionnaire;
-use QRFeedz\Cube\Models\Tag;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
+use QRFeedz\Cube\Models\WidgetInstance;
 use QRFeedz\Cube\Models\WidgetInstanceConditional;
 
 class CrocRock extends Seeder
@@ -125,6 +124,7 @@ class CrocRock extends Seeder
         $questionnaire = Questionnaire::create([
             'name' => 'CrocRock 2024',
             'title' => 'Restaurant CrocRock',
+            'group_id' => Group::firstWhere('canonical', 'restaurant')->id,
             'starts_at' => now(),
         ]);
 
@@ -219,11 +219,16 @@ class CrocRock extends Seeder
                  * - Widgets (the splash-1 widget)
                  * - Conditionals (no conditionals)
                  */
-                $question = QuestionInstance::create([
+                $questionInstance = QuestionInstance::create([
                     'page_instance_id' => $pageInstance->id,
                     'is_analytical' => false,
                     'is_single_value' => false,
                     'is_used_for_personal_data' => false,
+                ]);
+
+                $widgetInstance = WidgetInstance::create([
+                    'question_instance_id' => $questionInstance->id,
+                    'widget_id' => Widget::firstWhere('canonical', 'splash-1')->id,
                 ]);
 
                 dd('estou aqui');
@@ -346,42 +351,5 @@ class CrocRock extends Seeder
                 $questionWidgetType->save();
             }
         }
-
-        /**
-         * Lets also add categories, groups and tags, to test the questionnaire.
-         * Tag:      Nancy (location)
-         * Group:    Pioneer
-         */
-        $tag = Tag::create([
-            'name' => 'Nancy',
-            'description' => 'Nancy location',
-            'client_id' => $client->id,
-        ]);
-
-        $group = Group::create([
-            'name' => 'Pioneer',
-            'client_id' => $client->id,
-        ]);
-
-        $category = Category::create([
-            'name' => 'Restaurant',
-            'client_id' => $client->id,
-        ]);
-
-        /**
-         * Add this questionnaire to the categorizables, tagables and
-         * groupables polymorphic relationships.
-         */
-        $questionnaire->tags()->attach(
-            $tag->id
-        );
-
-        $questionnaire->categories()->attach(
-            $category->id
-        );
-
-        $questionnaire->group()->associate($group->id)->save();
-
-        // Now comes the complex part. To render it on an UI...Good luck!
     }
 }

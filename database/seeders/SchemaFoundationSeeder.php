@@ -5,6 +5,7 @@ namespace QRFeedz\Database\Seeders;
 use Illuminate\Database\Seeder;
 use QRFeedz\Cube\Models\Authorization;
 use QRFeedz\Cube\Models\Country;
+use QRFeedz\Cube\Models\Group;
 use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\Page;
 use QRFeedz\Cube\Models\User;
@@ -466,6 +467,27 @@ class SchemaFoundationSeeder extends Seeder
             'email' => env('QRFEEDZ_SUPER_ADMIN_EMAIL'),
             //'password' => bcrypt(env('QRFEEDZ_SUPER_ADMIN_PASSWORD')),
             'is_super_admin' => true,
+        ]);
+
+        /**
+         * Group system types creation.
+         */
+        Group::create([
+            'name' => 'Hotel',
+            'canonical' => 'hotel',
+            'description' => 'Hotel based feedbacks',
+        ]);
+
+        Group::create([
+            'name' => 'Restaurant',
+            'canonical' => 'restaurant',
+            'description' => 'Restaurant based feedbacks',
+        ]);
+
+        Group::create([
+            'name' => 'Product',
+            'canonical' => 'product',
+            'description' => 'Product based feedbacks',
         ]);
     }
 }
