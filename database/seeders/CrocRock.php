@@ -12,8 +12,10 @@ use QRFeedz\Cube\Models\Group;
 use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\OpenAIPrompt;
 use QRFeedz\Cube\Models\Page;
+use QRFeedz\Cube\Models\PageInstance;
 use QRFeedz\Cube\Models\Pivots\QuestionWidgetType;
 use QRFeedz\Cube\Models\Question;
+use QRFeedz\Cube\Models\QuestionInstance;
 use QRFeedz\Cube\Models\Questionnaire;
 use QRFeedz\Cube\Models\Tag;
 use QRFeedz\Cube\Models\User;
@@ -78,8 +80,6 @@ class CrocRock extends Seeder
                ->associate($affiliate)
                ->save();
 
-        dd('---');
-
         // Create restaurant admin.
         $admin = User::create([
             'client_id' => $client->id,
@@ -99,12 +99,9 @@ class CrocRock extends Seeder
         /**
          * Give respective permissions to all the created users.
          *
-         * The client that will have Karine ($affiliate) as affiliate.
          * The client that will have Peres as admin.
          * The 2nd user (non-admin) will not have direct permissions.
          */
-        $client->affiliate()->associate($affiliate)->save();
-
         Authorization::firstWhere('canonical', 'admin')
             ->clients()
             ->attach(
@@ -163,7 +160,7 @@ class CrocRock extends Seeder
          *
          * Pages are added to the via the PageTypeQuestionnaire pivot table.
          */
-        $pageTypeIds = [
+        $pageIds = [
             Page::firstWhere('canonical', 'splash-page-5-secs')->id,
             Page::firstWhere('canonical', 'locale-select-page')->id,
             Page::firstWhere('canonical', 'survey-page-default')->id,
@@ -171,13 +168,11 @@ class CrocRock extends Seeder
             Page::firstWhere('canonical', 'promo-page-default')->id,
         ];
 
-        foreach ($pageTypeIds as $pageTypeId) {
-            $pageType = $questionnaire->pageTypes()->newPivot([
+        foreach ($pageIds as $pageId) {
+            PageInstance::create([
+                'page_id' => $pageId,
                 'questionnaire_id' => $questionnaire->id,
-                'page_id' => $pageTypeId,
             ]);
-
-            $pageType->save();
         }
 
         /**
@@ -195,17 +190,15 @@ class CrocRock extends Seeder
          */
 
         // Obtain the page type questionnaire instances (ordered by index).
-        $pageTypes = $questionnaire->pageTypes;
+        $pageInstances = $questionnaire->pageInstances;
 
         /**
          * The first 2 pages they don't need any work.
          * The next 2 pages they need to have questions, one question per page.
          * The last promo page doesn't need to have anything.
          */
-        foreach ($pageTypes as $pageType) {
-            $pivot = $pageType->pivot;
-
-            if ($pageType->canonical == 'splash-page-5-secs') {
+        foreach ($pageInstances as $pageInstance) {
+            if ($pageInstance->page->canonical == 'splash-page-5-secs') {
 
                 /**
                  *  ||
@@ -226,12 +219,14 @@ class CrocRock extends Seeder
                  * - Widgets (the splash-1 widget)
                  * - Conditionals (no conditionals)
                  */
-                $question = Question::create([
-                    'page_type_questionnaire_id' => $pageType->id,
+                $question = QuestionInstance::create([
+                    'page_instance_id' => $pageInstance->id,
                     'is_analytical' => false,
                     'is_single_value' => false,
                     'is_used_for_personal_data' => false,
                 ]);
+
+                dd('estou aqui');
 
                 $questionWidgetType = new QuestionWidgetType();
                 $questionWidgetType->question_id = $question->id;

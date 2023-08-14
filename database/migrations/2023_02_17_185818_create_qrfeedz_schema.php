@@ -228,6 +228,10 @@ return new class extends Migration
                   ->default(true)
                   ->comment('Overrides the active dates. In case we want to immediate inactivate the questionnaire');
 
+            $table->json('data')
+                  ->nullable()
+                  ->comment('Additional data that identifies or better details this questionnaire');
+
             $table->dateTime('starts_at')
                   ->nullable()
                   ->comment('When is the questionnaire active, and ready to receive data');
@@ -435,6 +439,10 @@ return new class extends Migration
 
         Schema::create('page_instances', function (Blueprint $table) {
             $table->id();
+
+            $table->char('uuid', 36)
+                  ->unique()
+                  ->nullable();
 
             $table->foreignId('page_id')
                   ->comment('Related page type, to undertand what strucutre should be loaded. If null, then a view component override is needed');
