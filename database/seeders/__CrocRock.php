@@ -21,7 +21,7 @@ use QRFeedz\Cube\Models\Widget;
 use QRFeedz\Cube\Models\WidgetInstance;
 use QRFeedz\Cube\Models\WidgetInstanceConditional;
 
-class CrocRock extends Seeder
+class __CrocRock extends Seeder
 {
     public function run()
     {
@@ -198,11 +198,7 @@ class CrocRock extends Seeder
          * The last promo page doesn't need to have anything.
          */
         foreach ($pageInstances->orderBy as $pageInstance) {
-
-            /**
-             * Splash page. No feedback is received. No locale used.
-             */
-            if ($pageInstance->id == 1) {
+            if ($pageInstance->page->canonical == 'splash-page-5-secs') {
                 $questionInstance = QuestionInstance::create([
                     'page_instance_id' => $pageInstance->id,
                     'is_analytical' => false,
@@ -216,60 +212,116 @@ class CrocRock extends Seeder
                 ]);
             }
 
-            /**
-             * Locale selection. Will be kept forever in all pages.
-             * The locale is a session variable that changes in case there
-             * is a querystring parameter 'lang=en' as example. After that
-             * it will keep the same locale on the same session.
-             */
-            if ($pageInstance->id == 2) {
-                $questionInstance = QuestionInstance::create([
-                    'page_instance_id' => $pageInstance->id,
-                    'is_analytical' => false,
-                    'is_single_value' => false,
-                    'is_used_for_personal_data' => false,
-                ]);
+            if ($pageType->canonical == 'survey-page-default' && $pivot->index == 3) {
+                /**
+                 * Add the overall question stars rating.
+                 * - Question
+                 * - Locales
+                 * - Widgets
+                 * - Conditionals
+                 */
 
-                $widgetInstance = WidgetInstance::create([
-                    'question_instance_id' => $questionInstance->id,
-                    'widget_id' => Widget::firstWhere('canonical', 'locale-select-page')->id,
-                ]);
-            }
-
-            /**
-             * First survey page. A "how did it go?" 5 stars widget.
-             * In case there is a  <=2 or a =5 then a "why?". The label on the
-             * why is different so we need use it on the widget conditionals.
-             *
-             * On this case we also need to add question and widget locales,
-             * and also widget conditional locales.
-             */
-            if ($pageInstance->id == 3) {
-                $questionInstance = QuestionInstance::create([
-                    'page_instance_id' => $pageInstance->id,
+                // Add question.
+                $question = Question::create([
+                    'page_type_questionnaire_id' => $pageType->pivot->id,
                     'is_analytical' => true,
-                    'is_single_value' => true,
                     'is_used_for_personal_data' => false,
+                    'is_single_value' => true,
+                    'is_required' => true,
                 ]);
 
-                $widgetInstance = WidgetInstance::create([
-                    'question_instance_id' => $questionInstance->id,
-                    'widget_id' => Widget::firstWhere('canonical', 'stars-rating')->id,
+                // Add locales.
+                Locale::firstWhere('canonical', 'en')
+                    ->questions()
+                    ->attach(
+                        $question->id,
+                        ['caption' => 'How do you rate us, in overall?']
+                    );
+
+                Locale::firstWhere('canonical', 'fr')
+                    ->questions()
+                    ->attach(
+                        $question->id,
+                        ['caption' => 'Comment nous évaluez-vous, globalement ?']
+                    );
+
+                Locale::firstWhere('canonical', 'de')
+                    ->questions()
+                    ->attach(
+                        $question->id,
+                        ['caption' => 'Wie bewerten Sie uns insgesamt?']
+                    );
+
+                /**
+                 * Add the widget type to the question, by then creating a
+                 * QuestionWidgetType model instance (pivot).
+                 */
+                $questionWidgetType = new QuestionWidgetType();
+                $questionWidgetType->question_id = $question->id;
+                $questionWidgetType->widget_id = Widget::firstWhere('canonical', 'stars-rating')->id;
+                $questionWidgetType->save();
+
+                // Now, lets create the widget type conditionals.
+                $questionWidgetTypeConditional = WidgetInstanceConditional::create([
+                    'question_widget_type_id' => $questionWidgetType->id,
+                    'when' => ['value' => '<=2'],
+                    'then' => ['action' => 'textarea.open'],
+                ]);
+
+                $questionWidgetTypeConditional = WidgetInstanceConditional::create([
+                    'question_widget_type_id' => $questionWidgetType->id,
+                    'when' => ['value' => '==5'],
+                    'then' => ['action' => 'textarea.open'],
                 ]);
             }
 
-            /**
-             * 2nd survey page. We ask "anything you would like to see
-             * improved?" -- This is a textarea.
-             */
-            if ($pageInstance->id == 4) {
-            }
+            if ($pageType->canonical == 'survey-page-default' && $pivot->index == 4) {
+                /**
+                 * Add anything else to let us know.
+                 * - Question
+                 * - Locales
+                 * - Widgets
+                 * - Conditionals
+                 */
+                // Add question.
+                $question = Question::create([
+                    'page_type_questionnaire_id' => $pageType->pivot->id,
+                    'is_analytical' => true,
+                    'is_used_for_personal_data' => false,
+                    'is_single_value' => true,
+                    'is_required' => true,
+                ]);
 
-            /**
-             * This is a promotional page from the
-             * @var [type]
-             */
-            if ($pageInstance->id == 5) {
+                // Add locales.
+                Locale::firstWhere('canonical', 'en')
+                    ->questions()
+                    ->attach(
+                        $question->id,
+                        ['caption' => 'Anything else to let us know?']
+                    );
+
+                Locale::firstWhere('canonical', 'fr')
+                    ->questions()
+                    ->attach(
+                        $question->id,
+                        ['caption' => 'Y a-t-il autre chose que vous souhaitez nous communiquer ?']
+                    );
+
+                Locale::firstWhere('canonical', 'de')
+                    ->questions()
+                    ->attach(
+                        $question->id,
+                        ['caption' => 'Gibt es sonst noch etwas, das Sie uns mitteilen möchten?']
+                    );
+
+                /**
+                 * Add the widget type to the question, by then creating a
+                 * QuestionWidgetType model instance (pivot).
+                 */
+                $questionWidgetType = new QuestionWidgetType();
+                $questionWidgetType->question_id = $question->id;
+                $questionWidgetType->widget_id = Widget::firstWhere('canonical', 'textarea')->id;
+                $questionWidgetType->save();
             }
         }
     }
