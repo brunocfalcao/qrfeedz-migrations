@@ -187,7 +187,7 @@ return new class extends Migration
         Schema::create('questionnaires', function (Blueprint $table) {
             $table->id();
 
-            $table->uuid()
+            $table->char('uuid', 36)
                   ->unique()
                   ->nullable()
                   ->comment('This will be the unique questionnaire qr code that will be scanned by a client.');
@@ -467,6 +467,10 @@ return new class extends Migration
         Schema::create('question_instances', function (Blueprint $table) {
             $table->id();
 
+            $table->char('uuid', 36)
+                  ->unique()
+                  ->nullable();
+
             $table->foreignId('page_instance_id')
                   ->nullable()
                   ->comment('Related questionnaire page instance');
@@ -515,11 +519,48 @@ return new class extends Migration
         Schema::create('widget_instances', function (Blueprint $table) {
             $table->id();
 
+            $table->char('uuid', 36)
+                  ->unique()
+                  ->nullable();
+
             $table->foreignId('question_instance_id');
             $table->foreignId('widget_id');
 
             $table->unsignedInteger('index')
                   ->comment('The sequence of the widget instance in case it is a multi-widget instance question instance');
+
+            $table->foreignId('widget_instance_id')
+                  ->nullable()
+                  ->comment('If it is a widget instance child (like a widget conditional)');
+
+            /**
+             * This is a javascript eval expression like:
+             * 'widget.value <=2 or widget.value ==5'.
+             * The value is the widget.value.
+             * Each json entry is an OR clause.
+             * Later there will be more types and options, like access
+             * to other question instance values, widget values, etc.
+             */
+            $table->json('when')
+                  ->nullable()
+                  ->comment('Condition that will trigger the condition for the widget conditional to appear');
+
+            /**
+             * The available conditions at the moment are:
+             * textarea-slidedown
+             * subtext-appear
+             * jump-to-page
+             *
+             * Then the respective value if needed. E.g.:
+             * ["jump-to-page" => 2]
+             * ["textarea-slidedown"]
+             * ["subtext-appear" => WidgetPivot on the localables with
+             *                      'variable_type' => 'subtext',
+             *                      'variable_uuid' => uuid()]
+             */
+            $table->json('then')
+                  ->nullable()
+                  ->comment('Consequence of the conditional when it is triggered');
 
             $table->json('data')
                   ->nullable()
@@ -541,33 +582,6 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('widget_instance_id');
-
-            /**
-             * This is a javascript eval expression like:
-             * 'widget.value <=2 or widget.value ==5'.
-             * The value is the widget.value.
-             * Each json entry is an OR clause.
-             * Later there will be more types and options, like access
-             * to other question instance values, widget values, etc.
-             */
-            $table->json('when')
-                  ->comment('Conditional that will trigger the condition');
-
-            /**
-             * The available conditions at the moment are:
-             * textarea-slidedown
-             * subtext-appear
-             * jump-to-page
-             *
-             * Then the respective value if needed. E.g.:
-             * ["jump-to-page" => 2]
-             * ["textarea-slidedown"]
-             * ["subtext-appear" => WidgetPivot on the localables with
-             *                      'variable_type' => 'subtext',
-             *                      'variable_uuid' => uuid()]
-             */
-            $table->json('then')
-                  ->comment('Consequence of the conditional when it is triggered');
 
             $table->timestamps();
             $table->softDeletes();

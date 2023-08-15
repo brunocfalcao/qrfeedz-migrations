@@ -454,7 +454,7 @@ class SchemaFoundationSeeder extends Seeder
 
         Widget::create([
             'name' => 'Locales selectors',
-            'canonical' => 'locale-selectors-1',
+            'canonical' => 'locale-selector-1',
             'description' => 'Big buttons for a full screen, to select a locale from a locales list',
             'view_component_namespace' => 'widgets.locale-selectors-1',
         ]);

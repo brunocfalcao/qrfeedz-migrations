@@ -195,7 +195,7 @@ class CrocRock extends Seeder
          * The next 2 pages they need to have questions, one question per page.
          * The last promo page doesn't need to have anything.
          */
-        foreach ($pageInstances->orderBy as $pageInstance) {
+        foreach ($pageInstances as $pageInstance) {
 
             /**
              * Splash page. No feedback is received. No locale used.
@@ -230,7 +230,7 @@ class CrocRock extends Seeder
 
                 $widgetInstance = WidgetInstance::create([
                     'question_instance_id' => $questionInstance->id,
-                    'widget_id' => Widget::firstWhere('canonical', 'locale-select-page')->id,
+                    'widget_id' => Widget::firstWhere('canonical', 'locale-selector-1')->id,
                 ]);
             }
 
@@ -240,7 +240,7 @@ class CrocRock extends Seeder
              * why is different so we need use it on the widget conditionals.
              *
              * On this case we also need to add question and widget locales,
-             * and also widget conditional locales.
+             * and also widget conditional locales (en, fr, it).
              */
             if ($pageInstance->id == 3) {
                 $questionInstance = QuestionInstance::create([
@@ -254,6 +254,27 @@ class CrocRock extends Seeder
                     'question_instance_id' => $questionInstance->id,
                     'widget_id' => Widget::firstWhere('canonical', 'stars-rating')->id,
                 ]);
+
+                Locale::firstWhere('canonical', 'en')
+                    ->questionInstances()
+                    ->attach(
+                        $questionInstance->id,
+                        ['caption' => 'How do you rate us, in overall?']
+                    );
+
+                Locale::firstWhere('canonical', 'fr')
+                    ->questionInstances()
+                    ->attach(
+                        $questionInstance->id,
+                        ['caption' => 'Ca va etait?']
+                    );
+
+                Locale::firstWhere('canonical', 'it')
+                    ->questionInstances()
+                    ->attach(
+                        $questionInstance->id,
+                        ['caption' => 'Tuto va bienne?']
+                    );
             }
 
             /**
