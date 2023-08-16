@@ -275,6 +275,36 @@ class CrocRock extends Seeder
                         $questionInstance->id,
                         ['caption' => 'Tuto va bienne?']
                     );
+
+                // Now we need to load the widget instance conditionals.
+                $widgetInstanceConditional = WidgetInstance::create([
+                    'widget_instance_id' => $widgetInstance->id,
+                    'widget_id' => Widget::firstWhere('canonical', 'textarea')->id,
+                    'index' => null,
+                    'when' => ['value' => '<=2'],
+                    'then' => ['action' => 'slidedown'],
+                ]);
+
+                Locale::firstWhere('canonical', 'en')
+                    ->widgetInstances()
+                    ->attach(
+                        $widgetInstanceConditional->id,
+                        ['caption' => 'What went wrong?']
+                    );
+
+                Locale::firstWhere('canonical', 'it')
+                    ->widgetInstances()
+                    ->attach(
+                        $widgetInstanceConditional->id,
+                        ['caption' => 'Qui ha passato malle?']
+                    );
+
+                Locale::firstWhere('canonical', 'fr')
+                    ->widgetInstances()
+                    ->attach(
+                        $widgetInstanceConditional->id,
+                        ['caption' => 'Ce etait mal?']
+                    );
             }
 
             /**

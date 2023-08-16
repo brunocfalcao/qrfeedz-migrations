@@ -523,10 +523,14 @@ return new class extends Migration
                   ->unique()
                   ->nullable();
 
-            $table->foreignId('question_instance_id');
-            $table->foreignId('widget_id');
+            $table->foreignId('question_instance_id')
+                  ->nullable();
+
+            $table->foreignId('widget_id')
+                  ->nullable();
 
             $table->unsignedInteger('index')
+                  ->nullable()
                   ->comment('The sequence of the widget instance in case it is a multi-widget instance question instance');
 
             $table->foreignId('widget_instance_id')
@@ -565,23 +569,6 @@ return new class extends Migration
             $table->json('data')
                   ->nullable()
                   ->comment('The settings override for the widget instance data');
-
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
-        /**
-         * This table stores all the conditional types for a specific widget
-         * instance vs the respective conditionals it will have.
-         *
-         * Examples:
-         * If a stars rating <=2 then it slides down a textarea.
-         * If an emoji rating = 3 then it shows sub-text "Right in the middle!".
-         */
-        Schema::create('widget_instance_conditionals', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('widget_instance_id');
 
             $table->timestamps();
             $table->softDeletes();
