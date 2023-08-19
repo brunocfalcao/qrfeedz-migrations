@@ -159,11 +159,11 @@ class CrocRock extends Seeder
          * Pages are added to the via the PageTypeQuestionnaire pivot table.
          */
         $pageIds = [
-            Page::firstWhere('canonical', 'splash-page-5-secs')->id,
-            Page::firstWhere('canonical', 'locale-select-page')->id,
-            Page::firstWhere('canonical', 'survey-page-default')->id,
-            Page::firstWhere('canonical', 'survey-page-default')->id,
-            Page::firstWhere('canonical', 'promo-page-default')->id,
+            Page::firstWhere('canonical', 'full-screen')->id,
+            Page::firstWhere('canonical', 'full-screen')->id,
+            Page::firstWhere('canonical', 'full-screen')->id,
+            Page::firstWhere('canonical', 'full-screen')->id,
+            Page::firstWhere('canonical', 'full-screen')->id,
         ];
 
         foreach ($pageIds as $pageId) {

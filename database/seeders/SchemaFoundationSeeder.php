@@ -348,65 +348,11 @@ class SchemaFoundationSeeder extends Seeder
             'description' => 'Access to delete a specific asset. Normally for admins',
         ]);
 
-        /**
-         * Pages creation.
-         *
-         * 'splash-page' - Blank splash page with logo + questionnaire title.
-         * 'locale-select' - Flags, oneliner for locale selection.
-         * 'survey' - Default survey form (header, content, voice recorder).
-         * 'promo'  - Default promo page (header, message title, email field).
-         * 'social' - Social sharing page, normally the last page.
-         *
-         * There are the following sliding contexts:
-         * 'global' - The slide/paging will happen at the highest level.
-         * 'survey' - The slide/paging will happen at the survey pages.
-         *
-         * The transitions are calculated by the UI framework, but mostly
-         * between globals are full page transitions, and between surveys
-         * are component transitions.
-         * A transition can also reload the page. Like for instance when the
-         * visitor selects a new language. The page is reloaded to a specific
-         * page rendering (not to the beginning of the 1st page).
-         *
-         * A page reload is used as:
-         * <url>.ai/<uuid>?p=<uuid>&locale=??
-         *
-         * This will reload a survey directly to the uuid page, from the
-         * qrcode uuid. They both need to math in the same data model.
-         * The locale querystring will render the survey with that locale.
-         */
         Page::create([
-            'name' => 'Splash page - 5 seconds',
-            'canonical' => 'splash-page-5-secs',
+            'name' => 'Default full screen',
+            'canonical' => 'full-screen',
             'view_component_namespace' => 'pages.full-screen',
-            'description' => 'A splash full page, with logo or questionnaire title, lasts 5 seconds',
-        ]);
-
-        Page::create([
-            'name' => 'Local selection page',
-            'canonical' => 'locale-select-page',
-            'view_component_namespace' => 'pages.full-screen',
-            'description' => 'A list of locales that are available for the questionnaire',
-        ]);
-
-        Page::create([
-            'name' => 'Survey page (default)',
-            'canonical' => 'survey-page-default',
-            'description' => 'Survey structure page - default questions structure',
-        ]);
-
-        Page::create([
-            'name' => 'Promo page',
-            'canonical' => 'promo-page-default',
-            'view_component_namespace' => 'pages.full-screen',
-            'description' => 'Promotional default page',
-        ]);
-
-        Page::create([
-            'name' => 'Social sharing page',
-            'canonical' => 'social-page-default',
-            'view_component_namespace' => 'pages.full-screen',
-            'description' => 'Social sharing default page',
+            'description' => 'A default fullscreen page, mostly used on all page instance transitions',
         ]);
 
         /**
