@@ -308,7 +308,7 @@ class SchemaFoundationSeeder extends Seeder
          * Authorizations types creation.
          */
         Authorization::create([
-            'canonical' => 'admin',
+            'canonical' => 'client-admin',
             'name' => 'Client Administrator',
             'description' => 'Generic admin, can admin its own client, respective groups and questionnaires. Can delete questionnaires that dont have data yet. Can change users, and delete them, but not delete himself. Can trigger reset passwords']);
 
@@ -411,7 +411,7 @@ class SchemaFoundationSeeder extends Seeder
         $sysadmin = User::create([
             'name' => env('QRFEEDZ_SUPER_ADMIN_NAME'),
             'email' => env('QRFEEDZ_SUPER_ADMIN_EMAIL'),
-            //'password' => bcrypt(env('QRFEEDZ_SUPER_ADMIN_PASSWORD')),
+            'password' => bcrypt(env('QRFEEDZ_SUPER_ADMIN_PASSWORD')),
             'is_super_admin' => true,
         ]);
 

@@ -99,7 +99,7 @@ class CrocRock extends Seeder
          * The client that will have Peres as admin.
          * The 2nd user (non-admin) will not have direct permissions.
          */
-        Authorization::firstWhere('canonical', 'admin')
+        Authorization::firstWhere('canonical', 'client-admin')
             ->clients()
             ->attach(
                 $client->id,
