@@ -64,47 +64,18 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('affiliates', function (Blueprint $table) {
-            $table->id();
-
-            $table->string('name')
-                  ->comment('Affiliate name');
-
-            $table->unsignedInteger('commission_percentage')
-                  ->default(50)
-                  ->comment('Comission in percentage (0 to 100)');
-
-            $table->text('address')
-                ->nullable()
-                ->comment('The affiliate address');
-
-            $table->string('postal_code')
-                  ->nullable()
-                  ->comment('The affiliate postal code');
-
-            $table->string('locality')
-                  ->nullable()
-                  ->comment('The affiliate locality');
-
-            $table->foreignId('country_id')
-                  ->comment('Affiliate country');
-
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
 
             $table->string('name')
                   ->comment('The client name');
 
-            $table->foreignId('affiliate_id')
+            $table->foreignId('user_affiliate_id')
                   ->nullable()
-                  ->comment('Related affiliate, if exists');
+                  ->comment('Related affiliate, in table users, if exists');
 
             $table->foreignId('locale_id')
-                  ->comment('Related default locale');
+                  ->comment('Related default locale. Cascades to questionnaire');
 
             $table->string('vat_number')
                   ->nullable()
@@ -147,15 +118,30 @@ return new class extends Migration
                   ->comment('The default locale of all notifications that are sent to this user')
                   ->after('client_id');
 
-            $table->foreignId('affiliate_id')
-                  ->nullable()
-                  ->after('client_id')
-                  ->comment('Related affiliate');
-
             $table->boolean('is_super_admin')
                   ->default(false)
-                  ->after('affiliate_id')
+                  ->after('locale_id')
                   ->comment('Has a super admin role?');
+
+            $table->unsignedInteger('commission_percentage')
+                  ->default(0)
+                  ->comment('Comission in percentage (0 to 100), in case it is an affiliate');
+
+            $table->text('address')
+                ->nullable()
+                ->comment('User address');
+
+            $table->string('postal_code')
+                  ->nullable()
+                  ->comment('User postal code');
+
+            $table->string('locality')
+                  ->nullable()
+                  ->comment('User locality');
+
+            $table->foreignId('country_id')
+                  ->nullable()
+                  ->comment('User country');
 
             $table->dropColumn('email_verified_at');
 

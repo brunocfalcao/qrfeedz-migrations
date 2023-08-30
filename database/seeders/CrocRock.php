@@ -45,7 +45,6 @@ class CrocRock extends Seeder
          * There will be 1 affiliate user connected to the client.
          */
         $affiliate = Affiliate::create([
-            'name' => 'Karine Esnault',
             'address' => 'Le chauffour 4',
             'postal_code' => '2364',
             'locality' => 'St-Brais',
