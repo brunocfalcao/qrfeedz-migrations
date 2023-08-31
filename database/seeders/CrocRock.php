@@ -3,7 +3,6 @@
 namespace QRFeedz\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use QRFeedz\Cube\Models\Affiliate;
 use QRFeedz\Cube\Models\Authorization;
 use QRFeedz\Cube\Models\Client;
 use QRFeedz\Cube\Models\Country;
@@ -23,34 +22,6 @@ class CrocRock extends Seeder
 {
     public function run()
     {
-        /**
-         * The Croc & Rock restaurant example.
-         *
-         * A restaurant survey that will ask for the visitors for the
-         * overall experience.
-         *
-         * The questionnaire workflow is the following:
-         *
-         * 1. Splash screen (full screen)
-         * 2. Choose your language (full screen)
-         * 3. How was the meal quality ? (survey screen)
-         * 4. How was the services ? (survey screen)
-         * 5. How was the price vs quality ? (survey screen)
-         * 6. Have a 10% discount next time (full screen)
-         * 7. Add yourself to our social networks (full screen)
-         *
-         * The client will belong to the "restaurants" group (admin managed).
-         * There will be 2 users: a client admin and a questionnaire admin.
-         *
-         * There will be 1 affiliate user connected to the client.
-         */
-        $affiliate = Affiliate::create([
-            'address' => 'Le chauffour 4',
-            'postal_code' => '2364',
-            'locality' => 'St-Brais',
-            'country_id' => Country::firstWhere('name', 'Switzerland')->id,
-        ]);
-
         // Create CrocRock client.
         $client = Client::create([
             'name' => 'Croc & Rock',
@@ -62,15 +33,16 @@ class CrocRock extends Seeder
         ]);
 
         // This is the user connected to the afilliate. For testing purposes.
-        $affiliateUser = User::create([
+        $affiliate = User::create([
             'name' => env('CROCROCK_AFFILIATE_NAME'),
             'email' => env('CROCROCK_AFFILIATE_EMAIL'),
             'password' => bcrypt(env('CROCROCK_AFFILIATE_PASSWORD')),
+            'address' => 'Le chauffour 4',
+            'postal_code' => '2364',
+            'locality' => 'St-Brais',
+            'commission_percentage' => 50,
+            'country_id' => Country::firstWhere('name', 'Switzerland')->id,
         ]);
-
-        // Associate Karine affiliate with the user Karine (kaesnault@outlook.com).
-        $affiliate->user()
-                  ->save($affiliateUser);
 
         $client->affiliate()
                ->associate($affiliate)
