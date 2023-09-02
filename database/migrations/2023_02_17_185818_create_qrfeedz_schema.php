@@ -148,28 +148,6 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('groups', function (Blueprint $table) {
-            $table->id();
-
-            $table->string('name')
-                  ->comment('The group name, can be a specific location or a restaurant/hotel, etc');
-
-            $table->string('canonical')
-                  ->unique()
-                  ->comment('Widget canonical, easier to find when relating with question instances');
-
-            $table->text('description')
-                  ->nullable()
-                  ->comment('If necessary can have a bit more description context to understand what this group is');
-
-            $table->json('data')
-                  ->nullable()
-                  ->comment('Additional data that identifies this group, like a brand, a restaurant, etc');
-
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
         Schema::create('questionnaires', function (Blueprint $table) {
             $table->id();
 
@@ -186,9 +164,8 @@ return new class extends Migration
                   ->nullable()
                   ->comment('The default locale for this questionnaire, in case a language is not selected');
 
-            $table->foreignId('group_id')
-                  ->nullable()
-                  ->comment('Related group (hotel, restaurant, etc)');
+            $table->foreignId('category_id')
+                  ->comment('Related system assigned category (hotel, restaurant, product, etc)');
 
             $table->string('name')
                   ->nullable()
@@ -287,18 +264,17 @@ return new class extends Migration
         });
 
         /**
-         * Categories are joker attributes that are related to clients,
-         * groups, questionnaires, etc. They can be created and used as
-         * requested.
+         * Categories can be a system grouped tag. Restaurant, Hotel, Product,
+         * besides others. They are system-assigned and not by the user.
          */
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('client_id')
-                  ->nullable()
-                  ->comment('Related client');
-
             $table->string('name');
+
+            $table->string('canonical')
+                  ->unique()
+                  ->comment('Category canonical');
 
             $table->text('description')
                   ->nullable();
@@ -339,16 +315,6 @@ return new class extends Migration
 
             $table->morphs('model');
             $table->foreignId('tag_id');
-
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
-        Schema::create('category_questionnaire', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('category_id');
-            $table->foreignId('questionnaire_id');
 
             $table->timestamps();
             $table->softDeletes();

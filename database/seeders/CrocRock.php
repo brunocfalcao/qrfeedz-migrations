@@ -4,9 +4,9 @@ namespace QRFeedz\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use QRFeedz\Cube\Models\Authorization;
+use QRFeedz\Cube\Models\Category;
 use QRFeedz\Cube\Models\Client;
 use QRFeedz\Cube\Models\Country;
-use QRFeedz\Cube\Models\Group;
 use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\OpenAIPrompt;
 use QRFeedz\Cube\Models\Page;
@@ -93,7 +93,7 @@ class CrocRock extends Seeder
         $questionnaire = Questionnaire::create([
             'name' => 'CrocRock 2024',
             'title' => 'Restaurant CrocRock',
-            'group_id' => Group::firstWhere('canonical', 'restaurant')->id,
+            'category_id' => Category::firstWhere('canonical', 'restaurant')->id,
             'starts_at' => now(),
         ]);
 
