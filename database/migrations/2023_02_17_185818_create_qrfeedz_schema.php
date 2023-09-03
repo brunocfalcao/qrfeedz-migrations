@@ -160,6 +160,10 @@ return new class extends Migration
                   ->nullable()
                   ->comment('Related client');
 
+            $table->foreignId('location_id')
+                  ->nullable()
+                  ->comment('Related location');
+
             $table->foreignId('locale_id')
                   ->nullable()
                   ->comment('The default locale for this questionnaire, in case a language is not selected');
@@ -521,6 +525,34 @@ return new class extends Migration
             $table->json('data')
                   ->nullable()
                   ->comment('The settings override for the widget instance data');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('locations', function (Blueprint $table) {
+            $table->id();
+
+            $table->string('name')
+                  ->comment('Location name, like an Hotel name');
+
+            $table->foreignId('client_id')
+                  ->comment('Related client');
+
+            $table->text('address')
+                ->nullable()
+                ->comment('The client address');
+
+            $table->string('postal_code')
+                ->nullable()
+                ->comment('The client postal code');
+
+            $table->string('locality')
+                  ->nullable()
+                  ->comment('The client locality');
+
+            $table->foreignId('country_id')
+                  ->comment('Related country');
 
             $table->timestamps();
             $table->softDeletes();
