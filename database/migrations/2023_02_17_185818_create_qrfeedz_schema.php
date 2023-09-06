@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Artisan;
 
 return new class extends Migration
 {
@@ -557,6 +558,15 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        /**
+         * The foundation seeder populates de system tables with the
+         * initial data that is needed to use qrfeedz.
+         */
+        Artisan::call('db:seed', [
+            '--class' => 'QRFeedz\Database\Seeders\SchemaFoundationSeeder',
+            '--quiet' => 1,
+        ]);
     }
 
     public function down()

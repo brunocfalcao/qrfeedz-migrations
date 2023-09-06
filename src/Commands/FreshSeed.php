@@ -47,15 +47,6 @@ class FreshSeed extends Command
             '--quiet' => 1,
         ]);
 
-        /**
-         * The foundation seeder populates de system tables with the
-         * initial data that is needed to use qrfeedz.
-         */
-        $this->call('db:seed', [
-            '--class' => 'QRFeedz\Database\Seeders\SchemaFoundationSeeder',
-            '--quiet' => 1,
-        ]);
-
         if ($this->option('test') && app()->environment() != 'production') {
             $this->info('=> Seeding database with testing data ...');
             $this->call('db:seed', [
