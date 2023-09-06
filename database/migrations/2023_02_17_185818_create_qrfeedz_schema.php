@@ -565,6 +565,7 @@ return new class extends Migration
          */
         Artisan::call('db:seed', [
             '--class' => 'QRFeedz\Database\Seeders\SchemaFoundationSeeder',
+            '--force' => true,
             '--quiet' => 1,
         ]);
     }
