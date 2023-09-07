@@ -415,6 +415,16 @@ class SchemaFoundationSeeder extends Seeder
             'is_super_admin' => true,
         ]);
 
+        /**
+         * Tester creation.
+         */
+        $tester = User::create([
+            'name' => env('QRFEEDZ_TESTER_NAME'),
+            'email' => env('QRFEEDZ_TESTER_EMAIL'),
+            'password' => bcrypt(env('QRFEEDZ_TESTER_PASSWORD')),
+            'is_super_admin' => true,
+        ]);
+
         Category::create([
             'name' => 'Hotel',
             'canonical' => 'hotel',
