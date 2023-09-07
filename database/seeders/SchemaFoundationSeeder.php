@@ -415,6 +415,8 @@ class SchemaFoundationSeeder extends Seeder
             'is_super_admin' => true,
         ]);
 
+        info('Sysadmin created.');
+
         /**
          * Tester creation.
          */
@@ -424,6 +426,8 @@ class SchemaFoundationSeeder extends Seeder
             'password' => bcrypt(env('QRFEEDZ_TESTER_PASSWORD')),
             'is_super_admin' => true,
         ]);
+
+        info('Tester created.');
 
         Category::create([
             'name' => 'Hotel',
