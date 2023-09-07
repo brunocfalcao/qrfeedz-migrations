@@ -432,19 +432,19 @@ class SchemaFoundationSeeder extends Seeder
         Category::create([
             'name' => 'Hotel',
             'canonical' => 'hotel',
-            'description' => 'Hotel based feedbacks',
+            'description' => 'Hotel-based feedbacks',
         ]);
 
         Category::create([
             'name' => 'Restaurant',
             'canonical' => 'restaurant',
-            'description' => 'Restaurant based feedbacks',
+            'description' => 'Restaurant-based feedbacks',
         ]);
 
         Category::create([
             'name' => 'Product',
             'canonical' => 'product',
-            'description' => 'Product based feedbacks',
+            'description' => 'Product-based feedbacks',
         ]);
     }
 }
