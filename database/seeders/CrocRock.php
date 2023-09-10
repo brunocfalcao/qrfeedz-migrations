@@ -48,6 +48,17 @@ class CrocRock extends Seeder
                ->associate($affiliate)
                ->save();
 
+        /**
+         * Besides being an affiliate in the users/clients we also
+         * need to add this affiliate to the authorization Morph table.
+         */
+        Authorization::firstWhere('canonical', 'affiliate')
+            ->clients()
+            ->attach(
+                $client->id,
+                ['user_id' => $affiliate->id] // Affiliate User
+            );
+
         // Create restaurant admin.
         $admin = User::create([
             'client_id' => $client->id,

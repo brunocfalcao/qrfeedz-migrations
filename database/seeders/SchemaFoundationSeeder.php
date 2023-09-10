@@ -308,6 +308,11 @@ class SchemaFoundationSeeder extends Seeder
          * Authorizations types creation.
          */
         Authorization::create([
+            'canonical' => 'affiliate',
+            'name' => 'Client Affiliate',
+            'description' => 'Client affiliate, means receives monthly commissions']);
+
+        Authorization::create([
             'canonical' => 'client-admin',
             'name' => 'Client Administrator',
             'description' => 'Generic admin, can admin its own client, respective groups and questionnaires. Can delete questionnaires that dont have data yet. Can change users, and delete them, but not delete himself. Can trigger reset passwords']);
