@@ -126,22 +126,27 @@ return new class extends Migration
 
             $table->unsignedInteger('commission_percentage')
                   ->default(0)
+                  ->after('email')
                   ->comment('Comission in percentage (0 to 100), in case it is an affiliate');
 
             $table->text('address')
                 ->nullable()
+                ->after('commission_percentage')
                 ->comment('User address');
 
             $table->string('postal_code')
                   ->nullable()
+                  ->after('address')
                   ->comment('User postal code');
 
             $table->string('locality')
                   ->nullable()
+                  ->after('postal_code')
                   ->comment('User locality');
 
             $table->foreignId('country_id')
                   ->nullable()
+                  ->after('locality')
                   ->comment('User country');
 
             $table->dropColumn('email_verified_at');

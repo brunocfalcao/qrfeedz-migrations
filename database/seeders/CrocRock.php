@@ -8,7 +8,6 @@ use QRFeedz\Cube\Models\Category;
 use QRFeedz\Cube\Models\Client;
 use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Locale;
-use QRFeedz\Cube\Models\OpenAIPrompt;
 use QRFeedz\Cube\Models\Page;
 use QRFeedz\Cube\Models\PageInstance;
 use QRFeedz\Cube\Models\Question;
@@ -111,24 +110,6 @@ class CrocRock extends Seeder
 
         $questionnaire->client()->associate($client);
         $questionnaire->save();
-
-        /**
-         * Now it's time to configure the OpenAI prompt. On this case,
-         * the restaurant is a start-up, so highly sensitive to feedback,
-         * and it's interest to know mostly the food quality since that's
-         * where they are betting to be different. They also want to
-         * know if visitors left their emails so they can reach to them
-         * with more information.
-         */
-        $prompt = OpenAIPrompt::make([
-            'prompt_i_am_a_business_of' => 'a restaurant in Nancy',
-            'prompt_I_am_paying_attention_to' => 'my food quality, and if tourists like it or not',
-            'balance_type' => 'balanced',
-            'should_be_email_aware' => true,
-        ]);
-
-        $prompt->questionnaire()->associate($questionnaire);
-        $prompt->save();
 
         /**
          * Lets create the pages:
