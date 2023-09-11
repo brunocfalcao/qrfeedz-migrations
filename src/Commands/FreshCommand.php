@@ -3,6 +3,7 @@
 namespace QRFeedz\Migrations\Commands;
 
 use Illuminate\Console\Command;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 class FreshCommand extends Command
@@ -15,24 +16,33 @@ class FreshCommand extends Command
     {
         $seeder = $this->option('seeder');
 
-        // Run migrate:fresh
+        $this->info('Running migrate:fresh...');
+
         $migrateFreshProcess = new Process(['php', 'artisan', 'migrate:fresh', '--force']);
         $migrateFreshProcess->run();
 
-        if (! $migrateFreshProcess->isSuccessful()) {
-            return $this->error('migrate:fresh failed.');
+        try {
+            if (! $migrateFreshProcess->isSuccessful()) {
+                throw new ProcessFailedException($migrateFreshProcess);
+            }
+        } catch (ProcessFailedException $e) {
+            return $this->error($e->getMessage());
         }
 
-        // If seeder option is provided
         if ($seeder) {
             $seederClass = "QRFeedz\\Database\\Seeders\\{$seeder}";
 
-            // Run seeder
+            $this->info("Running seeder: {$seederClass}...");
+
             $seedProcess = new Process(['php', 'artisan', 'db:seed', '--class='.$seederClass, '--force']);
             $seedProcess->run();
 
-            if (! $seedProcess->isSuccessful()) {
-                return $this->error('Seeder failed.');
+            try {
+                if (! $seedProcess->isSuccessful()) {
+                    throw new ProcessFailedException($seedProcess);
+                }
+            } catch (ProcessFailedException $e) {
+                return $this->error($e->getMessage());
             }
         }
 
