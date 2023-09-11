@@ -104,6 +104,7 @@ class CrocRock extends Seeder
         $questionnaire = Questionnaire::create([
             'name' => 'CrocRock 2024',
             'title' => 'Restaurant CrocRock',
+            'location_id' => 1, // This is because the client creation triggered a location.
             'category_id' => Category::firstWhere('canonical', 'restaurant')->id,
             'starts_at' => now(),
         ]);
