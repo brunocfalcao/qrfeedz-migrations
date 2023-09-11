@@ -22,9 +22,9 @@ class MigrationsServiceProvider extends QRFeedzServiceProvider
     protected function registerCommands()
     {
         if ($this->app->runningInConsole()) {
-                $this->commands([
-                    FreshCommand::class,
-                ]);
+            $this->commands([
+                FreshCommand::class,
+            ]);
         }
     }
 }
