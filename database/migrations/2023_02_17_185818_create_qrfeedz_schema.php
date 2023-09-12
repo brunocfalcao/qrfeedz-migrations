@@ -257,7 +257,7 @@ return new class extends Migration
                   ->nullable()
                   ->comment('OpenAI specific prompt text about what the questionnaire/business is about');
 
-            $table->text('prompt_I_am_paying_attention_to')
+            $table->text('prompt_i_am_paying_attention_to')
                   ->nullable()
                   ->comment('OpenAI specific prompt text');
 
