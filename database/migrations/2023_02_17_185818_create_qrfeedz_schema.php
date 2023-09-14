@@ -445,10 +445,6 @@ return new class extends Migration
                   ->default(false)
                   ->comment('Used to be only seen by GDPR profiles');
 
-            $table->boolean('is_single_value')
-                  ->default(true)
-                  ->comment('Accepted values: single - Just returns one value (even from several widgets), multiple, returns all the values');
-
             $table->unsignedInteger('index')
                   ->comment('The question instance index in related page');
 
@@ -463,16 +459,15 @@ return new class extends Migration
         Schema::create('responses', function (Blueprint $table) {
             $table->id();
 
+            $table->string('session_instance_id')
+                  ->comment('The visitor session instance id (aggregator) where this questionnaire was created');
+
             $table->foreignId('question_instance_id')
                   ->comment('Related question instance where this response was answered');
 
-            $table->string('value')
+            $table->json('value')
                   ->nullable()
-                  ->comment('The concluded response value');
-
-            $table->json('values')
-                  ->nullable()
-                  ->comment('A possible subset of values that are part of a response, like a multiple checkbox widget');
+                  ->comment('Value or values of the question instance');
 
             $table->timestamps();
             $table->softDeletes();
