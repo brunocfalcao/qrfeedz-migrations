@@ -3,6 +3,7 @@
 namespace QRFeedz\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 use QRFeedz\Cube\Models\Authorization;
 use QRFeedz\Cube\Models\Category;
 use QRFeedz\Cube\Models\Client;
@@ -13,6 +14,7 @@ use QRFeedz\Cube\Models\PageInstance;
 use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\QuestionInstance;
 use QRFeedz\Cube\Models\Questionnaire;
+use QRFeedz\Cube\Models\Response;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
 use QRFeedz\Cube\Models\WidgetInstance;
@@ -168,7 +170,6 @@ class CrocRock extends Seeder
                 $questionInstance = QuestionInstance::create([
                     'page_instance_id' => $pageInstance->id,
                     'is_analytical' => false,
-                    'is_single_value' => false,
                     'is_used_for_personal_data' => false,
                 ]);
 
@@ -188,7 +189,6 @@ class CrocRock extends Seeder
                 $questionInstance = QuestionInstance::create([
                     'page_instance_id' => $pageInstance->id,
                     'is_analytical' => false,
-                    'is_single_value' => false,
                     'is_used_for_personal_data' => false,
                 ]);
 
@@ -207,42 +207,41 @@ class CrocRock extends Seeder
              * and also widget conditional locales (en, fr, it).
              */
             if ($pageInstance->id == 3) {
-                $questionInstance = QuestionInstance::create([
+                $questionInstanceStars = QuestionInstance::create([
                     'page_instance_id' => $pageInstance->id,
                     'is_analytical' => true,
-                    'is_single_value' => true,
                     'is_used_for_personal_data' => false,
                 ]);
 
-                $widgetInstance = WidgetInstance::create([
-                    'question_instance_id' => $questionInstance->id,
+                $widgetInstanceStars = WidgetInstance::create([
+                    'question_instance_id' => $questionInstanceStars->id,
                     'widget_id' => Widget::firstWhere('canonical', 'stars-rating')->id,
                 ]);
 
                 Locale::firstWhere('canonical', 'en')
                     ->questionInstances()
                     ->attach(
-                        $questionInstance->id,
+                        $questionInstanceStars->id,
                         ['caption' => 'How do you rate us, in overall?']
                     );
 
                 Locale::firstWhere('canonical', 'fr')
                     ->questionInstances()
                     ->attach(
-                        $questionInstance->id,
+                        $questionInstanceStars->id,
                         ['caption' => 'Ca va etait?']
                     );
 
                 Locale::firstWhere('canonical', 'it')
                     ->questionInstances()
                     ->attach(
-                        $questionInstance->id,
+                        $questionInstanceStars->id,
                         ['caption' => 'Tuto va bienne?']
                     );
 
                 // Now we need to load the widget instance conditionals.
                 $widgetInstanceConditional = WidgetInstance::create([
-                    'widget_instance_id' => $widgetInstance->id,
+                    'widget_instance_id' => $widgetInstanceStars->id,
                     'widget_id' => Widget::firstWhere('canonical', 'textarea')->id,
                     'index' => null,
                     'when' => ['value' => '<=2'],
@@ -286,5 +285,15 @@ class CrocRock extends Seeder
             if ($pageInstance->id == 5) {
             }
         }
+
+        /**
+         * Create a single response for this questionnaire.
+         */
+        Response::create([
+            'session_instance_id' => (string) Str::uuid(),
+            'question_instance_id' => $questionInstanceStars->id,
+            'widget_instance_id' => $widgetInstanceStars->id,
+            'value' => ['2', '3'],
+        ]);
     }
 }

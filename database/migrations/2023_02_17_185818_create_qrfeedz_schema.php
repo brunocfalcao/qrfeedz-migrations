@@ -465,6 +465,9 @@ return new class extends Migration
             $table->foreignId('question_instance_id')
                   ->comment('Related question instance where this response was answered');
 
+            $table->foreignId('widget_instance_id')
+                  ->comment('Related widget instance where this response was answered');
+
             $table->json('value')
                   ->nullable()
                   ->comment('Value or values of the question instance');
