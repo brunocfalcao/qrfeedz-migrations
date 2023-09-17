@@ -401,6 +401,9 @@ return new class extends Migration
                   ->unique()
                   ->nullable();
 
+            $table->string('name')
+                  ->comment('What is this page instance about?');
+
             $table->foreignId('page_id')
                   ->comment('Related page type, to undertand what strucutre should be loaded. If null, then a view component override is needed');
 

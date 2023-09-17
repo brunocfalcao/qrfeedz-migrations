@@ -21,8 +21,7 @@
         "illuminate/contracts": "^10.0",
         "brunocfalcao/qrfeedz-cube": "dev-master",
         "brunocfalcao/qrfeedz-services": "dev-master",
-        "brunocfalcao/qrfeedz-foundation": "dev-master",
-        "brunocfalcao/qrfeedz-authorization": "dev-master"
+        "brunocfalcao/qrfeedz-foundation": "dev-master"
     },
     "autoload": {
         "psr-4": {

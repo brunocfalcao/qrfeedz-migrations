@@ -132,9 +132,18 @@ class CrocRock extends Seeder
             Page::firstWhere('canonical', 'full-screen')->id,
         ];
 
-        foreach ($pageIds as $pageId) {
+        $pageNames = [
+            'Splash screen',
+            'Language selection',
+            'How did it go?',
+            'Anything to improve?',
+            'Promotional page',
+        ];
+
+        foreach ($pageIds as $key => $pageId) {
             PageInstance::create([
                 'page_id' => $pageId,
+                'name' => $pageNames[$key],
                 'questionnaire_id' => $questionnaire->id,
             ]);
         }
