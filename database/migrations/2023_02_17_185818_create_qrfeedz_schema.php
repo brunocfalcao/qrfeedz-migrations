@@ -124,6 +124,11 @@ return new class extends Migration
                   ->after('locale_id')
                   ->comment('Has a super admin role?');
 
+            $table->boolean('is_admin')
+                  ->default(false)
+                  ->after('is_super_admin')
+                  ->comment('Has an admin role?');
+
             $table->unsignedInteger('commission_percentage')
                   ->default(0)
                   ->after('email')

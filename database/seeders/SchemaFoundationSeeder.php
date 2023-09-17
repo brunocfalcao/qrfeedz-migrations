@@ -310,47 +310,25 @@ class SchemaFoundationSeeder extends Seeder
         Authorization::create([
             'canonical' => 'affiliate',
             'name' => 'Client Affiliate',
-            'description' => 'Client affiliate, means receives monthly commissions']);
+            'description' => 'Client affiliate, means receives monthly commissions',
+        ]);
+
+        Authorization::create([
+            'canonical' => 'admin',
+            'name' => 'System admin',
+            'description' => 'Like the super admin, but with less specific authorizations, for instance cannot delete a client that was not created by him/her',
+        ]);
 
         Authorization::create([
             'canonical' => 'client-admin',
             'name' => 'Client Administrator',
-            'description' => 'Generic admin, can admin its own client, respective groups and questionnaires. Can delete questionnaires that dont have data yet. Can change users, and delete them, but not delete himself. Can trigger reset passwords']);
-
-        Authorization::create([
-            'canonical' => 'questionnaire-admin',
-            'name' => 'Questionnaire Administrator',
-            'description' => 'Can only admin questionnaires, create, change and delete (both data-limited) from its own client',
+            'description' => 'Generic admin, can admin its own client, respective groups and questionnaires. Can delete questionnaires that dont have data yet. Can change users, and delete them, but not delete himself. Can trigger reset passwords',
         ]);
 
         Authorization::create([
-            'canonical' => 'gdpr',
-            'name' => 'GDPR',
-            'description' => 'The GDPR role allows the user to see personal data, like visitors emails, widgets instances marked as having personal data',
-        ]);
-
-        Authorization::create([
-            'canonical' => 'questionnaire-view',
-            'name' => 'View-Only to Questionnaires',
-            'description' => 'Standard questionnaire role, for view access only',
-        ]);
-
-        Authorization::create([
-            'canonical' => 'view',
-            'name' => 'View generic access',
-            'description' => 'Access to view a specific asset. Cannot update or delete it',
-        ]);
-
-        Authorization::create([
-            'canonical' => 'update',
-            'name' => 'Update generic access',
-            'description' => 'Access to update a specific asset. Cannot delete it',
-        ]);
-
-        Authorization::create([
-            'canonical' => 'delete',
-            'name' => 'Delete generic access',
-            'description' => 'Access to delete a specific asset. Normally for admins',
+            'canonical' => 'location-admin',
+            'name' => 'Location Administrator',
+            'description' => 'For persons that need to access questionnaires from a specific location (like hotel managers, McDonalds team leads)',
         ]);
 
         Page::create([
@@ -413,26 +391,22 @@ class SchemaFoundationSeeder extends Seeder
         /**
          * Super system admin credentials registration.
          */
-        $sysadmin = User::create([
+        $superAdmin = User::create([
             'name' => env('QRFEEDZ_SUPER_ADMIN_NAME'),
             'email' => env('QRFEEDZ_SUPER_ADMIN_EMAIL'),
             'password' => bcrypt(env('QRFEEDZ_SUPER_ADMIN_PASSWORD')),
             'is_super_admin' => true,
         ]);
 
-        info('Sysadmin created.');
-
         /**
          * Tester creation.
          */
-        $tester = User::create([
-            'name' => env('QRFEEDZ_TESTER_NAME'),
-            'email' => env('QRFEEDZ_TESTER_EMAIL'),
-            'password' => bcrypt(env('QRFEEDZ_TESTER_PASSWORD')),
-            'is_super_admin' => true,
+        $admin = User::create([
+            'name' => env('QRFEEDZ_ADMIN_NAME'),
+            'email' => env('QRFEEDZ_ADMIN_EMAIL'),
+            'password' => bcrypt(env('QRFEEDZ_ADMIN_PASSWORD')),
+            'is_admin' => true,
         ]);
-
-        info('Tester created.');
 
         Category::create([
             'name' => 'Hotel',
