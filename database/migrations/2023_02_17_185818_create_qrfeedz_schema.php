@@ -167,10 +167,6 @@ return new class extends Migration
                   ->nullable()
                   ->comment('This will be the unique questionnaire qr code that will be scanned by a client.');
 
-            $table->foreignId('client_id')
-                  ->nullable()
-                  ->comment('Related client');
-
             $table->foreignId('location_id')
                   ->nullable()
                   ->comment('Related location');
