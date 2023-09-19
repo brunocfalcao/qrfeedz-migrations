@@ -110,7 +110,6 @@ class CrocRock extends Seeder
             'starts_at' => now(),
         ]);
 
-        $questionnaire->client()->associate($client);
         $questionnaire->save();
 
         /**
