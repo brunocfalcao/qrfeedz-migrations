@@ -331,6 +331,12 @@ class SchemaFoundationSeeder extends Seeder
             'description' => 'For persons that need to access questionnaires from a specific location (like hotel managers, McDonalds team leads)',
         ]);
 
+        Authorization::create([
+            'canonical' => 'questionnaire-admin',
+            'name' => 'Questionnaire Administrator',
+            'description' => 'For persons that need to admin a questionnaire, like changing notifications, or OpenAI configurations, etc',
+        ]);
+
         Page::create([
             'name' => 'Default full screen',
             'canonical' => 'full-screen',
