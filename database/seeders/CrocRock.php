@@ -33,7 +33,7 @@ class CrocRock extends Seeder
             'locale_id' => Locale::firstWhere('canonical', 'fr')->id,
         ]);
 
-        // This is the user connected to the afilliate. For testing purposes.
+        // This is the user connected to the afilliate.
         $affiliate = User::create([
             'name' => env('CROCROCK_AFFILIATE_NAME'),
             'email' => env('CROCROCK_AFFILIATE_EMAIL'),
@@ -45,35 +45,43 @@ class CrocRock extends Seeder
             'country_id' => Country::firstWhere('name', 'Switzerland')->id,
         ]);
 
+        // Associate the client with this affiliate.
         $client->affiliate()
                ->associate($affiliate)
                ->save();
 
-        /**
-         * Besides being an affiliate in the users/clients we also
-         * need to add this affiliate to the authorization Morph table.
-         */
-        Authorization::firstWhere('canonical', 'affiliate')
-            ->clients()
-            ->attach(
-                $client->id,
-                ['user_id' => $affiliate->id] // Affiliate User
-            );
-
-        // Create restaurant admin.
-        $admin = User::create([
+        // Create client admin.
+        $clientAdmin = User::create([
             'client_id' => $client->id,
-            'name' => env('CROCROCK_ADMIN_NAME'),
-            'email' => env('CROCROCK_ADMIN_EMAIL'),
-            'password' => bcrypt(env('CROCROCK_ADMIN_PASSWORD')),
+            'name' => env('CROCROCK_CLIENT_ADMIN_NAME'),
+            'email' => env('CROCROCK_CLIENT_ADMIN_EMAIL'),
+            'password' => bcrypt(env('CROCROCK_CLIENT_ADMIN_PASSWORD')),
         ]);
 
-        // Create restaurant standard user.
-        $user = User::create([
+        // Create location admin.
+        $locationAdmin = User::create([
             'client_id' => $client->id,
-            'name' => env('CROCROCK_USER_NAME'),
-            'email' => env('CROCROCK_USER_EMAIL'),
-            'password' => bcrypt(env('CROCROCK_USER_PASSWORD')),
+            'name' => env('CROCROCK_LOCATION_ADMIN_NAME'),
+            'email' => env('CROCROCK_LOCATION_ADMIN_EMAIL'),
+            'password' => bcrypt(env('CROCROCK_LOCATION_ADMIN_PASSWORD')),
+        ]);
+
+        // Create questionaire admin.
+        $questionnaireAdmin = User::create([
+            'client_id' => $client->id,
+            'name' => env('CROCROCK_QUESTIONNAIRE_ADMIN_NAME'),
+            'email' => env('CROCROCK_QUESTIONNAIRE_ADMIN_EMAIL'),
+            'password' => bcrypt(env('CROCROCK_QUESTIONNAIRE_ADMIN_PASSWORD')),
+        ]);
+
+        /**
+         * Create user admin.
+         */
+        $admin = User::create([
+            'name' => env('QRFEEDZ_ADMIN_NAME'),
+            'email' => env('QRFEEDZ_ADMIN_EMAIL'),
+            'password' => bcrypt(env('QRFEEDZ_ADMIN_PASSWORD')),
+            'is_admin' => true,
         ]);
 
         /**
@@ -86,7 +94,21 @@ class CrocRock extends Seeder
             ->clients()
             ->attach(
                 $client->id,
-                ['user_id' => $admin->id] // Peres User
+                ['user_id' => $clientAdmin->id]
+            );
+
+        Authorization::firstWhere('canonical', 'location-admin')
+            ->clients()
+            ->attach(
+                $client->id,
+                ['user_id' => $locationAdmin->id]
+            );
+
+        Authorization::firstWhere('canonical', 'questionnaire-admin')
+            ->clients()
+            ->attach(
+                $client->id,
+                ['user_id' => $questionnaireAdmin->id]
             );
 
         /**

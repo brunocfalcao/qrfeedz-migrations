@@ -304,21 +304,6 @@ class SchemaFoundationSeeder extends Seeder
             'name' => 'German',
         ]);
 
-        /**
-         * Authorizations types creation.
-         */
-        Authorization::create([
-            'canonical' => 'affiliate',
-            'name' => 'Client Affiliate',
-            'description' => 'Client affiliate, means receives monthly commissions',
-        ]);
-
-        Authorization::create([
-            'canonical' => 'admin',
-            'name' => 'System admin',
-            'description' => 'Like the super admin, but with less specific authorizations, for instance cannot delete a client that was not created by him/her',
-        ]);
-
         Authorization::create([
             'canonical' => 'client-admin',
             'name' => 'Client Administrator',
@@ -402,16 +387,6 @@ class SchemaFoundationSeeder extends Seeder
             'email' => env('QRFEEDZ_SUPER_ADMIN_EMAIL'),
             'password' => bcrypt(env('QRFEEDZ_SUPER_ADMIN_PASSWORD')),
             'is_super_admin' => true,
-        ]);
-
-        /**
-         * Tester creation.
-         */
-        $admin = User::create([
-            'name' => env('QRFEEDZ_ADMIN_NAME'),
-            'email' => env('QRFEEDZ_ADMIN_EMAIL'),
-            'password' => bcrypt(env('QRFEEDZ_ADMIN_PASSWORD')),
-            'is_admin' => true,
         ]);
 
         Category::create([
