@@ -90,12 +90,20 @@ return new class extends Migration
                 ->nullable()
                 ->comment('The client postal code');
 
-            $table->string('locality')
+            $table->string('city')
                   ->nullable()
-                  ->comment('The client locality');
+                  ->comment('The client city');
 
             $table->foreignId('country_id')
                   ->comment('Related country');
+
+            $table->string('latitude')
+                  ->nullable()
+                  ->comment('Address latitude');
+
+            $table->string('longitude')
+                  ->nullable()
+                  ->comment('Address longitude');
 
             $table->timestamps();
             $table->softDeletes();
