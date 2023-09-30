@@ -41,17 +41,6 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('authorizables', function (Blueprint $table) {
-            $table->id();
-
-            $table->morphs('model');
-            $table->foreignId('authorization_id');
-            $table->foreignId('user_id');
-
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
         Schema::create('countries', function (Blueprint $table) {
             $table->id();
 
@@ -581,6 +570,54 @@ return new class extends Migration
             $table->string('longitude')
                   ->nullable()
                   ->comment('Location address longitude');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('client_authorizations', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('client_id')
+                  ->comment('Related client');
+
+            $table->foreignId('user_id')
+                  ->comment('Related user');
+
+            $table->foreignId('authorization_id')
+                  ->comment('Related authorization');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('location_authorizations', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('location_id')
+                  ->comment('Related location');
+
+            $table->foreignId('user_id')
+                  ->comment('Related user');
+
+            $table->foreignId('authorization_id')
+                  ->comment('Related authorization');
+
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('questionnaire_authorizations', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('questionnaire_id')
+                  ->comment('Related questionnaire');
+
+            $table->foreignId('user_id')
+                  ->comment('Related user');
+
+            $table->foreignId('authorization_id')
+                  ->comment('Related authorization');
 
             $table->timestamps();
             $table->softDeletes();
