@@ -78,6 +78,10 @@ return new class extends Migration
             $table->foreignId('locale_id')
                   ->comment('Related default locale. Cascades to questionnaire');
 
+            $table->string('file_logo')
+                  ->nullable()
+                  ->comment('Image logo, appears in the questionnaire headers, preferably SVG or PNG/transparent');
+
             $table->string('vat_number')
                   ->nullable()
                   ->comment('Client fiscal number');
