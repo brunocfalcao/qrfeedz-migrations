@@ -28,7 +28,7 @@ class CrocRock extends Seeder
             'name' => 'Croc & Rock',
             'address' => '27 avenue du XX ème corps',
             'postal_code' => '54000',
-            'locality' => 'Nancy',
+            'city' => 'Nancy',
             'country_id' => Country::firstWhere('name', 'France')->id,
             'locale_id' => Locale::firstWhere('canonical', 'fr')->id,
         ]);

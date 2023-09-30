@@ -557,18 +557,26 @@ return new class extends Migration
 
             $table->text('address')
                 ->nullable()
-                ->comment('The client address');
+                ->comment('The location address');
 
             $table->string('postal_code')
                 ->nullable()
-                ->comment('The client postal code');
+                ->comment('The location postal code');
 
-            $table->string('locality')
+            $table->string('city')
                   ->nullable()
-                  ->comment('The client locality');
+                  ->comment('The location city');
 
             $table->foreignId('country_id')
                   ->comment('Related country');
+
+            $table->string('latitude')
+                  ->nullable()
+                  ->comment('Location Address latitude');
+
+            $table->string('longitude')
+                  ->nullable()
+                  ->comment('Location address longitude');
 
             $table->timestamps();
             $table->softDeletes();
