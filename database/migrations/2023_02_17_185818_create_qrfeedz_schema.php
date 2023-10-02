@@ -575,15 +575,15 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('client_authorizations', function (Blueprint $table) {
+        Schema::create('authorization_client', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('user_id')
+                  ->comment('Related user');
 
             $table->foreignId('client_id')
                   ->comment('Related client');
 
-            $table->foreignId('user_id')
-                  ->comment('Related user');
-
             $table->foreignId('authorization_id')
                   ->comment('Related authorization');
 
@@ -591,30 +591,14 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('location_authorizations', function (Blueprint $table) {
+        Schema::create('authorization_questionnaire', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('location_id')
-                  ->comment('Related location');
 
             $table->foreignId('user_id')
                   ->comment('Related user');
-
-            $table->foreignId('authorization_id')
-                  ->comment('Related authorization');
-
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
-        Schema::create('questionnaire_authorizations', function (Blueprint $table) {
-            $table->id();
 
             $table->foreignId('questionnaire_id')
                   ->comment('Related questionnaire');
-
-            $table->foreignId('user_id')
-                  ->comment('Related user');
 
             $table->foreignId('authorization_id')
                   ->comment('Related authorization');
