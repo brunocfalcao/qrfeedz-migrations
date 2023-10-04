@@ -67,7 +67,7 @@ return new class extends Migration
             $table->foreignId('locale_id')
                   ->comment('Related default locale. Cascades to questionnaire');
 
-            $table->string('file_logo')
+            $table->string('logo_file')
                   ->nullable()
                   ->comment('Image logo, appears in the questionnaire headers, preferably SVG or PNG/transparent');
 
@@ -90,11 +90,11 @@ return new class extends Migration
             $table->foreignId('country_id')
                   ->comment('Related country');
 
-            $table->string('latitude')
+            $table->decimal('latitude', 10, 8)
                   ->nullable()
                   ->comment('Address latitude');
 
-            $table->string('longitude')
+            $table->decimal('longitude', 11, 8)
                   ->nullable()
                   ->comment('Address longitude');
 
@@ -202,7 +202,7 @@ return new class extends Migration
             $table->string('color_secondary')
                   ->comment('Secondary color, normally used for the actionable buttons like "start questionnaire"');
 
-            $table->string('file_logo')
+            $table->string('logo_file')
                   ->nullable()
                   ->comment('Image logo, appears in the questionnaire headers, preferably SVG or PNG/transparent');
 

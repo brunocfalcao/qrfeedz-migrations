@@ -26,9 +26,11 @@ class CrocRock extends Seeder
         // Create CrocRock client.
         $client = Client::create([
             'name' => 'Croc & Rock',
-            'address' => '27 avenue du XX ème corps',
-            'postal_code' => '54000',
-            'city' => 'Nancy',
+            'address' => '156 Rue de Frescaty, 57155 Marly, France',
+            'postal_code' => '57155',
+            'city' => 'Marly',
+            'latitude' => 49.087548,
+            'longitude' => 6.141728899999999,
             'country_id' => Country::firstWhere('name', 'France')->id,
             'locale_id' => Locale::firstWhere('canonical', 'fr')->id,
         ]);
