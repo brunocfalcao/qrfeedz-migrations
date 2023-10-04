@@ -41,6 +41,7 @@ class CrocRock extends Seeder
             'address' => 'Le chauffour 4',
             'postal_code' => '2364',
             'locality' => 'St-Brais',
+            'is_affiliate' => true,
             'commission_percentage' => 50,
             'country_id' => Country::firstWhere('name', 'Switzerland')->id,
         ]);
@@ -58,14 +59,6 @@ class CrocRock extends Seeder
             'password' => bcrypt(env('CROCROCK_CLIENT_ADMIN_PASSWORD')),
         ]);
 
-        // Create location admin.
-        $locationAdmin = User::create([
-            'client_id' => $client->id,
-            'name' => env('CROCROCK_LOCATION_ADMIN_NAME'),
-            'email' => env('CROCROCK_LOCATION_ADMIN_EMAIL'),
-            'password' => bcrypt(env('CROCROCK_LOCATION_ADMIN_PASSWORD')),
-        ]);
-
         // Create questionaire admin.
         $questionnaireAdmin = User::create([
             'client_id' => $client->id,
@@ -73,6 +66,13 @@ class CrocRock extends Seeder
             'email' => env('CROCROCK_QUESTIONNAIRE_ADMIN_EMAIL'),
             'password' => bcrypt(env('CROCROCK_QUESTIONNAIRE_ADMIN_PASSWORD')),
         ]);
+
+        // Give questionnaire admin authorization.
+        $client->authorizations()
+               ->attach(
+                   Authorization::firstWhere('canonical', 'client-admin'),
+                   ['user_id' => $clientAdmin->id]
+               );
 
         /**
          * Create user admin.
@@ -83,33 +83,6 @@ class CrocRock extends Seeder
             'password' => bcrypt(env('QRFEEDZ_ADMIN_PASSWORD')),
             'is_admin' => true,
         ]);
-
-        /**
-         * Give respective permissions to all the created users.
-         *
-         * The client that will have Peres as admin.
-         * The 2nd user (non-admin) will not have direct permissions.
-         */
-        Authorization::firstWhere('canonical', 'client-admin')
-            ->clients()
-            ->attach(
-                $client->id,
-                ['user_id' => $clientAdmin->id]
-            );
-
-        Authorization::firstWhere('canonical', 'location-admin')
-            ->clients()
-            ->attach(
-                $client->id,
-                ['user_id' => $locationAdmin->id]
-            );
-
-        Authorization::firstWhere('canonical', 'questionnaire-admin')
-            ->clients()
-            ->attach(
-                $client->id,
-                ['user_id' => $questionnaireAdmin->id]
-            );
 
         /**
          * Time to create the questionnaire.
@@ -133,6 +106,14 @@ class CrocRock extends Seeder
         ]);
 
         $questionnaire->save();
+
+        // Give questionnaire admin authorization.
+        $questionnaire
+            ->authorizations()
+            ->attach(
+                Authorization::firstWhere('canonical', 'questionnaire-admin'),
+                ['user_id' => $questionnaireAdmin->id]
+            );
 
         /**
          * Lets create the pages:

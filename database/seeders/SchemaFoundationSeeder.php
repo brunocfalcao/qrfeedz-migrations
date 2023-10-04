@@ -311,12 +311,6 @@ class SchemaFoundationSeeder extends Seeder
         ]);
 
         Authorization::create([
-            'canonical' => 'location-admin',
-            'name' => 'Location Administrator',
-            'description' => 'For persons that need to access questionnaires from a specific location (like hotel managers, McDonalds team leads)',
-        ]);
-
-        Authorization::create([
             'canonical' => 'questionnaire-admin',
             'name' => 'Questionnaire Administrator',
             'description' => 'For persons that need to admin a questionnaire, like changing notifications, or OpenAI configurations, etc',
