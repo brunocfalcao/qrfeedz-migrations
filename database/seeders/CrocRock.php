@@ -70,8 +70,8 @@ class CrocRock extends Seeder
         // Give questionnaire admin authorization.
         $client->authorizations()
                ->attach(
-                   Authorization::firstWhere('canonical', 'client-admin'),
-                   ['user_id' => $clientAdmin->id]
+                   Authorization::firstWhere('canonical', 'questionnaire-admin'),
+                   ['user_id' => $questionnaireAdmin->id]
                );
 
         /**
