@@ -73,7 +73,7 @@ class CrocRock extends Seeder
         $client->authorizations()
                ->attach(
                    Authorization::firstWhere('canonical', 'client-admin'),
-                   ['user_id' => $questionnaireAdmin->id]
+                   ['user_id' => $clientAdmin->id]
                );
 
         /**
