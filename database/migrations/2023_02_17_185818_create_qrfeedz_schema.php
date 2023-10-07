@@ -580,14 +580,23 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('authorizables', function (Blueprint $table) {
+        Schema::create('client_authorizations', function (Blueprint $table) {
             $table->id();
 
-            $table->morphs('authorizable');
+            $table->foreignId('client_id');
+            $table->foreignId('user_id');
             $table->foreignId('authorization_id');
 
-            $table->foreignId('user_id')
-                  ->comment('Related user for the morphable authorization');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('questionnaire_authorizations', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('questionnaire_id');
+            $table->foreignId('user_id');
+            $table->foreignId('authorization_d');
 
             $table->timestamps();
             $table->softDeletes();
