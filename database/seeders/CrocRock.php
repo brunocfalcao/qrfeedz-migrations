@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use QRFeedz\Cube\Models\Authorization;
 use QRFeedz\Cube\Models\Category;
 use QRFeedz\Cube\Models\Client;
+use QRFeedz\Cube\Models\ClientAuthorization;
 use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Locale;
 use QRFeedz\Cube\Models\Page;
@@ -48,11 +49,6 @@ class CrocRock extends Seeder
             'country_id' => Country::firstWhere('name', 'Switzerland')->id,
         ]);
 
-        // Associate the client with this affiliate.
-        $client->affiliate()
-               ->associate($affiliate)
-               ->save();
-
         // Create client admin.
         $clientAdmin = User::create([
             'client_id' => $client->id,
@@ -69,13 +65,6 @@ class CrocRock extends Seeder
             'password' => bcrypt(env('CROCROCK_QUESTIONNAIRE_ADMIN_PASSWORD')),
         ]);
 
-        // Give questionnaire admin authorization.
-        $client->authorizations()
-               ->attach(
-                   Authorization::firstWhere('canonical', 'client-admin'),
-                   ['user_id' => $clientAdmin->id]
-               );
-
         /**
          * Create user admin.
          */
@@ -84,6 +73,18 @@ class CrocRock extends Seeder
             'email' => env('QRFEEDZ_ADMIN_EMAIL'),
             'password' => bcrypt(env('QRFEEDZ_ADMIN_PASSWORD')),
             'is_admin' => true,
+        ]);
+
+        // Associate the client with this affiliate.
+        $client->affiliate()
+               ->associate($affiliate)
+               ->save();
+
+        // Give client admin permissions.
+        ClientAuthorization::create([
+            'user_id' => $clientAdmin->id,
+            'client_id' => $client->id,
+            'authorization_id' => Authorization::firstWhere('canonical', 'client-admin')->id,
         ]);
 
         /**
@@ -108,14 +109,6 @@ class CrocRock extends Seeder
         ]);
 
         $questionnaire->save();
-
-        // Give questionnaire admin authorization.
-        $questionnaire
-            ->authorizations()
-            ->attach(
-                Authorization::firstWhere('canonical', 'questionnaire-admin'),
-                ['user_id' => $questionnaireAdmin->id]
-            );
 
         /**
          * Lets create the pages:

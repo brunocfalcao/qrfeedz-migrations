@@ -596,7 +596,7 @@ return new class extends Migration
 
             $table->foreignId('questionnaire_id');
             $table->foreignId('user_id');
-            $table->foreignId('authorization_d');
+            $table->foreignId('authorization_id');
 
             $table->timestamps();
             $table->softDeletes();
