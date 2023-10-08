@@ -15,6 +15,7 @@ use QRFeedz\Cube\Models\PageInstance;
 use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\QuestionInstance;
 use QRFeedz\Cube\Models\Questionnaire;
+use QRFeedz\Cube\Models\QuestionnaireAuthorization;
 use QRFeedz\Cube\Models\Response;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
@@ -109,6 +110,13 @@ class CrocRock extends Seeder
         ]);
 
         $questionnaire->save();
+
+        // Give questionnaire admin permissions.
+        QuestionnaireAuthorization::create([
+            'user_id' => $questionnaireAdmin->id,
+            'questionnaire_id' => $questionnaire->id,
+            'authorization_id' => Authorization::firstWhere('canonical', 'questionnaire-admin')->id,
+        ]);
 
         /**
          * Lets create the pages:

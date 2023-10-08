@@ -317,16 +317,6 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('client_tag', function (Blueprint $table) {
-            $table->id();
-
-            $table->foreignId('client_id');
-            $table->foreignId('tag_id');
-
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
         Schema::create('taggables', function (Blueprint $table) {
             $table->id();
 
@@ -589,6 +579,8 @@ return new class extends Migration
 
             $table->timestamps();
             $table->softDeletes();
+
+            $table->unique(['client_id', 'user_id', 'authorization_id'], 'unique_client_auth_keys');
         });
 
         Schema::create('questionnaire_authorizations', function (Blueprint $table) {
@@ -600,6 +592,8 @@ return new class extends Migration
 
             $table->timestamps();
             $table->softDeletes();
+
+            $table->unique(['questionnaire_id', 'user_id', 'authorization_id'], 'unique_questionnaire_auth_keys');
         });
 
         /**
