@@ -300,28 +300,15 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        /**
-         * Tags are joker attributes that are related with clients,
-         * groups, questionnaires, etc. They can be created and used as
-         * requested.
-         */
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('questionnaire_id');
 
             $table->string('name');
 
             $table->text('description')
                   ->nullable();
-
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
-        Schema::create('taggables', function (Blueprint $table) {
-            $table->id();
-
-            $table->morphs('model');
-            $table->foreignId('tag_id');
 
             $table->timestamps();
             $table->softDeletes();
