@@ -360,59 +360,6 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('pages', function (Blueprint $table) {
-            $table->id();
-
-            $table->string('name');
-            $table->string('canonical')
-                  ->unique();
-
-            $table->text('description')
-                  ->nullable();
-
-            $table->string('view_component_namespace')
-                  ->default('survey')
-                  ->comment('The view component name that will encapsulate the widget(s) namespaces. Normally will the components inside components/pages/...');
-
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
-        Schema::create('page_instances', function (Blueprint $table) {
-            $table->id();
-
-            $table->char('uuid', 36)
-                  ->unique()
-                  ->nullable();
-
-            $table->string('name')
-                  ->comment('What is this page instance about?');
-
-            $table->foreignId('page_id')
-                  ->comment('Related page type, to undertand what strucutre should be loaded. If null, then a view component override is needed');
-
-            $table->foreignId('questionnaire_id')
-                  ->comment('Related questionnaire id');
-
-            $table->unsignedInteger('index')
-                  ->comment('The page index in the respective related questionnaire, or to the group name');
-
-            $table->string('group')
-                  ->nullable()
-                  ->comment('A group joins different pages to create sub-questionnaire pages, e.g.: when using group oneliners');
-
-            $table->string('view_component_override')
-                  ->nullable()
-                  ->comment('If we have a specific view component, instead of using the ones from the page types');
-
-            $table->json('data')
-                  ->nullable()
-                  ->comment('Any extra data we want to pass to the page instance');
-
-            $table->timestamps();
-            $table->softDeletes();
-        });
-
         Schema::create('question_instances', function (Blueprint $table) {
             $table->id();
 
@@ -420,9 +367,9 @@ return new class extends Migration
                   ->unique()
                   ->nullable();
 
-            $table->foreignId('page_instance_id')
+            $table->foreignId('questionnaire_id')
                   ->nullable()
-                  ->comment('Related questionnaire page instance');
+                  ->comment('Related questionnaire');
 
             $table->boolean('is_analytical')
                   ->default(true)

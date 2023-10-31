@@ -3,23 +3,16 @@
 namespace QRFeedz\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 use QRFeedz\Cube\Models\Authorization;
 use QRFeedz\Cube\Models\Category;
 use QRFeedz\Cube\Models\Client;
 use QRFeedz\Cube\Models\ClientAuthorization;
 use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Locale;
-use QRFeedz\Cube\Models\Page;
-use QRFeedz\Cube\Models\PageInstance;
-use QRFeedz\Cube\Models\Question;
 use QRFeedz\Cube\Models\QuestionInstance;
 use QRFeedz\Cube\Models\Questionnaire;
 use QRFeedz\Cube\Models\QuestionnaireAuthorization;
-use QRFeedz\Cube\Models\Response;
 use QRFeedz\Cube\Models\User;
-use QRFeedz\Cube\Models\Widget;
-use QRFeedz\Cube\Models\WidgetInstance;
 
 class CrocRock extends Seeder
 {
@@ -88,19 +81,6 @@ class CrocRock extends Seeder
             'authorization_id' => Authorization::firstWhere('canonical', 'client-admin')->id,
         ]);
 
-        /**
-         * Time to create the questionnaire.
-         *
-         * 2 survey pages, with one question each:
-         * 1 question - Overall rating.
-         * 1 question - Anything specific to improve?
-         *
-         * After there will be a promo message (written in the 3 locales) and
-         * a final page for the social sharing links.
-         *
-         * The promo message and the final social page are not questionnaire
-         * pages, "per se", so they don't count for the questionnaire counter.
-         */
         $questionnaire = Questionnaire::create([
             'name' => 'CrocRock 2024',
             'title' => 'Restaurant CrocRock',
@@ -119,195 +99,22 @@ class CrocRock extends Seeder
         ]);
 
         /**
-         * Lets create the pages:
-         *
-         * 1. Splash screen.
-         * 2. Select language.
-         * 3. 1 question - Overall rating.
-         * 4. 1 question - Anything specific to improve?
-         * 5. promo page.
-         *
-         * Pages are added to the via the PageTypeQuestionnaire pivot table.
+         * Create 2 questions:
+         * - What's your overall satisfaction?
+         * - Anything you would like to see improved?
          */
-        $pageIds = [
-            Page::firstWhere('canonical', 'full-screen')->id,
-            Page::firstWhere('canonical', 'full-screen')->id,
-            Page::firstWhere('canonical', 'full-screen')->id,
-            Page::firstWhere('canonical', 'full-screen')->id,
-            Page::firstWhere('canonical', 'full-screen')->id,
-        ];
+        $question1 = QuestionInstance::create([
+            'questionnaire_id' => $questionnaire->id,
+            'is_analytical' => true,
+            'is_used_for_personal_data' => false,
+            'is_required' => true,
+        ]);
 
-        $pageNames = [
-            'Splash screen',
-            'Language selection',
-            'How did it go?',
-            'Anything to improve?',
-            'Promotional page',
-        ];
-
-        foreach ($pageIds as $key => $pageId) {
-            PageInstance::create([
-                'page_id' => $pageId,
-                'name' => $pageNames[$key],
-                'questionnaire_id' => $questionnaire->id,
-            ]);
-        }
-
-        /**
-         * Lets create the questions associated with each survey page.
-         * Each question will have a localable in each of the available
-         * languages. And will then have a widget(s) collection if needed.
-         *
-         * On this case, we want to create 1 question per survey page:
-         *
-         * 1st page:
-         * - Overall, how do you rate your experience with us?
-         *
-         * 2nd page:
-         * - Anything to let us know to help us improve?
-         */
-
-        // Obtain the page type questionnaire instances (ordered by index).
-        $pageInstances = $questionnaire->pageInstances;
-
-        /**
-         * The first 2 pages they don't need any work.
-         * The next 2 pages they need to have questions, one question per page.
-         * The last promo page doesn't need to have anything.
-         */
-        foreach ($pageInstances as $pageInstance) {
-
-            /**
-             * Splash page. No feedback is received. No locale used.
-             */
-            if ($pageInstance->id == 1) {
-                $questionInstance = QuestionInstance::create([
-                    'page_instance_id' => $pageInstance->id,
-                    'is_analytical' => false,
-                    'is_used_for_personal_data' => false,
-                ]);
-
-                $widgetInstance = WidgetInstance::create([
-                    'question_instance_id' => $questionInstance->id,
-                    'widget_id' => Widget::firstWhere('canonical', 'splash-1')->id,
-                ]);
-            }
-
-            /**
-             * Locale selection. Will be kept forever in all pages.
-             * The locale is a session variable that changes in case there
-             * is a querystring parameter 'lang=en' as example. After that
-             * it will keep the same locale on the same session.
-             */
-            if ($pageInstance->id == 2) {
-                $questionInstance = QuestionInstance::create([
-                    'page_instance_id' => $pageInstance->id,
-                    'is_analytical' => false,
-                    'is_used_for_personal_data' => false,
-                ]);
-
-                $widgetInstance = WidgetInstance::create([
-                    'question_instance_id' => $questionInstance->id,
-                    'widget_id' => Widget::firstWhere('canonical', 'locale-selector-1')->id,
-                ]);
-            }
-
-            /**
-             * First survey page. A "how did it go?" 5 stars widget.
-             * In case there is a  <=2 or a =5 then a "why?". The label on the
-             * why is different so we need use it on the widget conditionals.
-             *
-             * On this case we also need to add question and widget locales,
-             * and also widget conditional locales (en, fr, it).
-             */
-            if ($pageInstance->id == 3) {
-                $questionInstanceStars = QuestionInstance::create([
-                    'page_instance_id' => $pageInstance->id,
-                    'is_analytical' => true,
-                    'is_used_for_personal_data' => false,
-                ]);
-
-                $widgetInstanceStars = WidgetInstance::create([
-                    'question_instance_id' => $questionInstanceStars->id,
-                    'widget_id' => Widget::firstWhere('canonical', 'stars-rating')->id,
-                ]);
-
-                Locale::firstWhere('canonical', 'en')
-                    ->questionInstances()
-                    ->attach(
-                        $questionInstanceStars->id,
-                        ['caption' => 'How do you rate us, in overall?']
-                    );
-
-                Locale::firstWhere('canonical', 'fr')
-                    ->questionInstances()
-                    ->attach(
-                        $questionInstanceStars->id,
-                        ['caption' => 'Ca va etait?']
-                    );
-
-                Locale::firstWhere('canonical', 'it')
-                    ->questionInstances()
-                    ->attach(
-                        $questionInstanceStars->id,
-                        ['caption' => 'Tuto va bienne?']
-                    );
-
-                // Now we need to load the widget instance conditionals.
-                $widgetInstanceConditional = WidgetInstance::create([
-                    'widget_instance_id' => $widgetInstanceStars->id,
-                    'widget_id' => Widget::firstWhere('canonical', 'textarea')->id,
-                    'index' => null,
-                    'when' => ['value' => '<=2'],
-                    'then' => ['action' => 'slidedown'],
-                ]);
-
-                Locale::firstWhere('canonical', 'en')
-                    ->widgetInstances()
-                    ->attach(
-                        $widgetInstanceConditional->id,
-                        ['caption' => 'What went wrong?']
-                    );
-
-                Locale::firstWhere('canonical', 'it')
-                    ->widgetInstances()
-                    ->attach(
-                        $widgetInstanceConditional->id,
-                        ['caption' => 'Qui ha passato malle?']
-                    );
-
-                Locale::firstWhere('canonical', 'fr')
-                    ->widgetInstances()
-                    ->attach(
-                        $widgetInstanceConditional->id,
-                        ['caption' => 'Ce etait mal?']
-                    );
-            }
-
-            /**
-             * 2nd survey page. We ask "anything you would like to see
-             * improved?" -- This is a textarea.
-             */
-            if ($pageInstance->id == 4) {
-            }
-
-            /**
-             * This is a promotional page from the
-             *
-             * @var [type]
-             */
-            if ($pageInstance->id == 5) {
-            }
-        }
-
-        /**
-         * Create a single response for this questionnaire.
-         */
-        Response::create([
-            'session_instance_id' => (string) Str::uuid(),
-            'question_instance_id' => $questionInstanceStars->id,
-            'widget_instance_id' => $widgetInstanceStars->id,
-            'value' => ['2', '3'],
+        $question2 = QuestionInstance::create([
+            'questionnaire_id' => $questionnaire->id,
+            'is_analytical' => true,
+            'is_used_for_personal_data' => false,
+            'is_required' => false,
         ]);
     }
 }

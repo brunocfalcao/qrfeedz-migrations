@@ -7,7 +7,6 @@ use QRFeedz\Cube\Models\Authorization;
 use QRFeedz\Cube\Models\Category;
 use QRFeedz\Cube\Models\Country;
 use QRFeedz\Cube\Models\Locale;
-use QRFeedz\Cube\Models\Page;
 use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
 
@@ -314,13 +313,6 @@ class SchemaFoundationSeeder extends Seeder
             'canonical' => 'questionnaire-admin',
             'name' => 'Questionnaire Administrator',
             'description' => 'For persons that need to admin a questionnaire, like changing notifications, or OpenAI configurations, etc',
-        ]);
-
-        Page::create([
-            'name' => 'Default full screen',
-            'canonical' => 'full-screen',
-            'view_component_namespace' => 'pages.full-screen',
-            'description' => 'A default fullscreen page, mostly used on all page instance transitions',
         ]);
 
         /**
