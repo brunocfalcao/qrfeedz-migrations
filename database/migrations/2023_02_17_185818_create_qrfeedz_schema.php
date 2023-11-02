@@ -202,6 +202,9 @@ return new class extends Migration
             $table->string('color_secondary')
                   ->comment('Secondary color, normally used for the actionable buttons like "start questionnaire"');
 
+            $table->boolean('has_splash_screen')
+                  ->default(false);
+
             $table->string('logo_file')
                   ->nullable()
                   ->comment('Image logo, appears in the questionnaire headers, preferably SVG or PNG/transparent');
@@ -422,14 +425,6 @@ return new class extends Migration
 
             $table->foreignId('widget_id')
                   ->nullable();
-
-            $table->unsignedInteger('index')
-                  ->nullable()
-                  ->comment('The sequence of the widget instance in case it is a multi-widget instance question instance');
-
-            $table->foreignId('widget_instance_id')
-                  ->nullable()
-                  ->comment('If it is a widget instance child (like a widget conditional)');
 
             /**
              * This is a javascript eval expression like:

@@ -315,40 +315,73 @@ class SchemaFoundationSeeder extends Seeder
             'description' => 'For persons that need to admin a questionnaire, like changing notifications, or OpenAI configurations, etc',
         ]);
 
-        /**
-         * Widgets creation.
-         *
-         * Emoji rating.
-         * Stars rating.
-         * One Liner.
-         */
-        Widget::create([
+        // Get locales.
+        $en = Locale::firstWhere('canonical', 'en');
+        $fr = Locale::firstWhere('canonical', 'fr');
+        $pt = Locale::firstWhere('canonical', 'pt');
+        $it = Locale::firstWhere('canonical', 'it');
+        $de = Locale::firstWhere('canonical', 'de');
+
+        // Create widgets.
+        $emojisRating = Widget::create([
             'name' => 'Emoji faces rating',
             'canonical' => 'emoji-faces-rating',
             'description' => 'Emoji rating, 5 faces from very sad to very happy. Gray-based, then when the visitor touches the emoji it gets transformed into color',
             'view_component_namespace' => 'widgets.emoji-faces-rating',
         ]);
 
-        Widget::create([
+        $starsRating = Widget::create([
             'name' => 'Stars rating',
             'canonical' => 'stars-rating',
             'description' => 'Stars rating with stars. Visitor touches a star and it selects the right value of it',
             'view_component_namespace' => 'widgets.stars-rating',
         ]);
 
-        Widget::create([
+        // Add locales for stars rating.
+        $locales = [
+            'en' => 'Please select a star',
+            'fr' => 'Choisiez une etoile svp',
+            'pt' => 'Escolha uma estrela',
+            'it' => 'Ezcuza una strella',
+            'de' => 'Richt facht Etoille',
+        ];
+
+        foreach ($locales as $lang => $caption) {
+            $starsRating->captions()->attach(
+                Locale::firstWhere('canonical', $lang)->id,
+                ['caption' => $caption]
+            );
+        }
+
+        $emojiSlider = Widget::create([
             'name' => 'Emoji slider rating',
             'canonical' => 'emoji-slider-rating',
             'description' => 'Slider that shows emoji faces as long as the visitor slides it',
             'view_component_namespace' => 'widgets.emoji-slider-rating',
         ]);
 
-        Widget::create([
+        $textarea = Widget::create([
             'name' => 'Textarea',
             'canonical' => 'textarea',
             'description' => 'Standard textarea to store feedback text',
             'view_component_namespace' => 'widgets.textarea',
         ]);
+
+        // Add locales for stars rating.
+        $locales = [
+            'en' => 'Enter your comments',
+            'fr' => 'Ecrivez votre commentaires',
+            'pt' => 'Escreva os seus comentarios',
+            'it' => 'Escrezia tuos comentatos',
+            'de' => 'Thguit anf commentariens',
+        ];
+
+        foreach ($locales as $lang => $caption) {
+            $textarea->captions()->attach(
+                Locale::firstWhere('canonical', $lang)->id,
+                ['caption' => $caption]
+            );
+        }
 
         /** ----- Special Widgets for "full page" page types ---- */
         Widget::create([
@@ -356,13 +389,6 @@ class SchemaFoundationSeeder extends Seeder
             'canonical' => 'splash-1',
             'description' => 'Horizontally and centered logo + questionnaire name + footer with client name, for full screen pages. Fades in and out the logo / questionnaire title',
             'view_component_namespace' => 'widgets.splash-1',
-        ]);
-
-        Widget::create([
-            'name' => 'Locales selectors',
-            'canonical' => 'locale-selector-1',
-            'description' => 'Big buttons for a full screen, to select a locale from a locales list',
-            'view_component_namespace' => 'widgets.locale-selectors-1',
         ]);
 
         /**

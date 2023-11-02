@@ -13,6 +13,8 @@ use QRFeedz\Cube\Models\QuestionInstance;
 use QRFeedz\Cube\Models\Questionnaire;
 use QRFeedz\Cube\Models\QuestionnaireAuthorization;
 use QRFeedz\Cube\Models\User;
+use QRFeedz\Cube\Models\Widget;
+use QRFeedz\Cube\Models\WidgetInstance;
 
 class CrocRock extends Seeder
 {
@@ -115,6 +117,47 @@ class CrocRock extends Seeder
             'is_analytical' => true,
             'is_used_for_personal_data' => false,
             'is_required' => false,
+        ]);
+
+        // Get locales.
+        $en = Locale::firstWhere('canonical', 'en');
+        $fr = Locale::firstWhere('canonical', 'fr');
+        $pt = Locale::firstWhere('canonical', 'pt');
+
+        // Add locales to both questions.
+        $question1->captions()->attach($en->id, [
+            'caption' => 'Overall, how did we perform?',
+        ]);
+
+        $question1->captions()->attach($fr->id, [
+            'caption' => 'Tout etait bien?',
+        ]);
+
+        $question1->captions()->attach($pt->id, [
+            'caption' => 'De modo geral, como o acolhemos?',
+        ]);
+
+        $question2->captions()->attach($en->id, [
+            'caption' => 'Anything else to add?',
+        ]);
+
+        $question2->captions()->attach($fr->id, [
+            'caption' => 'Quelque chose a dire?',
+        ]);
+
+        $question2->captions()->attach($pt->id, [
+            'caption' => 'Algo mais a acrescentar?',
+        ]);
+
+        // Add widget instances to the question instance.
+        $starsRating = WidgetInstance::create([
+            'question_instance_id' => $question1->id,
+            'widget_id' => Widget::firstWhere('canonical', 'stars-rating')->id,
+        ]);
+
+        $textarea = WidgetInstance::create([
+            'question_instance_id' => $question2->id,
+            'widget_id' => Widget::firstWhere('canonical', 'textarea')->id,
         ]);
     }
 }
