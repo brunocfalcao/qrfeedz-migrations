@@ -16,12 +16,12 @@ use QRFeedz\Cube\Models\User;
 use QRFeedz\Cube\Models\Widget;
 use QRFeedz\Cube\Models\WidgetInstance;
 
-class CrocRock extends Seeder
+class Seed1 extends Seeder
 {
     public function run()
     {
-        // Create CrocRock client.
-        $client = Client::create([
+        // Create clients.
+        $clientCroc = Client::create([
             'name' => 'Croc & Rock',
             'address' => '156 Rue de Frescaty, 57155 Marly, France',
             'postal_code' => '57155',
@@ -32,33 +32,71 @@ class CrocRock extends Seeder
             'locale_id' => Locale::firstWhere('canonical', 'fr')->id,
         ]);
 
-        // This is the user connected to the afilliate.
-        $affiliate = User::create([
+        $clientHilton = Client::create([
+            'name' => 'Hilton Diagonal Barcelona',
+            'address' => 'Rua da Penha de França 138 porta 4',
+            'postal_code' => '1170-207',
+            'city' => 'Lisbon',
+            'latitude' => 38.72523740,
+            'longitude' => -9.12950620,
+            'country_id' => Country::firstWhere('name', 'Portugal')->id,
+            'locale_id' => Locale::firstWhere('canonical', 'pt')->id,
+        ]);
+
+        // Create users that will be affiliates.
+        $affiliateCroc = User::create([
             'name' => env('CROCROCK_AFFILIATE_NAME'),
             'email' => env('CROCROCK_AFFILIATE_EMAIL'),
             'password' => bcrypt(env('CROCROCK_AFFILIATE_PASSWORD')),
-            'address' => 'Le chauffour 4',
-            'postal_code' => '2364',
-            'locality' => 'St-Brais',
+            'address' => 'Paiva Couceiro',
+            'postal_code' => '1200',
+            'locality' => 'Lisbon',
             'is_affiliate' => true,
             'commission_percentage' => 50,
+            'country_id' => Country::firstWhere('name', 'Portugal')->id,
+        ]);
+
+        $affiliateHilton = User::create([
+            'name' => env('HILTON_AFFILIATE_NAME'),
+            'email' => env('HILTON_AFFILIATE_EMAIL'),
+            'password' => bcrypt(env('HILTON_AFFILIATE_PASSWORD')),
+            'address' => 'Feichruttiweg 141',
+            'postal_code' => '5263',
+            'locality' => 'Etzgen',
+            'is_affiliate' => true,
+            'commission_percentage' => 20,
             'country_id' => Country::firstWhere('name', 'Switzerland')->id,
         ]);
 
-        // Create client admin.
-        $clientAdmin = User::create([
-            'client_id' => $client->id,
+        // Create client admins.
+        $clientCrocAdmin = User::create([
+            'client_id' => $clientCroc->id,
             'name' => env('CROCROCK_CLIENT_ADMIN_NAME'),
             'email' => env('CROCROCK_CLIENT_ADMIN_EMAIL'),
             'password' => bcrypt(env('CROCROCK_CLIENT_ADMIN_PASSWORD')),
         ]);
 
+        $clientHiltonAdmin = User::create([
+            'client_id' => $clientHilton->id,
+            'name' => env('HILTON_CLIENT_ADMIN_NAME'),
+            'email' => env('HILTON_CLIENT_ADMIN_EMAIL'),
+            'password' => bcrypt(env('HILTON_CLIENT_ADMIN_PASSWORD')),
+        ]);
+
         // Create questionaire admin.
-        $questionnaireAdmin = User::create([
-            'client_id' => $client->id,
+        $questionnaireCrocAdmin = User::create([
+            'client_id' => $clientCroc->id,
             'name' => env('CROCROCK_QUESTIONNAIRE_ADMIN_NAME'),
             'email' => env('CROCROCK_QUESTIONNAIRE_ADMIN_EMAIL'),
             'password' => bcrypt(env('CROCROCK_QUESTIONNAIRE_ADMIN_PASSWORD')),
+        ]);
+
+        // Create questionaire admin.
+        $questionnaireHiltonAdmin = User::create([
+            'client_id' => $clientHilton->id,
+            'name' => env('HILTON_QUESTIONNAIRE_ADMIN_NAME'),
+            'email' => env('HILTON_QUESTIONNAIRE_ADMIN_EMAIL'),
+            'password' => bcrypt(env('HILTON_QUESTIONNAIRE_ADMIN_PASSWORD')),
         ]);
 
         /**
@@ -71,19 +109,32 @@ class CrocRock extends Seeder
             'is_admin' => true,
         ]);
 
-        // Associate the client with this affiliate.
-        $client->affiliate()
-               ->associate($affiliate)
+        // Associate the clients with these affiliates.
+        $clientCroc->affiliate()
+               ->associate($affiliateCroc)
+               ->save();
+
+        // Associate the clients with these affiliates.
+        $clientHilton->affiliate()
+               ->associate($affiliateHilton)
                ->save();
 
         // Give client admin permissions.
         ClientAuthorization::create([
-            'user_id' => $clientAdmin->id,
-            'client_id' => $client->id,
+            'user_id' => $clientCrocAdmin->id,
+            'client_id' => $clientCroc->id,
             'authorization_id' => Authorization::firstWhere('canonical', 'client-admin')->id,
         ]);
 
-        $questionnaire = Questionnaire::create([
+        ClientAuthorization::create([
+            'user_id' => $clientHiltonAdmin->id,
+            'client_id' => $clientHilton->id,
+            'authorization_id' => Authorization::firstWhere('canonical', 'client-admin')->id,
+        ]);
+
+        return;
+
+        $questionnaireCroc = Questionnaire::create([
             'name' => 'CrocRock 2024',
             'title' => 'Restaurant CrocRock',
             'location_id' => 1, // This is because the client creation triggered a location.
